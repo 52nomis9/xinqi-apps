@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>心奇学象棋</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%238a2a1f' stroke='%234a1812' stroke-width='2'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='%23fff' font-family='LiSu,STLiti,serif'%3E帅%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>心奇学象棋</h1>
+      <div class="header-controls">
+        <button id="btn-fullscreen" class="btn btn-panel-toggle btn-fullscreen" type="button" title="全屏显示棋盘下棋界面" aria-pressed="false">⛶</button>
+        <button id="btn-toggle-panel" class="btn btn-panel-toggle" type="button" title="收起 / 展开右侧设置栏" aria-expanded="true">❯</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- 3D 棋盘 -->
+      <section class="board-area">
+        <div id="board-container"></div>
+        <div id="check-banner" class="check-banner">将军！</div>
+        <div class="board-hint">左键点击选子 / 落子 · 滚轮缩放 · 被吃掉的棋子以汉字棋子样式展示在棋盘外右侧 · 勾选「视角随走棋方切换」后视角锁定，取消勾选才可拖拽旋转</div>
+      </section>
+
+      <!-- 侧栏 -->
+      <aside class="panel">
+        <!-- 轮下方（含音效开关） -->
+        <div class="panel-block">
+          <div class="turn-row">
+            <span class="turn-label">当前轮到：</span>
+            <span id="turn-indicator" class="turn red">红方走棋</span>
+            <span class="turn-spacer"></span>
+            <button id="btn-sound" class="sound-toggle" type="button" title="音效：开" aria-pressed="true">🔊</button>
+          </div>
+          <div id="mode-indicator" class="mode-indicator">模式：双人对战</div>
+          <div id="thinking-indicator" class="thinking" style="display:none;">电脑思考中…</div>
+        </div>
+
+        <!-- 对战 / 人机 + 悔棋/重新开始 -->
+        <div class="panel-block">
+          <div class="mode-buttons">
+            <button id="btn-pvp" class="btn btn-primary active">双人对战</button>
+            <button id="btn-pve" class="btn btn-pve"><span>人机对战</span><span class="pve-sub">(玩家执红先走)</span></button>
+          </div>
+          <div class="action-buttons">
+            <button id="btn-undo" class="btn">悔棋</button>
+            <button id="btn-restart" class="btn">重新开始</button>
+          </div>
+        </div>
+
+        <!-- 难度设置（让子方 / 让子 / 人机难度） -->
+        <div class="panel-block">
+          <h3>难度设置</h3>
+          <label class="select-row">
+            <span class="select-label">让子方</span>
+            <select id="sel-giver" class="select-input">
+              <option value="red">红方让子</option>
+              <option value="black">黑方让子</option>
+            </select>
+          </label>
+          <label class="select-row">
+            <span class="select-label">让子</span>
+            <select id="sel-handicap" class="select-input">
+              <option value="none">常规对局</option>
+            </select>
+          </label>
+          <label class="select-row" id="difficulty-row" style="display:none;">
+            <span class="select-label">人机难度</span>
+            <select id="sel-difficulty" class="select-input">
+              <option value="1">1 级 · 兵/卒级（初学）</option>
+              <option value="2">2 级 · 仕/士级（新手）</option>
+              <option value="3">3 级 · 相/象级（入门）</option>
+              <option value="4">4 级 · 炮/砲级（业余）</option>
+              <option value="5">5 级 · 马级（高手）</option>
+              <option value="6">6 级 · 车级（棋士）</option>
+              <option value="7">7 级 · 帅/将级（大师）</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- 棋子形象 -->
+        <div class="panel-block">
+          <h3>棋子形象</h3>
+          <div class="style-buttons">
+            <button id="btn-style-model" class="btn btn-style">模型</button>
+            <button id="btn-style-both" class="btn btn-style">模型+汉字</button>
+            <button id="btn-style-char" class="btn btn-style">汉字</button>
+          </div>
+        </div>
+
+        <!-- 视角设置 -->
+        <div class="panel-block">
+          <h3>视角设置</h3>
+          <div class="view-buttons">
+            <button id="btn-view-angle" class="btn btn-view active">45° 后方斜视</button>
+            <button id="btn-view-top" class="btn btn-view">90° 全程俯视</button>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="chk-autoswitch" checked />
+            <span>视角随走棋方切换</span>
+          </label>
+          <div class="view-tip">勾选后视角锁定并随走棋方自动切换（45° 与 90° 均生效），取消勾选才可自由拖拽</div>
+          <div class="view-actions">
+            <button id="btn-flip" class="btn btn-small">翻转视角</button>
+          </div>
+          <div id="view-status" class="view-status">45° 斜视 · 随走棋方自动切换</div>
+        </div>
+
+        <!-- 着法记录 / 棋谱 -->
+        <div class="panel-block">
+          <h3>着法记录 · 棋谱</h3>
+          <div class="repertoire-row">
+            <button id="btn-import" class="btn btn-small">导入棋谱</button>
+            <button id="btn-export" class="btn btn-small">导出棋谱</button>
+            <button id="btn-replay" class="btn btn-small btn-replay" style="display:none;">复盘重下</button>
+            <input type="file" id="file-import" accept=".txt,text/plain" hidden />
+          </div>
+          <div id="move-list" class="move-list"></div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <span>规则引擎 engine.js ｜ AI / 棋谱 core.js ｜ 卡通 3D 模型 pieces3d.js ｜ 场景 scene3d.js ｜ 音效 sounds.js ｜ 渲染 three.js（本地）</span>
+    </footer>
+  </div>
+
+  <div id="gameover-modal" class="modal">
+    <div class="modal-card">
+      <h2 id="go-title" class="go-title">对局结束</h2>
+      <p id="go-desc" class="go-desc"></p>
+      <button id="btn-close-modal" class="btn btn-primary">再来一局</button>
+    </div>
+  </div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="engine.js"></script>
+  <script src="core.js"></script>
+  <script src="pieces3d.js"></script>
+  <script src="scene3d.js"></script>
+  <script src="sounds.js"></script>
+  <script src="main3d.js"></script>
+<script src="../../shared/back-home.js" data-home="../../index.html" defer></script>
+</body>
+</html>

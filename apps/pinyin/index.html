@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>心奇学拼音</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #FFF5F5 0%, #FFF0E6 30%, #FFF9E6 60%, #F0F9FF 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: #333;
+  overflow-x: hidden;
+}
+.app { max-width: 900px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+
+/* ===== UTILITY ===== */
+.hidden { display: none !important; }
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  color: #fff;
+  padding: 12px 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(255,107,107,0.3);
+}
+.header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; }
+.header .subtitle { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.overview-bar {
+  background: #fff;
+  margin: 8px 12px 0;
+  border-radius: 12px;
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.overview-bar .stat {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #666;
+}
+.overview-bar .stat strong { display: block; font-size: 1.1rem; color: #FF6B6B; }
+
+/* ===== MAIN ===== */
+.main { flex: 1; padding: 12px; padding-bottom: 80px; }
+
+/* ===== TABS ===== */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FF6B6B;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  z-index: 300;
+  box-shadow: 0 4px 20px rgba(255,107,107,0.4);
+  animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 1.8s forwards;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  display: flex;
+  border-top: 2px solid #f0f0f0;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+.bottom-nav .nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #999;
+  font-size: 0.7rem;
+  transition: color 0.2s;
+  min-height: 56px;
+  gap: 3px;
+}
+.bottom-nav .nav-item.active { color: #FF6B6B; font-weight: 600; }
+.bottom-nav .nav-item svg { width: 24px; height: 24px; }
+
+/* ===== CARDS (Quiz) ===== */
+.quiz-controls {
+  text-align: center;
+  margin: 16px 0;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  transition: all 0.2s;
+  min-height: 52px;
+  padding: 12px 28px;
+  font-size: 1.05rem;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255,107,107,0.35);
+}
+.btn-primary:hover { box-shadow: 0 6px 20px rgba(255,107,107,0.45); }
+.btn-secondary {
+  background: #fff;
+  color: #FF6B6B;
+  border: 2px solid #FF6B6B;
+}
+.btn-green { background: #4CAF50; color: #fff; box-shadow: 0 4px 14px rgba(76,175,80,0.35); }
+.btn-red { background: #f44336; color: #fff; box-shadow: 0 4px 14px rgba(244,67,54,0.35); }
+.btn-ghost { background: transparent; color: #666; border: 2px solid #ddd; }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+/* 3D Flip Card */
+.flip-card {
+  height: 160px;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  cursor: pointer;
+  transform-origin: center center;
+}
+.flip-card-inner.flipped { transform: rotateY(180deg); }
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.flip-card-front {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 16px rgba(102,126,234,0.3);
+  position: relative;
+  overflow: hidden;
+  text-transform: capitalize;
+  text-align: center;
+  padding: 10px;
+}
+.flip-card-front::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 2px dashed rgba(255,255,255,0.3);
+  border-radius: 12px;
+}
+.flip-card-front .card-number {
+  position: relative;
+  z-index: 1;
+  font-size: 1.6rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  line-height: 1.3;
+}
+.flip-card-front .card-label {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  position: relative;
+  z-index: 1;
+  margin-top: 4px;
+}
+.flip-card-back {
+  background: #fff;
+  transform: rotateY(180deg);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  padding: 12px;
+  gap: 6px;
+}
+.flip-card-back .pinyin-display {
+  font-size: 2.2rem;
+  color: #333;
+}
+.flip-card-back .judge-btns {
+  display: flex;
+  gap: 10px;
+}
+.flip-card-back .judge-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.flip-card-back .judge-btn:active { transform: scale(0.9); }
+.judge-btn.correct { background: #C8E6C9; color: #2E7D32; }
+.judge-btn.wrong { background: #FFCDD2; color: #C62828; }
+.flip-card-back .judge-btn:hover { transform: scale(1.1); }
+
+/* Card states after judging */
+.flip-card.answered-correct .flip-card-back { border: 3px solid #4CAF50; background: #f1f8e9; }
+.flip-card.answered-wrong .flip-card-back { border: 3px solid #f44336; background: #fef2f2; }
+.flip-card.answered-correct .flip-card-inner,
+.flip-card.answered-wrong .flip-card-inner { cursor: default; }
+.flip-card.answered-correct .judge-btn.correct { background: #4CAF50; color: #fff; }
+.flip-card.answered-wrong .judge-btn.wrong { background: #f44336; color: #fff; }
+
+.quiz-progress {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  color: #888;
+}
+.quiz-progress span { color: #FF6B6B; font-weight: 700; }
+.quiz-progress-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.btn-exit-quiz {
+  background: #fff; color: #FF6B6B; border: 2px solid #FF6B6B;
+  font-size: 0.85rem; min-height: 38px; padding: 8px 16px; white-space: nowrap;
+}
+.btn-exit-quiz:active { transform: scale(0.96); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(33,42,80,0.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s;
+}
+.modal-overlay.hidden { display: none; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-box {
+  background: linear-gradient(160deg, #ffffff 0%, #eef2ff 100%);
+  border: 2px solid #c7d2fe;
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 16px 60px rgba(49,46,129,0.35);
+  animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-box .score-big { font-size: 4rem; font-weight: 800; color: #FF6B6B; line-height: 1; }
+.modal-box .score-outof { font-size: 1.1rem; color: #999; margin: 4px 0; }
+.modal-box .encouragement { font-size: 1.6rem; font-weight: 700; margin: 12px 0 6px; }
+.modal-box .star-row { font-size: 1.8rem; margin: 4px 0 16px; letter-spacing: 4px; }
+.modal-box .modal-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.modal-box .modal-btns .btn { min-width: 120px; }
+
+/* ===== TUTORIAL MODAL ===== */
+.tutorial-box {
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  text-align: left;
+  padding: 28px 24px;
+}
+.tutorial-box::-webkit-scrollbar { width: 6px; }
+.tutorial-box::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 3px; }
+.tutorial-box::-webkit-scrollbar-thumb { background: #FF6B6B; border-radius: 3px; }
+.tutorial-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #FF6B6B;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.tutorial-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+.tutorial-section-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  color: #fff;
+}
+.tutorial-section-icon svg { width: 24px; height: 24px; }
+.tutorial-section-text { flex: 1; }
+.tutorial-section-text h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+}
+.tutorial-section-text p {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.5;
+}
+.tutorial-footer {
+  text-align: center;
+  margin: 16px 0 4px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 0.8rem;
+  color: #aaa;
+}
+.tutorial-footer p { margin: 2px 0; }
+
+/* ===== BANK ===== */
+.bank-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.bank-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 0;
+  font-size: 0.7rem;
+}
+.bank-legend-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.bank-dist {
+  flex: 1 1 200px;
+  min-width: 180px;
+  max-width: 360px;
+  text-align: right;
+}
+.bank-dist-cap { font-size: 0.7rem; color: #999; margin-bottom: 4px; }
+.bank-dist-bar {
+  display: flex;
+  height: 22px;
+  border-radius: 11px;
+  overflow: hidden;
+  background: #f0f0f0;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.12);
+}
+.bank-dist-bar > span {
+  height: 100%;
+  transition: width 0.3s;
+}
+.legend-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+.bank-table-container { overflow-x: auto; }
+.bank-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.bank-table th, .bank-table td {
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+.bank-table th {
+  background: #FFF5F5;
+  color: #FF6B6B;
+  font-weight: 700;
+  font-size: 0.8rem;
+  position: sticky;
+  top: 0;
+}
+.bank-table td:first-child { font-size: 1.2rem; font-weight: 700; }
+
+/* Weight colors */
+.w-color-6 { background: #FFE0E0; }
+.w-color-4 { background: #FFE8CC; }
+.w-color-2 { background: #FFF9C4; }
+.w-color-1g { background: #C8E6C9; }
+.w-color-1b { background: #BBDEFB; }
+.w-color-3 { background: #fff; }
+.w-color-0 { background: #f9f9f9; }
+
+/* ===== RECORDS ===== */
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.record-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.record-card .record-info { flex: 1; }
+.record-card .record-date { font-size: 0.85rem; color: #888; }
+.record-card .record-time { font-size: 0.75rem; color: #aaa; }
+.record-card .record-score {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #FF6B6B;
+}
+.record-card .record-score.perfect { color: #4CAF50; }
+.record-card .record-score.good { color: #FF8E53; }
+.record-card .record-score.ok { color: #FFA726; }
+
+/* ===== SETTINGS ===== */
+.settings-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.settings-section h3 {
+  font-size: 1rem;
+  color: #FF6B6B;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.settings-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.settings-field label {
+  min-width: 80px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+.settings-field input {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.settings-field input:focus { border-color: #FF6B6B; }
+.settings-field .weight-input { max-width: 80px; text-align: center; }
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* ===== BACKUP BAR ===== */
+.backup-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 8px 12px;
+}
+.backup-bar .btn { font-size: 0.8rem; min-height: 38px; padding: 8px 16px; white-space: nowrap; }
+#btnLang, #btnJudgeMode { min-width: 120px; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+.empty-state svg { width: 64px; height: 64px; opacity: 0.3; margin-bottom: 12px; }
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .card-grid { grid-template-columns: repeat(5, 1fr); }
+  .bottom-nav { max-width: 900px; left: 50%; transform: translateX(-50%); border-radius: 20px 20px 0 0; }
+  .flip-card { height: 180px; }
+  .header h1 { font-size: 1.8rem; }
+  .flip-card-front .card-number { font-size: 1.8rem; }
+}
+@media (max-width: 480px) {
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+  .flip-card { height: 150px; }
+  .flip-card-front .card-number { font-size: 1.3rem; }
+  .flip-card-back .pinyin-display { font-size: 1.8rem; }
+  .modal-box { padding: 24px 16px; }
+  .modal-box .score-big { font-size: 3rem; }
+  .bottom-nav .nav-item { font-size: 0.65rem; min-height: 52px; }
+  .backup-bar .btn { font-size: 0.72rem; padding: 8px 10px; }
+}
+
+/* ===== JUDGE MODE BUTTON ===== */
+#btnJudgeMode:disabled { opacity: 0.5; cursor: not-allowed; }
+.judge-mode-auto { background: linear-gradient(135deg,#667eea,#764ba2) !important; color:#fff !important; border-color: transparent !important; }
+
+/* ===== PRONUNCIATION COLUMN ===== */
+.pron-btn {
+  border: none; background: #E3F2FD; color: #1976D2; border-radius: 50%;
+  width: 38px; height: 38px; cursor: pointer; font-size: 1.05rem;
+  display: inline-flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.pron-btn:active { transform: scale(0.9); }
+.pron-btn.playing { background: #1976D2; color: #fff; }
+
+/* ===== RECORD BUTTON ON CARD ===== */
+.flip-card-back .record-btn {
+  border: none; border-radius: 14px; padding: 8px 18px; cursor: pointer;
+  background: linear-gradient(135deg,#FF6B6B,#FF8E53); color:#fff; font-weight: 700;
+  font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 4px;
+  box-shadow: 0 4px 14px rgba(255,107,107,0.35);
+}
+.flip-card-back .record-btn:active { transform: scale(0.96); }
+.flip-card-back .record-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.flip-card-back .judge-btns .judge-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ===== RECORD MODAL ===== */
+.mic-pulse {
+  width: 92px; height: 92px; border-radius: 50%;
+  background: linear-gradient(135deg,#FF6B6B,#FF8E53);
+  display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.4rem;
+  animation: micPulse 1s ease-in-out infinite; margin: 0 auto;
+}
+@keyframes micPulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,107,107,0.5); }
+  50% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(255,107,107,0); }
+}
+.wave-bars { display: flex; gap: 5px; justify-content: center; align-items: flex-end; height: 38px; margin-top: 16px; }
+.wave-bars span { width: 6px; background: #FF8E53; border-radius: 3px; height: 10px; animation: wave 1s ease-in-out infinite; }
+@keyframes wave { 0%,100% { height: 10px; } 50% { height: 36px; } }
+
+/* ===== JUDGE ANIMATION MODAL ===== */
+.judge-anim-box { text-align: center; }
+.judge-anim-badge {
+  width: 110px; height: 110px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto; font-size: 4.2rem; line-height: 1;
+  animation: popJudge 0.4s cubic-bezier(0.175,0.885,0.32,1.275), badgePulse 1.1s ease-out 0.4s;
+}
+.judge-anim-correct-badge { background: linear-gradient(135deg,#C8E6C9,#A5D6A7); color: #2E7D32; box-shadow: 0 8px 24px rgba(76,175,80,0.4); }
+.judge-anim-wrong-badge { background: linear-gradient(135deg,#FFCDD2,#EF9A9A); color: #C62828; box-shadow: 0 8px 24px rgba(244,67,54,0.4); }
+@keyframes popJudge { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes badgePulse {
+  0% { box-shadow: 0 0 0 0 rgba(79,70,229,0.45); }
+  100% { box-shadow: 0 0 0 26px rgba(79,70,229,0); }
+}
+.judge-anim-icon { font-weight: 800; }
+.judge-anim-correct { color: #2E7D32; }
+.judge-anim-wrong { color: #C62828; }
+
+/* ===== SIMILARITY SLIDER ===== */
+.sim-row { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 160px; }
+.sim-row input[type=range] { flex: 1; accent-color: #FF6B6B; }
+.sim-val { min-width: 50px; text-align: center; font-weight: 700; color: #FF6B6B; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- HEADER -->
+  <header class="header">
+    <h1 data-i18n="title">心奇学拼音</h1>
+    <div class="subtitle" data-i18n="subtitle">Sophia &amp; George 的拼音学习小程序</div>
+    <div class="overview-bar" id="overviewBar">
+      <div class="stat"><span data-i18n="statTotal">累计答题</span><strong id="statTotal">0</strong></div>
+      <div class="stat"><span data-i18n="statAccuracy">正确率</span><strong id="statAccuracy">--</strong></div>
+      <div class="stat"><span data-i18n="statLastScore">上次得分</span><strong id="statLastScore">--</strong></div>
+    </div>
+  </header>
+
+  <!-- DATA BACKUP BAR -->
+  <div class="backup-bar">
+    <!-- Tutorial Button (leftmost) -->
+    <button class="btn btn-ghost" onclick="showTutorial()" title="Tutorial">
+      <span style="font-size:1.1rem">📖</span>
+      <span data-i18n="btnTutorial">使用教程</span>
+    </button>
+    <!-- Judge Mode Button -->
+    <button class="btn btn-ghost" onclick="toggleJudgeMode()" id="btnJudgeMode" title="Judge Mode">
+      <span id="btnJudgeModeContent">🙋 人工判题</span>
+    </button>
+    <button class="btn btn-ghost" onclick="exportData()" title="Export JSON Backup">
+      <span style="font-size:1.1rem">💾</span>
+      <span data-i18n="btnExport">导出备份</span>
+    </button>
+    <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()" title="Import JSON Restore">
+      <span style="font-size:1.1rem">📥</span>
+      <span data-i18n="btnImport">导入恢复</span>
+    </button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-ghost" onclick="clearAllData()" title="Clear All Data">
+      <span style="font-size:1.1rem">🗑️</span>
+      <span data-i18n="btnClear">清除数据</span>
+    </button>
+    <!-- Language Toggle Button (rightmost) -->
+    <button class="btn btn-ghost" onclick="toggleLanguage()" id="btnLang" title="Switch Language">
+      <span id="btnLangContent">🇨🇳 中文</span>
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <!-- TAB: QUIZ -->
+    <section class="tab-content active" id="tabQuiz">
+      <div class="section-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span data-i18n="tabQuiz">答题练习</span>
+      </div>
+      <div class="quiz-controls" id="quizControls">
+        <button class="btn btn-primary" onclick="startQuiz()" id="btnStartQuiz">
+          <span style="font-size:1.3rem">🚀</span>
+          <span data-i18n="startQuiz">开始答题</span>
+        </button>
+      </div>
+      <div class="quiz-progress hidden" id="quizProgress">
+        <div class="quiz-progress-inner">
+          <span id="quizProgressText"></span>
+          <button class="btn btn-exit-quiz" onclick="requestExitQuiz()">🚪 <span data-i18n="exitQuiz">退出答题</span></button>
+        </div>
+      </div>
+      <div class="card-grid" id="cardGrid"></div>
+    </section>
+
+    <!-- TAB: BANK -->
+    <section class="tab-content" id="tabBank">
+      <div class="section-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span data-i18n="bankTitle">拼音题库</span>
+      </div>
+      <div class="bank-legend-row">
+        <div class="bank-legend">
+          <span><span class="legend-dot" style="background:#FFE0E0"></span><span data-i18n="legendHigh">高错误率</span></span>
+          <span><span class="legend-dot" style="background:#FFE8CC"></span><span data-i18n="legendMedium">中错误率</span></span>
+          <span><span class="legend-dot" style="background:#FFF9C4"></span><span data-i18n="legendLow">低错误率</span></span>
+          <span><span class="legend-dot" style="background:#C8E6C9"></span><span data-i18n="legendVeryLow">极低错误率</span></span>
+          <span><span class="legend-dot" style="background:#BBDEFB"></span><span data-i18n="legendPerfect">全部正确</span></span>
+          <span><span class="legend-dot" style="background:#fff;border:1px solid #ddd"></span><span data-i18n="legendNever">从未抽到</span></span>
+        </div>
+        <div class="bank-dist">
+          <div class="bank-dist-cap" id="bankDistCap"></div>
+          <div class="bank-dist-bar" id="bankDistBar"></div>
+        </div>
+      </div>
+      <div class="bank-table-container">
+        <table class="bank-table" id="bankTable">
+          <thead><tr>
+            <th data-i18n="thPinyin">拼音</th>
+            <th data-i18n="thPronounce">发音</th>
+            <th data-i18n="thAppeared">出现</th>
+            <th data-i18n="thErrors">错误</th>
+            <th data-i18n="thErrorRate">错误率</th>
+            <th data-i18n="thWeight">权重</th>
+          </tr></thead>
+          <tbody id="bankTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB: RECORDS -->
+    <section class="tab-content" id="tabRecords">
+      <div class="section-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span data-i18n="recordsTitle">练习记录</span>
+      </div>
+      <div class="records-list" id="recordsList"></div>
+    </section>
+
+    <!-- TAB: SETTINGS -->
+    <section class="tab-content" id="tabSettings">
+      <div class="section-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span data-i18n="settingsTitle">设置</span>
+      </div>
+
+      <div class="settings-section">
+        <h3>👶 宝宝名字</h3>
+        <div class="settings-field"><label>宝宝名字</label><input type="text" id="setBabyName" value="Sophia &amp; George"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="encTitle">鼓励语设置</h3>
+        <div class="settings-field"><label data-i18n="enc10">10分（满分）</label><input type="text" id="setEnc10" value="太棒了！"></div>
+        <div class="settings-field"><label data-i18n="enc89">8~9分（优秀）</label><input type="text" id="setEnc89" value="做得好！"></div>
+        <div class="settings-field"><label data-i18n="enc67">6~7分（良好）</label><input type="text" id="setEnc67" value="继续加油！"></div>
+        <div class="settings-field"><label data-i18n="enc15">1~5分（加油）</label><input type="text" id="setEnc15" value="你可以的！"></div>
+        <div class="settings-field"><label data-i18n="enc0">0分（意外）</label><input type="text" id="setEnc0" value="难以置信！"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="weightTitle">权重系数</h3>
+        <p style="font-size:0.78rem;color:#999;margin-bottom:10px;" data-i18n="weightHint">数值越大，答题时被抽中的概率越高</p>
+        <div class="settings-field"><label data-i18n="wHigh">错误率 ≥ 50%</label><input type="number" class="weight-input" id="setW6" min="1" max="99" value="6"></div>
+        <div class="settings-field"><label data-i18n="wMedium">25% ≤ 错误率 < 50%</label><input type="number" class="weight-input" id="setW4" min="1" max="99" value="4"></div>
+        <div class="settings-field"><label data-i18n="wLow">10% ≤ 错误率 < 25%</label><input type="number" class="weight-input" id="setW2" min="1" max="99" value="2"></div>
+        <div class="settings-field"><label data-i18n="wVeryLow">0 < 错误率 < 10%</label><input type="number" class="weight-input" id="setW1" min="1" max="99" value="1"></div>
+        <div class="settings-field"><label data-i18n="wPerfect">全部正确</label><input type="number" class="weight-input" id="setWp" min="1" max="99" value="1"></div>
+        <div class="settings-field"><label data-i18n="wNever">从未抽到</label><input type="number" class="weight-input" id="setWn" min="1" max="99" value="3"></div>
+        <div class="settings-actions">
+          <button class="btn btn-primary" onclick="saveSettings()" data-i18n="saveSettings">保存设置</button>
+          <button class="btn btn-ghost" onclick="resetSettings()" data-i18n="resetDefaults">恢复默认</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="simTitle2">语音判题设置</h3>
+        <p style="font-size:0.78rem;color:#999;margin-bottom:10px;" data-i18n="simHint">相似度阈值（数值越低越宽松，越高越严格）</p>
+        <div class="settings-field">
+          <label data-i18n="simLabel">相似度阈值</label>
+          <div class="sim-row">
+            <input type="range" id="setSim" min="60" max="100" step="10" value="80" oninput="document.getElementById('simVal').textContent=this.value+'%'">
+            <span class="sim-val" id="simVal">80%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('quiz')">
+      <span style="font-size:1.5rem">📝</span>
+      <span data-i18n="tabQuiz">答题练习</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('bank')">
+      <span style="font-size:1.5rem">📚</span>
+      <span data-i18n="tabBank">题库</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('records')">
+      <span style="font-size:1.5rem">📊</span>
+      <span data-i18n="tabRecords">记录</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('settings')">
+      <span style="font-size:1.5rem">⚙️</span>
+      <span data-i18n="tabSettings">设置</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ENCOURAGEMENT MODAL -->
+<div class="modal-overlay hidden" id="encourageModal">
+  <div class="modal-box">
+    <div class="score-big" id="modalScore">0</div>
+    <div class="score-outof">/ 10</div>
+    <div class="encouragement" id="modalEnc">你可以的！</div>
+    <div class="star-row" id="modalStars"></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="retryQuiz()">
+        <span style="font-size:1.1rem">🔄</span>
+        <span data-i18n="tryAgain">再来一次</span>
+      </button>
+      <button class="btn btn-secondary" onclick="exitQuiz()" data-i18n="exitQuiz">退出答题</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay hidden" id="confirmModal">
+  <div class="modal-box">
+    <div style="font-size:3rem;margin-bottom:8px;">⚠️</div>
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:8px;" id="confirmMsg"></div>
+    <div style="font-size:0.85rem;color:#999;margin-bottom:16px;" id="confirmDesc"></div>
+    <div class="modal-btns">
+      <button class="btn btn-red" id="confirmBtn" onclick="runConfirm()">确认</button>
+      <button class="btn btn-ghost" onclick="closeConfirmModal()" data-i18n="cancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- TUTORIAL MODAL -->
+<div class="modal-overlay hidden" id="tutorialModal">
+  <div class="modal-box tutorial-box">
+    <h2 class="tutorial-title" id="tutorialTitle">使用教程</h2>
+    <div id="tutorialContent"></div>
+    <div class="tutorial-footer">
+      <p id="tutorialAuthor">作者：Peppa's Daddy</p>
+      <p id="tutorialDate">日期：2026.8.5</p>
+      <p id="tutorialVersion">版本：1.5</p>
+    </div>
+  <div class="modal-btns">
+    <button class="btn btn-primary" onclick="closeTutorial()" id="tutorialCloseBtn">关闭教程</button>
+  </div>
+</div>
+
+<!-- RECORD MODAL -->
+<div class="modal-overlay hidden" id="recordModal">
+  <div class="modal-box record-box">
+    <div class="mic-pulse">🎤</div>
+    <div style="font-size:1.2rem;font-weight:700;margin-top:14px;" id="recordTitle">录音中…</div>
+    <div style="font-size:0.85rem;color:#999;margin-top:4px;" id="recordDesc">请大声读出卡片上的拼音</div>
+    <div class="wave-bars">
+      <span style="animation-delay:0s"></span><span style="animation-delay:.15s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.45s"></span><span style="animation-delay:.6s"></span>
+    </div>
+  </div>
+</div>
+
+<!-- JUDGE ANIMATION MODAL -->
+<div class="modal-overlay hidden" id="judgeAnimModal">
+  <div class="modal-box judge-anim-box">
+    <div class="judge-anim-badge" id="judgeAnimBadge"><span class="judge-anim-icon" id="judgeAnimIcon">✓</span></div>
+    <div style="font-size:1.2rem;font-weight:700;margin-top:12px;" id="judgeAnimText">发音正确！</div>
+    <div style="font-size:0.9rem;color:#555;margin-top:8px;background:#fff;border-radius:12px;padding:6px 14px;display:inline-block;box-shadow:0 2px 8px rgba(0,0,0,0.06);" id="judgeAnimSim"></div>
+  </div>
+</div>
+</div>
+
+<script>
+// ============================================================
+// I18N - Internationalization
+// ============================================================
+const I18N = {
+  zh: {
+    title: '心奇学拼音',
+    subtitle: 'Sophia & George 的拼音学习小程序',
+    statTotal: '累计答题',
+    statAccuracy: '正确率',
+    statLastScore: '上次得分',
+    btnTutorial: '使用教程',
+    btnExport: '导出备份',
+    btnImport: '导入恢复',
+    btnClear: '清除数据',
+    tabQuiz: '答题练习',
+    tabBank: '题库',
+    tabRecords: '记录',
+    tabSettings: '设置',
+    startQuiz: '开始答题',
+    quizProgressLabel: '已答',
+    bankTitle: '拼音题库',
+    thPinyin: '拼音',
+    thAppeared: '出现',
+    thErrors: '错误',
+    thErrorRate: '错误率',
+    thWeight: '权重',
+    legendHigh: '高错误率',
+    legendMedium: '中错误率',
+    legendLow: '低错误率',
+    legendVeryLow: '极低错误率',
+    legendPerfect: '全部正确',
+    legendNever: '从未抽到',
+    distTotal: '共',
+    distUnit: '个拼音组合',
+    recordsTitle: '练习记录',
+    emptyRecords: '暂无练习记录，快开始答题吧！',
+    settingsTitle: '设置',
+    encTitle: '鼓励语设置',
+    weightTitle: '权重系数',
+    weightHint: '数值越大，答题时被抽中的概率越高',
+    enc10: '10分（满分）',
+    enc89: '8~9分（优秀）',
+    enc67: '6~7分（良好）',
+    enc15: '1~5分（加油）',
+    enc0: '0分（意外）',
+    wHigh: '错误率 ≥ 50%',
+    wMedium: '25% ≤ 错误率 < 50%',
+    wLow: '10% ≤ 错误率 < 25%',
+    wVeryLow: '0 < 错误率 < 10%',
+    wPerfect: '全部正确',
+    wNever: '从未抽到',
+    saveSettings: '保存设置',
+    resetDefaults: '恢复默认',
+    tryAgain: '再来一次',
+    exitQuiz: '退出答题',
+    confirmClearTitle: '确定要清除所有数据吗？',
+    confirmClearDesc: '此操作不可撤销，请先导出备份。',
+    confirmClear: '确认清除',
+    cancel: '取消',
+    exitQuizConfirm: '确定要退出本次答题吗？',
+    exitQuizConfirmDesc: '退出后本次答题的成绩不会被记录。',
+    confirmExit: '确认退出',
+    toastJudgeFirst: '请先完成当前翻开的卡片！',
+    toastSettingsSaved: '设置已保存！',
+    toastSettingsReset: '设置已恢复默认！',
+    toastImportSuccess: '数据导入成功！共恢复 {0} 条记录。',
+    toastImportFail: '导入失败：文件格式无效。',
+    tutorialTitle: '使用教程',
+    tutorialClose: '关闭教程',
+    tutorialAuthor: '作者：Peppa\'s Daddy',
+    tutorialDate: '日期：2026.8.5',
+    tutorialVersion: '版本：1.5',
+    tutorialSection1Title: '① 答题练习',
+    tutorialSection1Text: '点击"开始答题"按钮，系统会根据错误率智能抽取10张拼音卡片。点击卡片翻开查看拼音，然后点击 ✓（认识）或 ✗（不认识）进行判断。完成全部10题后自动弹出成绩和鼓励语。',
+    tutorialSection2Title: '② 拼音题库',
+    tutorialSection2Text: '展示全部拼音及练习统计，包括出现次数、错误次数、错误率和权重。颜色越深表示错误率越高，权重越大的拼音在答题时被抽中的概率越高。',
+    tutorialSection3Title: '③ 练习记录',
+    tutorialSection3Text: '按时间倒序展示最近的练习成绩，方便追踪学习进度和变化趋势。',
+    tutorialSection4Title: '④ 设置',
+    tutorialSection4Text: '可自定义各分数段的鼓励语，以及不同错误率区间的权重系数，让练习更贴合学习需求。',
+    judgeCorrect: '认识',
+    judgeWrong: '不认识',
+    judgeManual: '人工判题',
+    judgeAuto: '自动判题',
+    thPronounce: '发音',
+    recordBtn: '🎤 录音',
+    recordHint: '点击录音，读出拼音',
+    recordingTitle: '录音中…',
+    recordingDesc: '请大声读出卡片上的拼音',
+    simTitle: '相似度',
+    simTitle2: '语音判题设置',
+    simLabel: '相似度阈值',
+    simHint: '相似度阈值（数值越低越宽松，越高越严格）',
+    autoCorrect: '发音正确！',
+    autoWrong: '需要再练习',
+    autoNoSpeech: '未检测到语音',
+    toastNeedMic: '需要麦克风权限才能使用自动判题',
+    toastMicFail: '无法访问麦克风',
+    toastQuizActive: '答题进行中不可切换模式',
+    tutorialSection5Title: '⑤ 判题模式',
+    tutorialSection5Text: '开始答题前，可在顶栏切换「人工判题 / 自动判题」。人工判题：翻卡后点 ✓ 或 ✗ 自己判断。自动判题：点「🎤 录音」，读出拼音，程序自动比对发音并判定对错（依据设置中的相似度阈值）。答题进行中不可切换模式。',
+    tutorialSection6Title: '⑥ 学习档案',
+    tutorialSection6Text: '顶栏的「导出备份 / 导入恢复 / 清除数据」用于管理个人学习档案：导出备份可把成绩与练习数据存成文件，换设备时用「导入恢复」载入；「清除数据」会清空全部记录，请先备份。'
+  },
+  en: {
+    title: '心奇学拼音',
+    subtitle: "Sophia and George's Pinyin Learning Mini Program",
+    statTotal: 'Total Answered',
+    statAccuracy: 'Accuracy',
+    statLastScore: 'Last Score',
+    btnTutorial: 'Tutorial',
+    btnExport: 'Export Backup',
+    btnImport: 'Import Restore',
+    btnClear: 'Clear Data',
+    tabQuiz: 'Quiz',
+    tabBank: 'Bank',
+    tabRecords: 'Records',
+    tabSettings: 'Settings',
+    startQuiz: 'Start Quiz',
+    quizProgressLabel: 'Answered',
+    bankTitle: 'Pinyin Bank',
+    thPinyin: 'Pinyin',
+    thAppeared: 'Appeared',
+    thErrors: 'Errors',
+    thErrorRate: 'Error Rate',
+    thWeight: 'Weight',
+    legendHigh: 'High Error',
+    legendMedium: 'Medium Error',
+    legendLow: 'Low Error',
+    legendVeryLow: 'Very Low Error',
+    legendPerfect: 'All Correct',
+    legendNever: 'Never Drawn',
+    distTotal: 'Total',
+    distUnit: 'pinyin combinations',
+    recordsTitle: 'Quiz Records',
+    emptyRecords: 'No quiz records yet. Start a quiz now!',
+    settingsTitle: 'Settings',
+    encTitle: 'Encouragement Text',
+    weightTitle: 'Weight Coefficients',
+    weightHint: 'Higher values = more likely to be selected in quiz',
+    enc10: '10 (Perfect)',
+    enc89: '8~9 (Great)',
+    enc67: '6~7 (Good)',
+    enc15: '1~5 (Try)',
+    enc0: '0 (Oops)',
+    wHigh: 'Error Rate >= 50%',
+    wMedium: '25% <= Error Rate < 50%',
+    wLow: '10% <= Error Rate < 25%',
+    wVeryLow: '0 < Error Rate < 10%',
+    wPerfect: 'All Correct',
+    wNever: 'Never Drawn',
+    saveSettings: 'Save Settings',
+    resetDefaults: 'Reset Defaults',
+    tryAgain: 'Try Again',
+    exitQuiz: 'Exit Quiz',
+    confirmClearTitle: 'Confirm to clear all data?',
+    confirmClearDesc: 'This cannot be undone. Please export a backup first.',
+    confirmClear: 'Confirm Clear',
+    cancel: 'Cancel',
+    exitQuizConfirm: 'Exit this quiz?',
+    exitQuizConfirmDesc: 'Your progress in this quiz will not be saved.',
+    confirmExit: 'Confirm Exit',
+    toastJudgeFirst: 'Please judge the flipped card first!',
+    toastSettingsSaved: 'Settings saved!',
+    toastSettingsReset: 'Settings reset to defaults!',
+    toastImportSuccess: 'Data imported successfully! {0} records restored.',
+    toastImportFail: 'Import failed: invalid file format.',
+    tutorialTitle: 'Tutorial',
+    tutorialClose: 'Close',
+    tutorialAuthor: "Author: Peppa's Daddy",
+    tutorialDate: 'Date: 2026.8.5',
+    tutorialVersion: 'Version: 1.5',
+    tutorialSection1Title: '① Quiz',
+    tutorialSection1Text: 'Click "Start Quiz" to get 10 pinyin cards selected based on your error rate. Tap a card to flip and reveal the pinyin, then tap \u2713 (correct) or \u2717 (wrong). Results appear after all 10 cards are judged.',
+    tutorialSection2Title: '② Pinyin Bank',
+    tutorialSection2Text: 'Shows all pinyin with stats including appearances, errors, error rate, and weight. Darker colors indicate higher error rates; higher weights mean higher selection probability.',
+    tutorialSection3Title: '③ Quiz Records',
+    tutorialSection3Text: 'Displays recent quiz scores in reverse chronological order to track learning progress.',
+    tutorialSection4Title: '④ Settings',
+    tutorialSection4Text: 'Customize encouragement text for each score range and weight coefficients for different error rate tiers.',
+    judgeCorrect: 'Correct',
+    judgeWrong: 'Wrong',
+    judgeManual: 'Manual',
+    judgeAuto: 'Auto',
+    thPronounce: 'Pronounce',
+    recordBtn: '🎤 Record',
+    recordHint: 'Tap to record, say the pinyin',
+    recordingTitle: 'Recording…',
+    recordingDesc: 'Say the pinyin on the card aloud',
+    simTitle: 'Similarity',
+    simTitle2: 'Voice Judge Settings',
+    simLabel: 'Threshold',
+    simHint: 'Similarity threshold (lower = lenient, higher = strict)',
+    autoCorrect: 'Correct pronunciation!',
+    autoWrong: 'Needs more practice',
+    autoNoSpeech: 'No speech detected',
+    toastNeedMic: 'Microphone permission needed for auto judge',
+    toastMicFail: 'Cannot access microphone',
+    toastQuizActive: 'Cannot switch mode during quiz',
+    tutorialSection5Title: '⑤ Judge Mode',
+    tutorialSection5Text: 'Before starting a quiz, switch "Manual / Auto" judge mode in the top bar. Manual: tap ✓/✗ after flipping. Auto: tap "🎤 Record", say the pinyin, and the app compares your pronunciation automatically (based on the similarity threshold in Settings). Mode cannot be changed mid-quiz.',
+    tutorialSection6Title: '⑥ Learning Archive',
+    tutorialSection6Text: 'The top bar "Export / Import / Clear" manages your personal learning archive: export scores and progress to a file, restore it on another device via "Import", and "Clear" wipes all data (back up first!).'
+  }
+};
+
+// SVG icons for tutorial sections
+const TUTORIAL_ICONS = {
+  quiz: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  bank: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+  records: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>',
+  voice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>',
+  archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'
+};
+
+// ============================================================
+// PINYIN BANK - Real Chinese Pinyin Combinations
+// ============================================================
+const TONE_MAP = {
+  a: ['&#257;','&#225;','&#462;','&#224;'], e: ['&#275;','&#233;','&#283;','&#232;'],
+  i: ['&#299;','&#237;','&#464;','&#236;'], o: ['&#333;','&#243;','&#466;','&#242;'],
+  u: ['&#363;','&#250;','&#468;','&#249;'], v: ['&#470;','&#472;','&#474;','&#476;']
+};
+
+function applyTone(syllable, tone) {
+  if (tone < 1 || tone > 4) return syllable;
+  const idx = tone - 1;
+  const vowels = 'aeiouv';
+  let target = -1;
+  // 声调标注规则（按优先级）：
+  // 1) 含 a / e 时标在 a / e 上
+  // 2) ou 标在 o 上
+  // 3) iu 标在最后一个元音 u 上；ui 标在最后一个元音 i 上
+  // 4) 其余标在最后一个元音上
+  if (syllable.includes('a')) target = syllable.indexOf('a');
+  else if (syllable.includes('e')) target = syllable.indexOf('e');
+  else if (syllable.includes('ou')) target = syllable.indexOf('o');
+  else if (syllable.includes('iu')) target = syllable.lastIndexOf('u');
+  else if (syllable.includes('ui')) target = syllable.lastIndexOf('i');
+  else {
+    for (let i = syllable.length - 1; i >= 0; i--) {
+      if (vowels.includes(syllable[i])) { target = i; break; }
+    }
+  }
+  if (target === -1) return syllable;
+  const ch = syllable[target] === '\u00fc' ? 'v' : syllable[target];
+  const toned = TONE_MAP[ch] ? TONE_MAP[ch][idx] : syllable[target];
+  return syllable.substring(0, target) + toned + syllable.substring(target + 1);
+}
+
+function makeEntries(initial, finals, tones) {
+  const entries = [];
+  for (const f of finals) {
+    for (const t of tones) {
+      // ü(v) 书写规则：n / l 之后保留两点；j / q / x / y / 零声母 之后写成 u（去两点）
+      let toneFinal = f;
+      let rawFinal = f;
+      if (f.indexOf('v') !== -1) {
+        if (initial === 'n' || initial === 'l') {
+          toneFinal = f;                       // 保留 'v'，applyTone 会输出带两点的 ü
+          rawFinal = f.replace(/v/g, '\u00fc');
+        } else {
+          toneFinal = f.replace(/v/g, 'u');    // j / q / x / y / 零声母：写成 u（去两点）
+          rawFinal = toneFinal;
+        }
+      }
+      const syllable = initial + toneFinal;
+      let pinyin = applyTone(syllable, t);
+      // n / l 之后 ü 的两点必须保留：applyTone 已把标调处的 v 转为 ü（通过 TONE_MAP['v']），
+      // 但 üe / üan 等非标调处的 v 仍需手动补成 ü
+      if ((initial === 'n' || initial === 'l') && f.indexOf('v') !== -1) {
+        pinyin = pinyin.replace(/v/g, 'ü');
+      }
+      const raw = initial + rawFinal;
+      entries.push({ id: initial + f + '_' + t, pinyin: pinyin, raw: raw, tone: t });
+    }
+  }
+  return entries;
+}
+
+function buildPinyinBank() {
+  let bank = [];
+  // 零声母：显式列举真实存在的音节，避免生成 ī / ū / ü 等不规范写法
+  const ZERO_INITIAL = ['a','o','e','ai','ei','ao','ou','an','en','ang','eng','er','ya','yao','you','yan','yang','yong','wa','wo','wai','wei','wan','wen','wang','weng'];
+  for (const syl of ZERO_INITIAL) {
+    for (let t = 1; t <= 4; t++) {
+      bank.push({ id: 'zi_' + syl + '_' + t, pinyin: applyTone(syl, t), raw: syl, tone: t });
+    }
+  }
+
+  bank.push(...makeEntries('b',['a','o','i','u','ai','ei','ao','an','en','ang','eng','ing','ian','iao','ie','in'], [1,2,3,4]));
+  bank.push(...makeEntries('p',['a','o','i','u','ai','ei','ao','an','en','ang','eng','ing','ian','iao','ie','in'], [1,2,3,4]));
+  bank.push(...makeEntries('m',['a','o','e','i','u','ai','ei','ao','ou','an','en','ang','eng','ing','ian','iao','ie','iu','in'], [1,2,3,4]));
+  bank.push(...makeEntries('f',['a','o','u','ei','ou','an','en','ang','eng'], [1,2,3,4]));
+
+  bank.push(...makeEntries('d',['a','e','i','u','ai','ei','ao','ou','an','en','ang','eng','ong','ia','iao','ie','iu','ian','ing','ui'], [1,2,3,4]));
+  bank.push(...makeEntries('t',['a','e','i','u','ai','ei','ao','ou','an','ang','eng','ong','ian','iao','ie','ing','ui'], [1,2,3,4]));
+  bank.push(...makeEntries('n',['a','e','i','u','v','ve','ai','ei','ao','ou','an','en','ang','eng','ong','ian','iao','ie','iu','in','ing'], [1,2,3,4]));
+  bank.push(...makeEntries('l',['a','e','i','u','v','ve','ai','ei','ao','ou','an','ang','eng','ong','ia','ian','iao','ie','iu','in','ing'], [1,2,3,4]));
+
+  bank.push(...makeEntries('g',['a','e','u','ai','ei','ao','ou','an','en','ang','eng','ong','ua','uai','ui','uo','uan','un','uang'], [1,2,3,4]));
+  bank.push(...makeEntries('k',['a','e','u','ai','ei','ao','ou','an','en','ang','eng','ong','ua','uai','ui','uo','uan','un','uang'], [1,2,3,4]));
+  bank.push(...makeEntries('h',['a','e','u','ai','ei','ao','ou','an','en','ang','eng','ong','ua','uai','ui','uo','uan','un','uang'], [1,2,3,4]));
+
+  bank.push(...makeEntries('j',['i','ia','iao','ie','iu','ian','in','iang','ing','iong','v','ve','van','vn'], [1,2,3,4]));
+  bank.push(...makeEntries('q',['i','ia','iao','ie','iu','ian','in','iang','ing','iong','v','ve','van','vn'], [1,2,3,4]));
+  bank.push(...makeEntries('x',['i','ia','iao','ie','iu','ian','in','iang','ing','iong','v','ve','van','vn'], [1,2,3,4]));
+
+  bank.push(...makeEntries('zh',['a','e','u','ai','ao','ou','an','en','ang','eng','ong','ua','uai','ui','uo','uan','un','uang'], [1,2,3,4]));
+  bank.push(...makeEntries('ch',['a','e','u','ai','ao','ou','an','en','ang','eng','ong','ua','uai','ui','uo','uan','un','uang'], [1,2,3,4]));
+  bank.push(...makeEntries('sh',['a','e','u','ai','ao','ou','an','en','ang','eng','ong','ua','uai','ui','uo','uan','un','uang'], [1,2,3,4]));
+  bank.push(...makeEntries('r',['e','u','ao','ou','an','en','ang','eng','ong','ua','ui','uo','uan','un'], [1,2,3,4]));
+
+  bank.push(...makeEntries('z',['a','e','u','ai','ei','ao','ou','an','en','ang','eng','ong','ui','uo','uan','un'], [1,2,3,4]));
+  bank.push(...makeEntries('c',['a','e','u','ai','ei','ao','ou','an','en','ang','eng','ong','ui','uo','uan','un'], [1,2,3,4]));
+  bank.push(...makeEntries('s',['a','e','u','ai','ao','ou','an','en','ang','eng','ong','ui','uo','uan','un'], [1,2,3,4]));
+
+  // y- / w- 音节已由零声母表与整体认读音节表覆盖（含 weng，避免错误地生成 wong）
+
+  const overall = ['zhi','chi','shi','ri','zi','ci','si','yi','wu','yu','ye','yue','yin','yun','yuan','ying'];
+  for (const syl of overall) {
+    for (let t = 1; t <= 4; t++) {
+      const pinyin = applyTone(syl, t);
+      bank.push({ id: 'ov_' + syl + '_' + t, pinyin: pinyin, raw: syl, tone: t });
+    }
+  }
+
+  const seen = new Set();
+  bank = bank.filter(e => { if (seen.has(e.id)) return false; seen.add(e.id); return true; });
+  return bank;
+}
+
+const DEFAULT_PINYIN_BANK = buildPinyinBank();
+
+// ============================================================
+// DEFAULT SETTINGS (language-aware)
+// ============================================================
+function getDefaultEncouragements(lang) {
+  const defs = {
+    zh: { 10: '太棒了！', '8-9': '做得好！', '6-7': '继续加油！', '1-5': '你可以的！', 0: '难以置信！' },
+    en: { 10: 'Perfect!', '8-9': 'Great job!', '6-7': 'Keep trying!', '1-5': 'You can do it!', 0: 'Unbelievable!' }
+  };
+  return { ...(defs[lang] || defs.en) };
+}
+
+const DEFAULT_WEIGHTS = {
+  high: 6, medium: 4, low: 2, veryLow: 1, perfect: 1, never: 3
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const LS_PREFIX = 'wb_pinyin_';
+let currentLang = 'zh';
+let pinyinBankStats = {};
+let quizRecords = [];
+let settings = {};
+let currentQuiz = null;
+
+// Judge mode & voice settings
+let judgeMode = 'manual';        // 'manual' | 'auto'
+let simThreshold = 80;           // 60 ~ 100, step 10
+let audioCtx = null;             // shared AudioContext for speech
+// Recording state
+let recordingStream = null;
+let recAudioCtx = null;
+let recProcessor = null;
+let recPcm = [];
+let recSampleRate = 44100;
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => { if (toast.parentNode) toast.remove(); }, 2200);
+}
+
+// Shorthand for i18n
+function t(key) {
+  return I18N[currentLang][key] || key;
+}
+
+// ============================================================
+// DATA LOAD / SAVE
+// ============================================================
+function loadData() {
+  // Load language preference
+  currentLang = localStorage.getItem(LS_PREFIX + 'lang') || 'zh';
+
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + 'bankStats');
+    pinyinBankStats = raw ? JSON.parse(raw) : {};
+  } catch(e) { pinyinBankStats = {}; }
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + 'records');
+    quizRecords = raw ? JSON.parse(raw) : [];
+  } catch(e) { quizRecords = []; }
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + 'settings');
+    settings = raw ? JSON.parse(raw) : {};
+    settings.encouragements = { ...getDefaultEncouragements(currentLang), ...(settings.encouragements || {}) };
+    settings.weights = { ...DEFAULT_WEIGHTS, ...(settings.weights || {}) };
+    if (!settings.babyName) settings.babyName = 'Sophia & George';
+  } catch(e) {
+    settings = {
+      encouragements: getDefaultEncouragements(currentLang),
+      weights: { ...DEFAULT_WEIGHTS },
+      babyName: 'Sophia & George'
+    };
+  }
+
+  // Judge mode preference
+  judgeMode = localStorage.getItem(LS_PREFIX + 'judgeMode') || 'manual';
+
+  // Similarity threshold
+  if (typeof settings.similarityThreshold === 'number') {
+    simThreshold = settings.similarityThreshold;
+  } else {
+    simThreshold = parseInt(localStorage.getItem(LS_PREFIX + 'simThreshold')) || 80;
+  }
+}
+
+function saveData() {
+  settings.similarityThreshold = simThreshold;
+  localStorage.setItem(LS_PREFIX + 'bankStats', JSON.stringify(pinyinBankStats));
+  localStorage.setItem(LS_PREFIX + 'records', JSON.stringify(quizRecords.slice(0, 200)));
+  localStorage.setItem(LS_PREFIX + 'settings', JSON.stringify(settings));
+  localStorage.setItem(LS_PREFIX + 'simThreshold', simThreshold);
+}
+
+// ============================================================
+// I18N FUNCTIONS
+// ============================================================
+function applyI18n() {
+  const tr = I18N[currentLang];
+
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (tr[key]) el.textContent = tr[key];
+  });
+
+  // Update language button
+  updateLangButton();
+
+  // Update judge mode button
+  updateJudgeModeButton();
+
+  // Update document attributes
+  document.title = '心奇学拼音';
+  document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+
+  // Update overview bar
+  updateOverview();
+
+  // Update quiz progress and cards if quiz is active
+  if (currentQuiz) {
+    updateQuizProgress();
+    renderCards();
+  }
+
+  // Re-render active tab content
+  if (document.getElementById('tabBank').classList.contains('active')) renderBank();
+  if (document.getElementById('tabRecords').classList.contains('active')) renderRecords();
+  if (document.getElementById('tabSettings').classList.contains('active')) loadSettingsToForm();
+
+  // Update encouragement modal if visible
+  if (!document.getElementById('encourageModal').classList.contains('hidden') && currentQuiz) {
+    const score = currentQuiz.answers.filter(a => a === true).length;
+    document.getElementById('modalEnc').textContent = getEncouragement(score);
+  }
+
+  // Update confirm modal message if visible
+  if (!document.getElementById('confirmModal').classList.contains('hidden')) {
+    document.getElementById('confirmMsg').textContent = tr.confirmClearTitle;
+  }
+
+  // Update tutorial modal if visible
+  if (!document.getElementById('tutorialModal').classList.contains('hidden')) {
+    renderTutorialContent();
+  }
+}
+
+function updateLangButton() {
+  const btn = document.getElementById('btnLangContent');
+  if (currentLang === 'zh') {
+    btn.textContent = '\u{1F1E8}\u{1F1F3} 中文';
+  } else {
+    btn.textContent = 'En English';
+  }
+}
+
+function updateJudgeModeButton() {
+  const el = document.getElementById('btnJudgeModeContent');
+  const btn = document.getElementById('btnJudgeMode');
+  if (!el || !btn) return;
+  if (judgeMode === 'manual') {
+    el.textContent = '\u{1F64B} ' + t('judgeManual');
+    btn.classList.remove('judge-mode-auto');
+  } else {
+    el.textContent = '\u{1F916} ' + t('judgeAuto');
+    btn.classList.add('judge-mode-auto');
+  }
+}
+
+function toggleJudgeMode() {
+  if (currentQuiz) {
+    showToast(t('toastQuizActive'));
+    return;
+  }
+  judgeMode = judgeMode === 'manual' ? 'auto' : 'manual';
+  localStorage.setItem(LS_PREFIX + 'judgeMode', judgeMode);
+  updateJudgeModeButton();
+}
+
+function toggleLanguage() {
+  const oldLang = currentLang;
+  currentLang = currentLang === 'zh' ? 'en' : 'zh';
+  localStorage.setItem(LS_PREFIX + 'lang', currentLang);
+
+  // Update encouragements: if they match old language defaults, switch to new language defaults
+  const oldDefs = getDefaultEncouragements(oldLang);
+  const newDefs = getDefaultEncouragements(currentLang);
+  let changed = false;
+  for (const key of [10, '8-9', '6-7', '1-5', 0]) {
+    if (settings.encouragements[key] === oldDefs[key]) {
+      settings.encouragements[key] = newDefs[key];
+      changed = true;
+    }
+  }
+  if (changed) saveData();
+
+  applyI18n();
+}
+
+function getCardLabels() {
+  return currentLang === 'zh'
+    ? ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+    : ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+}
+
+function getCardLabelText(index) {
+  if (currentLang === 'zh') {
+    return '第' + (index + 1) + '题';
+  }
+  return 'Card ' + (index + 1);
+}
+
+function getEncouragement(score) {
+  let encKey;
+  if (score === 10) encKey = 10;
+  else if (score >= 8) encKey = '8-9';
+  else if (score >= 6) encKey = '6-7';
+  else if (score >= 1) encKey = '1-5';
+  else encKey = 0;
+  return settings.encouragements[encKey] || getDefaultEncouragements(currentLang)[encKey];
+}
+
+// ============================================================
+// TUTORIAL
+// ============================================================
+function renderTutorialContent() {
+  const tr = I18N[currentLang];
+  const sections = [
+    { icon: TUTORIAL_ICONS.quiz, title: tr.tutorialSection1Title, text: tr.tutorialSection1Text },
+    { icon: TUTORIAL_ICONS.bank, title: tr.tutorialSection2Title, text: tr.tutorialSection2Text },
+    { icon: TUTORIAL_ICONS.records, title: tr.tutorialSection3Title, text: tr.tutorialSection3Text },
+    { icon: TUTORIAL_ICONS.settings, title: tr.tutorialSection4Title, text: tr.tutorialSection4Text },
+    { icon: TUTORIAL_ICONS.voice, title: tr.tutorialSection5Title, text: tr.tutorialSection5Text },
+    { icon: TUTORIAL_ICONS.archive, title: tr.tutorialSection6Title, text: tr.tutorialSection6Text }
+  ];
+
+  let html = '';
+  for (const s of sections) {
+    html += '<div class="tutorial-section">'
+      + '<div class="tutorial-section-icon">' + s.icon + '</div>'
+      + '<div class="tutorial-section-text">'
+      + '<h4>' + s.title + '</h4>'
+      + '<p>' + s.text + '</p>'
+      + '</div></div>';
+  }
+
+  document.getElementById('tutorialContent').innerHTML = html;
+  document.getElementById('tutorialTitle').textContent = tr.tutorialTitle;
+  document.getElementById('tutorialAuthor').textContent = tr.tutorialAuthor;
+  document.getElementById('tutorialDate').textContent = tr.tutorialDate;
+  document.getElementById('tutorialVersion').textContent = tr.tutorialVersion;
+  document.getElementById('tutorialCloseBtn').textContent = tr.tutorialClose;
+}
+
+function showTutorial() {
+  renderTutorialContent();
+  document.getElementById('tutorialModal').classList.remove('hidden');
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialModal').classList.add('hidden');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getWeight(entryId) {
+  const stat = pinyinBankStats[entryId];
+  if (!stat || stat.totalCount === 0) return settings.weights.never || 3;
+  const rate = stat.errorCount / stat.totalCount;
+  if (rate >= 0.5) return settings.weights.high || 6;
+  if (rate >= 0.25) return settings.weights.medium || 4;
+  if (rate >= 0.1) return settings.weights.low || 2;
+  if (rate > 0) return settings.weights.veryLow || 1;
+  return settings.weights.perfect || 1;
+}
+
+function getWeightColor(entryId) {
+  const stat = pinyinBankStats[entryId];
+  if (!stat || stat.totalCount === 0) return 'w-color-0';
+  const rate = stat.errorCount / stat.totalCount;
+  if (rate >= 0.5) return 'w-color-6';
+  if (rate >= 0.25) return 'w-color-4';
+  if (rate >= 0.1) return 'w-color-2';
+  if (rate > 0) return 'w-color-1g';
+  return 'w-color-1b';
+}
+
+function weightedRandomSelect(bank, count) {
+  const pool = bank.map(e => ({ entry: e, weight: getWeight(e.id) }));
+  const selected = [];
+  const available = [...pool];
+
+  for (let i = 0; i < count && available.length > 0; i++) {
+    const totalWeight = available.reduce((s, e) => s + e.weight, 0);
+    if (totalWeight === 0) break;
+    let rand = Math.random() * totalWeight;
+    let idx = 0;
+    for (; idx < available.length; idx++) {
+      rand -= available[idx].weight;
+      if (rand <= 0) break;
+    }
+    if (idx >= available.length) idx = available.length - 1;
+    selected.push(available[idx].entry);
+    available.splice(idx, 1);
+  }
+
+  while (selected.length < count && available.length > 0) {
+    const idx = Math.floor(Math.random() * available.length);
+    selected.push(available[idx].entry);
+    available.splice(idx, 1);
+  }
+  return selected;
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+function startQuiz() {
+  document.getElementById('encourageModal').classList.add('hidden');
+
+  // 快照答题前的题库统计，供"退出且不计成绩"时回滚
+  window._quizSnapshot = JSON.parse(JSON.stringify(pinyinBankStats));
+
+  const questions = weightedRandomSelect(DEFAULT_PINYIN_BANK, 10);
+  currentQuiz = {
+    questions: questions,
+    answers: new Array(10).fill(null),
+    startTime: Date.now()
+  };
+
+  document.getElementById('quizControls').classList.add('hidden');
+  document.getElementById('quizProgress').classList.remove('hidden');
+  document.getElementById('btnJudgeMode').disabled = true;
+  updateQuizProgress();
+  renderCards();
+}
+
+function retryQuiz() {
+  startQuiz();
+}
+
+function exitQuiz() {
+  currentQuiz = null;
+  document.getElementById('encourageModal').classList.add('hidden');
+  document.getElementById('quizControls').classList.remove('hidden');
+  document.getElementById('quizProgress').classList.add('hidden');
+  document.getElementById('cardGrid').innerHTML = '';
+  document.getElementById('btnJudgeMode').disabled = false;
+}
+
+function requestExitQuiz() {
+  showConfirmModal(t('exitQuizConfirm'), t('exitQuizConfirmDesc'), t('confirmExit'), exitQuizNoRecord);
+}
+
+function exitQuizNoRecord() {
+  // 回滚到答题开始前的题库统计，本次答题成绩不记录
+  if (window._quizSnapshot) {
+    pinyinBankStats = JSON.parse(JSON.stringify(window._quizSnapshot));
+    window._quizSnapshot = null;
+    saveData();
+    updateOverview();
+    if (document.getElementById('tabBank').classList.contains('active')) renderBank();
+  }
+  exitQuiz();
+}
+
+function updateQuizProgress() {
+  if (!currentQuiz) return;
+  const answered = currentQuiz.answers.filter(a => a !== null).length;
+  document.getElementById('quizProgressText').innerHTML = t('quizProgressLabel') + ': <span>' + answered + '</span> / 10';
+}
+
+function flipCard(index) {
+  if (!currentQuiz) return;
+  if (currentQuiz.answers[index] !== null) return;
+
+  for (let i = 0; i < 10; i++) {
+    if (i === index) continue;
+    if (currentQuiz.answers[i] !== null) continue;
+    const inner = document.querySelector('#card' + i + ' .flip-card-inner');
+    if (inner && inner.classList.contains('flipped')) {
+      showToast(t('toastJudgeFirst'));
+      return;
+    }
+  }
+
+  const inner = document.querySelector('#card' + index + ' .flip-card-inner');
+  if (inner && !inner.classList.contains('flipped')) {
+    inner.classList.add('flipped');
+  }
+}
+
+function judgeAnswer(index, isCorrect) {
+  if (!currentQuiz || currentQuiz.answers[index] !== null) return;
+  currentQuiz.answers[index] = isCorrect;
+
+  const card = document.getElementById('card' + index);
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+
+  const entryId = currentQuiz.questions[index].id;
+  if (!pinyinBankStats[entryId]) {
+    pinyinBankStats[entryId] = { totalCount: 0, errorCount: 0 };
+  }
+  pinyinBankStats[entryId].totalCount++;
+  if (!isCorrect) pinyinBankStats[entryId].errorCount++;
+
+  updateQuizProgress();
+  saveData();
+  updateOverview();
+
+  const answered = currentQuiz.answers.filter(a => a !== null).length;
+  if (answered === 10) {
+    setTimeout(() => showResult(), 500);
+  }
+}
+
+function showResult() {
+  const score = currentQuiz.answers.filter(a => a === true).length;
+
+  const now = new Date();
+  const record = {
+    date: now.toISOString().split('T')[0],
+    time: now.toTimeString().split(' ')[0].substring(0, 5),
+    score: score,
+    totalQuestions: 10
+  };
+  quizRecords.unshift(record);
+  saveData();
+  updateOverview();
+
+  document.getElementById('modalScore').textContent = score;
+  let stars;
+  if (score === 10) stars = '\u2B50\u2B50\u2B50\u2B50\u2B50';
+  else if (score >= 8) stars = '\u2B50\u2B50\u2B50\u2B50';
+  else if (score >= 6) stars = '\u2B50\u2B50\u2B50';
+  else if (score >= 1) stars = '\u2B50\u2B50';
+  else stars = '\uD83D\uDCAB';
+  document.getElementById('modalEnc').textContent = getEncouragement(score);
+  document.getElementById('modalStars').textContent = stars;
+  document.getElementById('encourageModal').classList.remove('hidden');
+
+  if (document.getElementById('tabBank').classList.contains('active')) renderBank();
+  if (document.getElementById('tabRecords').classList.contains('active')) renderRecords();
+}
+
+function renderCards() {
+  const grid = document.getElementById('cardGrid');
+  const labels = getCardLabels();
+  const tr = I18N[currentLang];
+  let html = '';
+  for (let i = 0; i < 10; i++) {
+    const pinyin = currentQuiz.questions[i].pinyin;
+    const isAnswered = currentQuiz.answers[i] !== null;
+    const isCorrect = currentQuiz.answers[i] === true;
+    const cardClass = isAnswered ? (isCorrect ? 'answered-correct' : 'answered-wrong') : '';
+    const flippedClass = isAnswered ? 'flipped' : '';
+
+    html += '<div class="flip-card ' + cardClass + '" id="card' + i + '">'
+      + '<div class="flip-card-inner ' + flippedClass + '" onclick="flipCard(' + i + ')">'
+      + '<div class="flip-card-front">'
+      + '<div class="card-number">' + labels[i] + '</div>'
+      + '<div class="card-label">' + getCardLabelText(i) + '</div>'
+      + '</div>'
+      + '<div class="flip-card-back">'
+      + '<div class="pinyin-display">' + pinyin + '</div>'
+      + (function() {
+          if (isAnswered) {
+            return '<div class="judge-btns">'
+              + '<button class="judge-btn correct" disabled title="' + tr.judgeCorrect + '">\u2713</button>'
+              + '<button class="judge-btn wrong" disabled title="' + tr.judgeWrong + '">\u2717</button>'
+              + '</div>';
+          }
+          if (judgeMode === 'auto') {
+            return '<button class="record-btn" onclick="startRecording(' + i + ')">\u{1F3A4} ' + tr.recordBtn + '</button>'
+              + '<div class="judge-btns">'
+              + '<button class="judge-btn correct" disabled title="' + tr.judgeCorrect + '">\u2713</button>'
+              + '<button class="judge-btn wrong" disabled title="' + tr.judgeWrong + '">\u2717</button>'
+              + '</div>';
+          }
+          return '<div class="judge-btns">'
+            + '<button class="judge-btn correct" onclick="event.stopPropagation();judgeAnswer(' + i + ',true)" title="' + tr.judgeCorrect + '">\u2713</button>'
+            + '<button class="judge-btn wrong" onclick="event.stopPropagation();judgeAnswer(' + i + ',false)" title="' + tr.judgeWrong + '">\u2717</button>'
+            + '</div>';
+        })()
+      + '</div>'
+      + '</div></div>';
+  }
+  grid.innerHTML = html;
+}
+
+// ============================================================
+// VOICE / PRONUNCIATION / AUTO-JUDGE
+// ============================================================
+function decodeEntities(s) {
+  const d = document.createElement('div');
+  d.innerHTML = s;
+  return d.textContent;
+}
+
+function playPronunciation(pinyinEntity) {
+  try {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const text = decodeEntities(pinyinEntity);
+    // 前 0.1 秒静音空白引导
+    setTimeout(function() {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'zh-CN';
+      u.rate = 0.85;
+      u.pitch = 1.0;
+      const voices = window.speechSynthesis.getVoices();
+      for (const v of voices) {
+        if (/zh|cmn|Chinese|中文|普通话/i.test(v.lang + ' ' + v.name)) { u.voice = v; break; }
+      }
+      window.speechSynthesis.speak(u);
+    }, 100);
+  } catch(e) {}
+}
+
+function showRecordModal() {
+  document.getElementById('recordTitle').textContent = t('recordingTitle');
+  document.getElementById('recordDesc').textContent = t('recordingDesc');
+  document.getElementById('recordModal').classList.remove('hidden');
+}
+function hideRecordModal() {
+  document.getElementById('recordModal').classList.add('hidden');
+}
+function stopStream() {
+  if (recordingStream) {
+    recordingStream.getTracks().forEach(function(t) { t.stop(); });
+    recordingStream = null;
+  }
+}
+function cleanupRec() {
+  recPcm = [];
+  if (recAudioCtx) { try { recAudioCtx.close(); } catch(e) {} recAudioCtx = null; }
+}
+
+function startRecording(index) {
+  if (judgeMode !== 'auto') return;
+  if (!currentQuiz || currentQuiz.answers[index] !== null) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast(t('toastNeedMic'));
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    recordingStream = stream;
+    recPcm = [];
+    try { recAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { recAudioCtx = null; }
+    if (!recAudioCtx) { showToast(t('toastMicFail')); stopStream(); return; }
+    recSampleRate = recAudioCtx.sampleRate;
+    const src = recAudioCtx.createMediaStreamSource(stream);
+    try { recProcessor = recAudioCtx.createScriptProcessor(4096, 1, 1); }
+    catch(e) { recProcessor = null; }
+    if (!recProcessor) { showToast(t('toastMicFail')); cleanupRec(); return; }
+    recProcessor.onaudioprocess = function(e) {
+      const ch = e.inputBuffer.getChannelData(0);
+      recPcm.push(new Float32Array(ch));
+    };
+    const silent = recAudioCtx.createGain();
+    silent.gain.value = 0;
+    src.connect(recProcessor);
+    recProcessor.connect(silent);
+    silent.connect(recAudioCtx.destination);
+    // 录音动画比实际录音延迟 0.1 秒
+    setTimeout(showRecordModal, 100);
+    // 2 秒后自动停止并完成录音
+    setTimeout(function() { stopRecording(index); }, 2000);
+  }).catch(function() {
+    showToast(t('toastMicFail'));
+  });
+}
+
+function stopRecording(index) {
+  if (recProcessor) {
+    try { recProcessor.disconnect(); recProcessor.onaudioprocess = null; } catch(e) {}
+    recProcessor = null;
+  }
+  stopStream();
+  hideRecordModal();
+  let total = 0;
+  for (const c of recPcm) total += c.length;
+  if (total === 0) { showToast(t('toastMicFail')); cleanupRec(); return; }
+  const combined = new Float32Array(total);
+  let off = 0;
+  for (const c of recPcm) { combined.set(c, off); off += c.length; }
+  const tone = currentQuiz.questions[index].tone;
+  const result = comparePronunciation(combined, recSampleRate, tone);
+  recPcm = [];
+  if (recAudioCtx) { recAudioCtx.close().catch(function(){}); recAudioCtx = null; }
+  finishAutoJudge(index, result);
+}
+
+function finishAutoJudge(index, result) {
+  const icon = document.getElementById('judgeAnimIcon');
+  const badge = document.getElementById('judgeAnimBadge');
+  const txt = document.getElementById('judgeAnimText');
+  const sim = document.getElementById('judgeAnimSim');
+  if (result.ok) {
+    icon.textContent = '\u2713';
+    icon.className = 'judge-anim-icon judge-anim-correct';
+    badge.className = 'judge-anim-badge judge-anim-correct-badge';
+    txt.textContent = t('autoCorrect');
+  } else {
+    icon.textContent = '\u2717';
+    icon.className = 'judge-anim-icon judge-anim-wrong';
+    badge.className = 'judge-anim-badge judge-anim-wrong-badge';
+    txt.textContent = t('autoWrong');
+  }
+  if (result.silent || result.short) sim.textContent = t('autoNoSpeech');
+  else sim.textContent = t('simTitle') + ': ' + result.score + '%';
+  document.getElementById('judgeAnimModal').classList.remove('hidden');
+  setTimeout(function() {
+    document.getElementById('judgeAnimModal').classList.add('hidden');
+    judgeAnswer(index, result.ok);
+  }, 1300);
+}
+
+function resample(arr, n) {
+  if (!arr || arr.length === 0) return new Array(n).fill(0.5);
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(arr[Math.floor(i * arr.length / n)]);
+  return out;
+}
+
+function detectPitch(buf, sampleRate) {
+  const SIZE = buf.length;
+  if (SIZE < 256) return -1;
+  const minF = 70, maxF = 400;
+  const maxPeriod = Math.min(Math.floor(sampleRate / minF), SIZE);
+  const minPeriod = Math.floor(sampleRate / maxF);
+  let rms = 0;
+  for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i];
+  rms = Math.sqrt(rms / SIZE);
+  if (rms < 0.01) return -1;
+  let bestOffset = -1, bestCorr = 0;
+  for (let offset = minPeriod; offset <= maxPeriod; offset++) {
+    let corr = 0;
+    const lim = SIZE - offset;
+    for (let i = 0; i < lim; i++) corr += buf[i] * buf[i + offset];
+    corr /= lim;
+    if (corr > bestCorr) { bestCorr = corr; bestOffset = offset; }
+  }
+  if (bestOffset === -1 || bestCorr < 0.001) return -1;
+  let pitch = sampleRate / bestOffset;
+  if (pitch < minF || pitch > maxF) return -1;
+  return pitch;
+}
+
+function getTargetContour(tone, n) {
+  const shapes = {
+    1: [0.75, 0.78, 0.76, 0.77, 0.75],
+    2: [0.20, 0.35, 0.52, 0.68, 0.82],
+    3: [0.55, 0.28, 0.34, 0.60, 0.82],
+    4: [0.85, 0.66, 0.46, 0.30, 0.18]
+  };
+  const s = shapes[tone] || shapes[1];
+  return resample(s, n);
+}
+
+function comparePronunciation(samples, sampleRate, targetTone) {
+  let rms = 0;
+  for (let i = 0; i < samples.length; i++) rms += samples[i] * samples[i];
+  rms = Math.sqrt(rms / samples.length);
+  if (rms < 0.01) return { score: 0, ok: false, silent: true };
+
+  const frameSize = Math.floor(sampleRate * 0.04);
+  const nFrames = Math.floor(samples.length / frameSize);
+  const pitches = [];
+  let voiced = 0;
+  for (let f = 0; f < nFrames; f++) {
+    const start = f * frameSize;
+    const frame = samples.subarray(start, start + frameSize);
+    const p = detectPitch(frame, sampleRate);
+    if (p > 0) { pitches.push(p); voiced++; } else pitches.push(null);
+  }
+  if (voiced < 4) return { score: 0, ok: false, short: true };
+
+  const valid = [];
+  for (let f = 0; f < nFrames; f++) if (pitches[f] !== null) valid.push(pitches[f]);
+  let minP = Infinity, maxP = -Infinity;
+  for (const v of valid) { if (v < minP) minP = v; if (v > maxP) maxP = v; }
+  const range = (maxP - minP) || 1;
+  const normVoiced = valid.map(function(p) { return (p - minP) / range; });
+  const userContour = resample(normVoiced, 5);
+  const target = getTargetContour(targetTone, 5);
+  let diff = 0;
+  for (let i = 0; i < 5; i++) diff += Math.abs(userContour[i] - target[i]);
+  diff /= 5;
+  const sim = Math.max(0, Math.min(100, Math.round(100 * (1 - diff))));
+  return { score: sim, ok: sim >= simThreshold };
+}
+
+// ============================================================
+// BANK
+// ============================================================
+function renderBank() {
+  const tbody = document.getElementById('bankTableBody');
+  const entries = DEFAULT_PINYIN_BANK.map(e => {
+    const stat = pinyinBankStats[e.id] || { totalCount: 0, errorCount: 0 };
+    return {
+      pinyin: e.pinyin,
+      totalCount: stat.totalCount,
+      errorCount: stat.errorCount,
+      errorRate: stat.totalCount > 0 ? (stat.errorCount / stat.totalCount * 100) : null,
+      weight: getWeight(e.id),
+      colorClass: getWeightColor(e.id)
+    };
+  });
+
+  entries.sort((a,b) => {
+    if (b.weight !== a.weight) return b.weight - a.weight;
+    return (b.errorRate || -1) - (a.errorRate || -1);
+  });
+
+  let html = '';
+  for (const e of entries) {
+    html += '<tr class="' + e.colorClass + '">'
+      + '<td>' + e.pinyin + '</td>'
+      + '<td><button class="pron-btn" onclick="playPronunciation(\'' + e.pinyin + '\')" title="' + t('thPronounce') + '">🔊</button></td>'
+      + '<td>' + e.totalCount + '</td>'
+      + '<td>' + e.errorCount + '</td>'
+      + '<td>' + (e.errorRate !== null ? e.errorRate.toFixed(0) + '%' : '--') + '</td>'
+      + '<td style="font-weight:700;color:#FF6B6B">' + e.weight + '</td>'
+      + '</tr>';
+  }
+  tbody.innerHTML = html;
+
+  // 错误率分布横向堆积条
+  const total = DEFAULT_PINYIN_BANK.length;
+  const counts = { high:0, medium:0, low:0, veryLow:0, perfect:0, never:0 };
+  for (const e of DEFAULT_PINYIN_BANK) {
+    const stat = pinyinBankStats[e.id];
+    if (!stat || stat.totalCount === 0) { counts.never++; continue; }
+    const r = stat.errorCount / stat.totalCount;
+    if (r >= 0.5) counts.high++;
+    else if (r >= 0.25) counts.medium++;
+    else if (r >= 0.1) counts.low++;
+    else if (r > 0) counts.veryLow++;
+    else counts.perfect++;
+  }
+  const segs = [
+    { c: counts.high, color: '#FF8A8A', label: t('legendHigh') },
+    { c: counts.medium, color: '#FFC285', label: t('legendMedium') },
+    { c: counts.low, color: '#FFE98A', label: t('legendLow') },
+    { c: counts.veryLow, color: '#A5D6A7', label: t('legendVeryLow') },
+    { c: counts.perfect, color: '#90CAF9', label: t('legendPerfect') },
+    { c: counts.never, color: '#E3E3E3', label: t('legendNever') }
+  ];
+  let barHtml = '';
+  for (const s of segs) {
+    if (s.c > 0) {
+      const pct = total > 0 ? (s.c / total * 100) : 0;
+      barHtml += '<span title="' + s.label + '：' + s.c + ' ' + t('distUnit') + '" style="width:' + pct.toFixed(2) + '%;background:' + s.color + '"></span>';
+    }
+  }
+  document.getElementById('bankDistBar').innerHTML = barHtml;
+  document.getElementById('bankDistCap').textContent = t('distTotal') + ' ' + total + ' ' + t('distUnit');
+}
+
+// ============================================================
+// RECORDS
+// ============================================================
+function renderRecords() {
+  const list = document.getElementById('recordsList');
+  const recent = quizRecords.slice(0, 20);
+  if (recent.length === 0) {
+    list.innerHTML = '<div class="empty-state">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+      + '<div>' + t('emptyRecords') + '</div>'
+      + '</div>';
+    return;
+  }
+  let html = '';
+  for (const r of recent) {
+    let cls = '';
+    if (r.score === 10) cls = 'perfect';
+    else if (r.score >= 8) cls = 'good';
+    else if (r.score >= 6) cls = 'ok';
+    html += '<div class="record-card">'
+      + '<div class="record-info"><div class="record-date">' + r.date + ' ' + r.time + '</div></div>'
+      + '<div class="record-score ' + cls + '">' + r.score + '/10</div>'
+      + '</div>';
+  }
+  list.innerHTML = html;
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function loadSettingsToForm() {
+  document.getElementById('setBabyName').value = settings.babyName || 'Sophia & George';
+  document.getElementById('setEnc10').value = settings.encouragements[10] || '';
+  document.getElementById('setEnc89').value = settings.encouragements['8-9'] || '';
+  document.getElementById('setEnc67').value = settings.encouragements['6-7'] || '';
+  document.getElementById('setEnc15').value = settings.encouragements['1-5'] || '';
+  document.getElementById('setEnc0').value = settings.encouragements[0] || '';
+  document.getElementById('setW6').value = settings.weights.high || 6;
+  document.getElementById('setW4').value = settings.weights.medium || 4;
+  document.getElementById('setW2').value = settings.weights.low || 2;
+  document.getElementById('setW1').value = settings.weights.veryLow || 1;
+  document.getElementById('setWp').value = settings.weights.perfect || 1;
+  document.getElementById('setWn').value = settings.weights.never || 3;
+  document.getElementById('setSim').value = simThreshold;
+  document.getElementById('simVal').textContent = simThreshold + '%';
+}
+
+function saveSettings() {
+  simThreshold = parseInt(document.getElementById('setSim').value) || 80;
+  settings.babyName = document.getElementById('setBabyName').value || 'Sophia & George';
+  settings.encouragements = {
+    10: document.getElementById('setEnc10').value || getDefaultEncouragements(currentLang)[10],
+    '8-9': document.getElementById('setEnc89').value || getDefaultEncouragements(currentLang)['8-9'],
+    '6-7': document.getElementById('setEnc67').value || getDefaultEncouragements(currentLang)['6-7'],
+    '1-5': document.getElementById('setEnc15').value || getDefaultEncouragements(currentLang)['1-5'],
+    0: document.getElementById('setEnc0').value || getDefaultEncouragements(currentLang)[0]
+  };
+  settings.weights = {
+    high: parseInt(document.getElementById('setW6').value) || 6,
+    medium: parseInt(document.getElementById('setW4').value) || 4,
+    low: parseInt(document.getElementById('setW2').value) || 2,
+    veryLow: parseInt(document.getElementById('setW1').value) || 1,
+    perfect: parseInt(document.getElementById('setWp').value) || 1,
+    never: parseInt(document.getElementById('setWn').value) || 3
+  };
+  saveData();
+  showToast(t('toastSettingsSaved'));
+  if (document.getElementById('tabBank').classList.contains('active')) renderBank();
+}
+
+function resetSettings() {
+  settings.encouragements = getDefaultEncouragements(currentLang);
+  settings.weights = { ...DEFAULT_WEIGHTS };
+  settings.babyName = 'Sophia & George';
+  simThreshold = 80;
+  loadSettingsToForm();
+  saveData();
+  showToast(t('toastSettingsReset'));
+}
+
+// ============================================================
+// BACKUP / RESTORE / CLEAR
+// ============================================================
+function exportData() {
+  const data = {
+    version: 1.5,
+    exportedAt: new Date().toISOString(),
+    babyName: settings.babyName || 'Sophia & George',
+    bankStats: pinyinBankStats,
+    records: quizRecords,
+    settings: settings
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const safeName = (settings.babyName || 'Sophia & George').replace(/[\\/:*?"<>|]/g, '_');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '(' + safeName + ')xinqi-pinyin-backup-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.bankStats) pinyinBankStats = data.bankStats;
+      if (data.records) quizRecords = data.records;
+      if (data.settings) {
+        settings = data.settings;
+        settings.encouragements = { ...getDefaultEncouragements(currentLang), ...(settings.encouragements || {}) };
+        settings.weights = { ...DEFAULT_WEIGHTS, ...(settings.weights || {}) };
+        if (data.babyName) settings.babyName = data.babyName;
+      } else if (data.babyName) {
+        settings.babyName = data.babyName;
+      }
+      saveData();
+      updateOverview();
+      loadSettingsToForm();
+      const count = data.records ? data.records.length : 0;
+      showToast(t('toastImportSuccess').replace('{0}', count));
+      const activeTab = document.querySelector('.tab-content.active');
+      if (activeTab) {
+        if (activeTab.id === 'tabBank') renderBank();
+        if (activeTab.id === 'tabRecords') renderRecords();
+      }
+    } catch(err) {
+      showToast(t('toastImportFail'));
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function showConfirmModal(msg, desc, btnLabel, callback) {
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmDesc').textContent = desc;
+  document.getElementById('confirmBtn').textContent = btnLabel;
+  window._confirmCallback = callback;
+  document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function runConfirm() {
+  const cb = window._confirmCallback;
+  window._confirmCallback = null;
+  if (typeof cb === 'function') cb();
+  closeConfirmModal();
+}
+
+function clearAllData() {
+  showConfirmModal(t('confirmClearTitle'), t('confirmClearDesc'), t('confirmClear'), confirmClearData);
+}
+
+function confirmClearData() {
+  pinyinBankStats = {};
+  quizRecords = [];
+  settings = {
+    encouragements: getDefaultEncouragements(currentLang),
+    weights: { ...DEFAULT_WEIGHTS }
+  };
+  saveData();
+  updateOverview();
+  loadSettingsToForm();
+  if (document.getElementById('tabBank').classList.contains('active')) renderBank();
+  if (document.getElementById('tabRecords').classList.contains('active')) renderRecords();
+  document.getElementById('confirmModal').classList.add('hidden');
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.add('hidden');
+}
+
+// ============================================================
+// OVERVIEW BAR
+// ============================================================
+function updateOverview() {
+  let totalAnswered = 0, totalErrors = 0;
+  for (const key in pinyinBankStats) {
+    totalAnswered += pinyinBankStats[key].totalCount;
+    totalErrors += pinyinBankStats[key].errorCount;
+  }
+  document.getElementById('statTotal').textContent = totalAnswered;
+  if (totalAnswered > 0) {
+    document.getElementById('statAccuracy').textContent = ((totalAnswered - totalErrors) / totalAnswered * 100).toFixed(0) + '%';
+  } else {
+    document.getElementById('statAccuracy').textContent = '--';
+  }
+  if (quizRecords.length > 0) {
+    document.getElementById('statLastScore').textContent = quizRecords[0].score + '/10';
+  } else {
+    document.getElementById('statLastScore').textContent = '--';
+  }
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+
+  const tabMap = { quiz: 'tabQuiz', bank: 'tabBank', records: 'tabRecords', settings: 'tabSettings' };
+  const navMap = { quiz: 0, bank: 1, records: 2, settings: 3 };
+  document.getElementById(tabMap[tab]).classList.add('active');
+  document.querySelectorAll('.bottom-nav .nav-item')[navMap[tab]].classList.add('active');
+
+  if (tab === 'bank') renderBank();
+  if (tab === 'records') renderRecords();
+  if (tab === 'settings') loadSettingsToForm();
+}
+
+// ============================================================
+// BOOTSTRAP
+// ============================================================
+function init() {
+  loadData();
+
+  // Preload speech synthesis voices (for pronunciation playback)
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+  }
+
+  const hasData = Object.keys(pinyinBankStats).length > 0;
+  if (!hasData && quizRecords.length === 0) {
+    const now = new Date();
+    quizRecords.push({
+      date: now.toISOString().split('T')[0],
+      time: '10:30',
+      score: 7,
+      totalQuestions: 10
+    });
+    const sampleIds = DEFAULT_PINYIN_BANK.slice(0, 50).map(e => e.id);
+    for (let i = 0; i < sampleIds.length; i++) {
+      const totalCount = Math.floor(Math.random() * 5) + (i < 30 ? 1 : 0);
+      if (totalCount > 0) {
+        const errorCount = Math.floor(Math.random() * Math.min(totalCount + 1, 3));
+        pinyinBankStats[sampleIds[i]] = { totalCount, errorCount };
+      }
+    }
+    saveData();
+  }
+
+  applyI18n();
+}
+
+init();
+</script>
+<script src="../../shared/back-home.js" data-home="../../index.html" defer></script>
+</body>
+</html>

@@ -1,0 +1,2832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>心奇学单词</title>
+<style>
+:root{
+  --bg:#eaf4fb; --bg2:#f6fbff; --card:#ffffff;
+  --primary:#5aa7e8; --primary-dark:#3b82c4; --primary-soft:#dceeff;
+  --accent:#ff8f6b; --accent-dark:#f2704e;
+  --text:#1f3a5f; --muted:#6b87a3;
+  --border:#cfe4f5; --red:#ff5b5b; --green:#3bbf7a; --gold:#d4af37;
+  --shadow:0 6px 22px rgba(90,167,232,.16);
+  --radius:18px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--font); color:var(--text); background:
+    radial-gradient(1200px 500px at 10% -10%, #dcedff 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, #e0f2ff 0%, transparent 55%),
+    var(--bg);
+  min-height:100vh; font-size:16px; line-height:1.55;
+}
+button{font-family:inherit; cursor:pointer; border:none;}
+input,select,textarea{font-family:inherit; font-size:16px;}
+.hidden{display:none !important;}
+
+/* ===== 顶部标题 ===== */
+.app-header{
+  text-align:center; padding:20px 16px 12px;
+  background:linear-gradient(135deg,#5aa7e8,#7fc0f5 55%,#a4d7ff);
+  color:#fff; border-bottom:4px solid #d4ecff;
+}
+.app-header h1{margin:0; font-size:30px; letter-spacing:2px; text-shadow:0 2px 6px rgba(0,0,0,.12);}
+.app-header .sub{margin:6px 0 0; font-size:13px; opacity:.95; letter-spacing:.5px;}
+
+/* ===== 导航 ===== */
+.nav{display:flex; justify-content:center; gap:8px; padding:12px 12px 0; flex-wrap:wrap; position:sticky; top:0; z-index:30; background:linear-gradient(var(--bg) 80%,transparent);}
+.nav button{
+  display:flex; align-items:center; gap:6px; padding:10px 16px; min-height:44px;
+  border-radius:999px; background:#fff; color:var(--primary-dark); font-size:15px; font-weight:600;
+  border:2px solid var(--border); box-shadow:0 3px 10px rgba(90,167,232,.10);
+  transition:.18s;
+}
+.nav button:hover{transform:translateY(-2px);}
+.nav button.active{background:linear-gradient(135deg,#5aa7e8,#7fc0f5); color:#fff; border-color:transparent; box-shadow:0 6px 16px rgba(90,167,232,.35);}
+.nav button:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+
+/* ===== 页面容器 ===== */
+.page{display:none; max-width:960px; margin:0 auto; padding:18px 16px 120px; animation:fade .25s;}
+.page.active{display:block;}
+@keyframes fade{from{opacity:0; transform:translateY(6px);}to{opacity:1; transform:none;}}
+
+.card{
+  background:var(--card); border-radius:var(--radius); padding:18px;
+  border:2px solid var(--border); box-shadow:var(--shadow); margin-bottom:16px;
+}
+.card h2{margin:0 0 12px; font-size:19px; display:flex; align-items:center; gap:8px;}
+.card h2 .tag{font-size:12px; background:var(--primary-soft); color:var(--primary-dark); padding:2px 10px; border-radius:999px; font-weight:600;}
+.muted{color:var(--muted); font-size:14px;}
+.section-title{font-size:15px; font-weight:700; color:var(--primary-dark); margin:16px 0 8px; display:flex; align-items:center; gap:6px;}
+
+/* ===== 按钮 ===== */
+.btn{
+  display:inline-flex; align-items:center; gap:8px; padding:11px 18px; min-height:44px;
+  border-radius:14px; font-size:15px; font-weight:700; border:2px solid transparent;
+  background:#fff; color:var(--primary-dark); border-color:var(--border); box-shadow:0 3px 8px rgba(90,167,232,.10);
+  transition:.16s;
+}
+.btn:hover{transform:translateY(-1px); box-shadow:0 6px 14px rgba(90,167,232,.22);}
+.btn.primary{background:linear-gradient(135deg,#5aa7e8,#7fc0f5); color:#fff; border-color:transparent;}
+.btn.accent{background:linear-gradient(135deg,#ff9a76,#ffb38a); color:#fff;}
+.btn.danger{background:#fff; color:#e5484d; border-color:#ffc9cc;}
+.btn.warn{background:#fff; color:#c07a00; border-color:#ffe0a3;}
+.btn.small{padding:7px 12px; min-height:40px; font-size:14px; border-radius:11px;}
+.btn.block{width:100%; justify-content:center;}
+.btn:disabled{opacity:.5; cursor:not-allowed; transform:none !important;}
+
+/* ===== 表单 ===== */
+label.fld{display:block; margin-bottom:14px;}
+label.fld span.lbl{display:block; font-weight:700; font-size:14px; color:var(--text); margin-bottom:6px;}
+input[type=text],input[type=number],select,textarea{
+  width:100%; padding:11px 12px; border-radius:12px; border:2px solid var(--border);
+  background:#fbfdff; color:var(--text); outline:none; transition:.15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--primary); background:#fff; box-shadow:0 0 0 3px rgba(90,167,232,.15);}
+textarea{resize:vertical; min-height:64px;}
+input[type=checkbox],input[type=radio]{width:18px; height:18px; accent-color:#5aa7e8;}
+
+.chip-group{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 14px; min-height:40px;
+  border-radius:999px; border:2px solid var(--border); background:#fff; cursor:pointer;
+  font-size:14px; font-weight:600; color:var(--muted); user-select:none; transition:.14s;
+}
+.chip input{display:none;}
+.w-chip{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:2px solid #b9c4cf; font-size:14px; font-weight:600; color:#33415c; cursor:default;}
+.w-chip .dot{flex-shrink:0;}
+.w-chip .w-in{display:inline-block; width:56px; padding:4px 6px; border:1.5px solid #8fa4b8; border-radius:8px; text-align:center; font-size:15px; font-weight:700; background:#fff; color:#1f3a5f; outline:none;}
+.w-chip .w-in:focus{border-color:#5aa7e8; box-shadow:0 0 0 3px rgba(90,167,232,.15);}
+.chip.on{background:var(--primary-soft); border-color:var(--primary); color:var(--primary-dark);}
+
+/* ===== 今日复习 ===== */
+.today-wrap{border:2.5px dashed #ffb38a; background:#fff8f2; border-radius:var(--radius); padding:14px 16px; margin-bottom:16px;}
+.today-head{display:flex; align-items:center; gap:8px; font-weight:800; color:#d4632f;}
+.today-item{display:flex; align-items:center; gap:10px; padding:9px 10px; margin-top:8px; background:#fff; border-radius:12px; border:2px solid #ffe0cf;}
+.today-item.overdue{border-color:#ffb3b3; background:#fff4f4;}
+.today-item .w{font-weight:800; font-size:17px;}
+.today-item .m{color:var(--muted); font-size:14px; flex:1;}
+.pill{font-size:11px; padding:2px 9px; border-radius:999px; font-weight:800; white-space:nowrap;}
+.pill.red{background:#ffe1e1; color:#e5484d;}
+.pill.yellow{background:#fff2cf; color:#b47a00;}
+.pill.green{background:#e2f7ea; color:#1f9d55;}
+.pill.gray{background:#eef2f6; color:#6b87a3;}
+
+/* ===== 词汇表表格 ===== */
+.wb-controls{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px;}
+.wb-controls input[type=text]{width:auto; flex:1; min-width:150px;}
+.wb-controls select{width:auto;}
+table.wb{width:100%; border-collapse:collapse; font-size:13px;}
+table.wb th,table.wb td{padding:6px 7px; text-align:left; border-bottom:1px solid #eaf2fb; vertical-align:middle;}
+table.wb th{color:var(--primary-dark); font-size:12px; background:#f2f9ff; white-space:nowrap;}
+table.wb th.tight,table.wb td.tight{padding-left:4px; padding-right:4px;}
+table.wb th.opt,table.wb td.opt{white-space:nowrap; text-align:center;}
+table.wb td.opt .btn{padding:4px 9px; min-height:30px; font-size:13px;}
+table.wb .act-row{display:inline-flex; gap:5px; align-items:center;}
+table.wb td .acc-bar{height:7px; border-radius:4px; background:#eef3f9; overflow:hidden; min-width:56px;}
+table.wb td .acc-bar i{display:block; height:100%; border-radius:4px;}
+.dot{display:inline-block; width:12px; height:12px; border-radius:4px; margin-right:4px; vertical-align:-1px; border:1px solid rgba(0,0,0,.08);}
+.band-legend{display:flex; flex-wrap:wrap; gap:10px; font-size:13px; color:var(--muted); margin-top:8px;}
+
+/* ===== 练习页 ===== */
+.prac-progress{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+.prac-progress .bar{flex:1; height:10px; border-radius:6px; background:#e5f0fb; overflow:hidden;}
+.prac-progress .bar i{display:block; height:100%; background:linear-gradient(90deg,#5aa7e8,#7fc0f5); border-radius:6px; transition:.3s;}
+.prac-card{background:#fff; border:2px solid var(--border); border-radius:22px; padding:26px 20px; text-align:center; box-shadow:var(--shadow);}
+.prac-card .src{font-size:13px; color:var(--muted); margin-bottom:6px;}
+.prac-card .w{font-size:46px; font-weight:800; letter-spacing:1px; margin:6px 0;}
+.prac-card .ph{font-size:20px; color:var(--muted); margin-bottom:10px;}
+.prac-card .me{font-size:22px; font-weight:700; color:var(--primary-dark); margin-bottom:12px;}
+.prac-extra{display:none; text-align:left; background:#f6fbff; border:2px dashed var(--border); border-radius:14px; padding:14px; margin-top:14px;}
+.prac-extra.show{display:block;}
+.prac-extra .line{margin:8px 0; font-size:15px;}
+.prac-extra .k{font-weight:800; color:var(--primary-dark);}
+.prac-nav{display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
+
+/* ===== 测评页 ===== */
+.quiz-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+.quiz-top .count{font-weight:800; font-size:16px;}
+.quiz-mode-tag{font-size:12px; padding:3px 10px; border-radius:999px; background:var(--primary-soft); color:var(--primary-dark); font-weight:700;}
+.deck-status{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; justify-content:center;}
+.deck-status .ds{width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; border:2px solid var(--border); background:#fff; color:var(--muted); transition:.2s;}
+.deck-status .ds.done{background:#e2f7ea; border-color:#9fdcb7; color:#1f9d55;}
+.deck-status .ds.cur{background:linear-gradient(135deg,#5aa7e8,#7fc0f5); color:#fff; border-color:transparent; transform:scale(1.15);}
+
+.flip-scene{perspective:1400px; width:100%; max-width:360px; margin:0 auto;}
+.flipper{position:relative; width:100%; aspect-ratio:3/4; transition:transform .6s cubic-bezier(.4,.2,.2,1); transform-style:preserve-3d; cursor:pointer;}
+.flipper.flipped{transform:rotateY(180deg);}
+.face{position:absolute; inset:0; border-radius:24px; backface-visibility:hidden; -webkit-backface-visibility:hidden; overflow:hidden; box-shadow:0 14px 34px rgba(31,58,95,.25);}
+.face.back{background:#1f3a5f;}
+.face.front{background:#fff; border:3px solid var(--border); transform:rotateY(180deg); display:flex; flex-direction:column;}
+
+.front-top{background:linear-gradient(135deg,#fff,#f2f9ff); padding:16px; border-bottom:2px dashed var(--border); position:relative; min-height:96px; display:flex; align-items:center; justify-content:center;}
+.front-top .cn{font-size:34px; font-weight:800;}
+.front-mid{padding:20px 16px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; position:relative;}
+.front-mid .en{font-size:34px; font-weight:800; letter-spacing:.5px;}
+.front-mid .ph{font-size:18px; color:var(--muted);}
+.front-mid .speak{font-size:14px; color:var(--primary-dark); cursor:pointer; margin-top:6px; display:inline-flex; gap:4px; align-items:center;}
+.front-judge{border-top:2px dashed var(--border); padding:14px; background:#fbfdff; border-radius:0 0 24px 24px;}
+
+.fog{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:opacity .4s;}
+.fog.big{background:rgba(120,140,160,.82); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);}
+.fog .fog-txt{color:#fff; font-weight:800; font-size:15px; background:rgba(0,0,0,.25); padding:6px 14px; border-radius:999px; letter-spacing:1px;}
+.fog.cleared{opacity:0; pointer-events:none;}
+
+.judge-btns{display:flex; gap:12px; justify-content:center; align-items:center;}
+.judge-btns .jb{flex:1; max-width:150px; min-height:56px; border-radius:16px; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:6px; transition:.15s;}
+.jb.yes{background:#e7f8ee; color:#1f9d55; border:2px solid #9fdcb7;}
+.jb.no{background:#ffecec; color:#e5484d; border:2px solid #ffb3b3;}
+.jb:hover{transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.10);}
+.jb:disabled{opacity:.4; cursor:not-allowed; transform:none;}
+.judge-hint{font-size:13px; color:var(--muted); text-align:center; margin-top:2px;}
+
+/* ===== 玫瑰图 ===== */
+.rose-wrap{display:flex; flex-direction:column; gap:10px; align-items:center;}
+.rose-wrap svg{max-width:100%; height:auto;}
+.rose-legend{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; font-size:13px;}
+.rose-legend .lg{display:flex; align-items:center; gap:4px; color:var(--muted);}
+.rose-legend .sw{width:14px; height:14px; border-radius:4px; display:inline-block; border:1px solid rgba(0,0,0,.08);}
+
+/* ===== 范围勾选行 & 悬停提示 ===== */
+.range-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+.range-g{font-weight:700; color:var(--text); min-width:56px; font-size:14px;}
+.rose-tip{position:fixed; z-index:300; background:#1f3a5f; color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; pointer-events:none; display:none; box-shadow:0 4px 12px rgba(0,0,0,.22); max-width:260px;}
+
+/* ===== 弹窗 ===== */
+.modal-mask{position:fixed; inset:0; background:rgba(31,58,95,.45); display:flex; align-items:center; justify-content:center; z-index:100; padding:16px; animation:fade .2s;}
+.modal{
+  background:#fff; border-radius:22px; border:4px solid #a4d7ff; box-shadow:0 20px 60px rgba(31,58,95,.4);
+  width:100%; max-width:480px; max-height:86vh; overflow:auto; padding:22px; position:relative;
+}
+.modal h3{margin:0 0 14px; font-size:20px; display:flex; align-items:center; gap:8px;}
+.modal .close{position:absolute; top:12px; right:12px; width:38px; height:38px; border-radius:50%; background:#f0f6fd; color:var(--muted); font-size:18px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+.modal-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:18px; flex-wrap:wrap;}
+.result-hero{text-align:center; padding:6px 0 14px;}
+.result-hero .big{font-size:52px; font-weight:800; color:var(--primary-dark);}
+.result-hero .label{color:var(--muted); font-size:14px;}
+.result-hero .enc{font-size:22px; font-weight:800; margin-top:8px; color:var(--accent-dark);}
+.result-hero .enc-en{font-size:15px; color:var(--muted); margin-top:2px;}
+
+/* ===== 提示条 ===== */
+.toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:#1f3a5f; color:#fff; padding:12px 20px; border-radius:14px; font-size:14px; opacity:0; transition:.3s; z-index:200; pointer-events:none; max-width:90%; text-align:center;}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.backup-tip{background:#fffbe8; border:2px solid #ffe0a3; border-radius:14px; padding:11px 14px; font-size:14px; color:#8a6200; margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+
+/* ===== 底部导航（移动端） ===== */
+.bottom-nav{display:none; position:fixed; bottom:0; left:0; right:0; z-index:40; background:#fff; border-top:2px solid var(--border); padding:6px 8px calc(6px + env(safe-area-inset-bottom));}
+.bottom-nav .bn{display:flex; justify-content:space-around;}
+.bottom-nav button{background:none; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; color:var(--muted); min-height:50px; padding:4px 6px; border-radius:10px; font-weight:600;}
+.bottom-nav button .ic{font-size:20px;}
+.bottom-nav button.active{color:var(--primary-dark); background:var(--primary-soft);}
+.bottom-nav button:disabled{opacity:.4;}
+
+/* ===== 响应式 ===== */
+@media (max-width:768px){
+  .nav{display:none;}
+  .bottom-nav{display:block;}
+  .app-header h1{font-size:24px;}
+  .prac-card .w{font-size:36px;}
+  table.wb{font-size:12px;}
+  table.wb th,table.wb td{padding:5px 4px;}
+}
+@media (min-width:769px){
+  .bottom-nav{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>🔤 心奇学单词</h1>
+  <div class="sub">Sophia &amp; George English Words Learning App</div>
+</header>
+
+<nav class="nav" id="topNav">
+  <button data-page="home" class="active">🏠 主界面</button>
+  <button data-page="wordbank">📚 词汇表</button>
+  <button data-page="practice">✏️ 练习</button>
+  <button data-page="assessment">🎯 测评</button>
+  <button data-page="settings">⚙️ 设置</button>
+</nav>
+
+<main>
+  <!-- ============ 主界面 ============ -->
+  <section class="page active" id="page-home"></section>
+
+  <!-- ============ 词汇表页 ============ -->
+  <section class="page" id="page-wordbank"></section>
+
+  <!-- ============ 练习页 ============ -->
+  <section class="page" id="page-practice"></section>
+
+  <!-- ============ 测评页 ============ -->
+  <section class="page" id="page-assessment"></section>
+
+  <!-- ============ 设置页 ============ -->
+  <section class="page" id="page-settings"></section>
+</main>
+
+<nav class="bottom-nav" id="bottomNav">
+  <div class="bn">
+    <button data-page="home" class="active"><span class="ic">🏠</span>主界面</button>
+    <button data-page="wordbank"><span class="ic">📚</span>词汇表</button>
+    <button data-page="practice"><span class="ic">✏️</span>练习</button>
+    <button data-page="assessment"><span class="ic">🎯</span>测评</button>
+    <button data-page="settings"><span class="ic">⚙️</span>设置</button>
+  </div>
+</nav>
+
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   心奇学单词 · 单文件应用  v1.0
+   ============================================================ */
+const APP_VERSION = '1.0';
+const STORE_KEY = 'wb_xinqi_state_v2';
+const VOCAB_VERSION = 'sh2022-1';
+
+/* ---------- 常量 ---------- */
+const SEM = {1:'上册', 2:'下册'};
+const GRADES = [3,4,5,6];
+const LEVEL = {1:'核心词汇', 2:'二级词', 3:'一般要求'};
+const LEVEL_TIP = {1:'核心词汇（粗体）', 2:'二级词（加星*）', 3:'一般要求'};
+const BAND = {
+  F:{label:'未测评', color:'#ffffff', weight:5,  acc:'—'},
+  E:{label:'≤20%',  color:'#f8a5c2', weight:10, acc:'0-20%'},
+  D:{label:'20-40%',color:'#ffb088', weight:5,  acc:'20-40%'},
+  C:{label:'40-80%',color:'#ffe08a', weight:3,  acc:'40-80%'},
+  B:{label:'80-95%',color:'#9ad0f5', weight:2,  acc:'80-95%'},
+  A:{label:'95-100%',color:'#a8e6a3', weight:1,  acc:'95-100%'}
+};
+const DEFAULT_ENCOURAGE = {
+  A:{en:'Excellent!',       zh:'太棒了，你是单词小达人！'},
+  B:{en:'Great job!',       zh:'真厉害，继续保持哦！'},
+  C:{en:'Good work!',       zh:'很不错，再练练就更好了！'},
+  D:{en:'Keep going!',      zh:'继续加油，你能行！'},
+  E:{en:'Don\'t give up!',  zh:'别灰心，多练几次就记住啦！'},
+  F:{en:'Let\'s practice!', zh:'一起再练一遍吧！'}
+};
+
+/* ---------- 沪教版（牛津上海版）3–6 年级教材词库 ---------- */
+// 掌握分级：1=核心词汇(粗体) 2=二级词(加星*) 3=一般要求
+// 词条：[英文, 音标, 释义, 造句, 扩展记忆, 年级, 册(1上2下), 单元, 分级]
+/* ---------- 沪教版（上海教育出版社 · 2022 课标修订版）三至六年级教材词库 ---------- */
+// 掌握分级：1=核心词汇(粗体) 2=二级词(加星*) 3=一般要求
+// 词条：[英文, 音标, 释义, 造句, 扩展记忆, 年级, 册(1上2下), 单元, 分级]
+// 单元：1-12 为单元；90=专有名词 91=星期 92=数字 93=月份 94=基数词 95=序数词
+/* ---------- 沪教版（上海教育出版社 · 2022 课标修订版）三至六年级教材词库 ---------- */
+// 掌握分级：1=核心词汇(粗体) 2=二级词(加星*) 3=一般要求
+// 词条：[英文, 音标, 释义, 造句, 扩展记忆, 年级, 册(1上2下), 单元, 分级]
+// 单元：1-12 为单元；90=专有名词 91=星期 92=数字 93=月份 94=基数词 95=序数词
+/* ---------- 沪教版（上海教育出版社 · 2022 课标修订版）三至六年级教材词库 ---------- */
+// 掌握分级：1=核心词汇(粗体) 2=二级词(加星*) 3=一般要求
+// 词条：[英文, 音标, 释义, 造句, 扩展记忆, 年级, 册(1上2下), 单元, 分级]
+// 单元：1-12 为单元；90=专有名词 91=星期 92=数字 93=月份 94=基数词 95=序数词
+const VOCAB = [
+['happy','/ˈhæpi/','开心的','I am very happy today.','词根 hap(运气) + -y；联想：运气好 → 开心。',3,1,1,1],
+['sad','/sæd/','伤心的','She is sad.','联想：s 像下垂的嘴角，表示难过。',3,1,1,1],
+['angry','/ˈæŋɡri/','生气的','He is angry.','联想：anger(生气) + -y。',3,1,1,1],
+['tired','/ˈtaɪəd/','疲倦的','I am tired.','联想：tire(使疲劳) + -d。',3,1,1,1],
+['boy','/bɔɪ/','男孩','He is a boy.','联想：boy 男孩，与 girl 相对。',3,1,1,1],
+['girl','/ɡɜːl/','女孩','She is a girl.','联想：girl 女孩，与 boy 相对。',3,1,1,1],
+['I','/aɪ/','我','I am a pupil.','',3,1,1,1],
+['am','/æm/','是','I am a student.','',3,1,1,1],
+['cold','/kəʊld/','冷的','It is cold today.','联想：cold 冷的，反义 hot。',3,1,1,2],
+['OK','/ˌəʊˈkeɪ/','对；好；行','I like OK.','',3,1,1,1],
+['find','/faɪnd/','找到','I find my book.','',3,1,1,2],
+['pencil','/ˈpensl/','铅笔','This is my pencil.','联想：pen(笔) + cil；铅笔芯是 c 形。',3,1,1,2],
+['too','/tuː/','也；太','I like too.','',3,1,1,1],
+['well','/wel/','好；就这样；好啦','I like well.','',3,1,1,2],
+['now','/naʊ/','现在','I must go now.','',3,1,1,2],
+['look at the blackboard','','看黑板','Let\'s look at the blackboard.','',3,1,1,3],
+['Good morning.','','上午好。','Good morning.','',3,1,1,3],
+['How are you?','','你好吗？','How are you?','',3,1,1,3],
+['Not so good.','','不太好。','Not so good.','',3,1,1,3],
+['Let\'s close the window.','','我们把窗户关上吧。','Let\'s close the window.','',3,1,1,3],
+['Fine, thank you.','','很好，谢谢。','Fine, thank you.','',3,1,1,3],
+['brother','/ˈbrʌðə(r)/','哥哥；弟弟','This is my brother.','联想：bro(兄) + ther；与 sister 相对。',3,1,2,1],
+['me','/miː/','我','This is me.','',3,1,2,1],
+['family','/ˈfæməli/','家庭','I love my family.','联想：father and mother I love you 首字母 F-A-M-I-L-Y。',3,1,2,1],
+['my','/maɪ/','我的','This is my bag.','',3,1,2,1],
+['name','/neɪm/','名字','My name is Kitty.','',3,1,2,1],
+['is','/ɪz/','是','He is my friend.','',3,1,2,1],
+['this','/ðɪs/','这；这个','This is a cat.','',3,1,2,1],
+['and','/ænd/','和','You and I.','',3,1,2,1],
+['she','/ʃiː/','她','She is my sister.','',3,1,2,1],
+['he','/hiː/','他','He is my brother.','',3,1,2,1],
+['who','/huː/','谁','Who is she?','',3,1,2,1],
+['twin','/twɪn/','双胞胎之一','They are twins.','联想：tw(二) + in，双胞胎成双。',3,1,2,1],
+['big','/bɪɡ/','大的','The elephant is big.','',3,1,2,1],
+['family tree','','家庭树','I like family tree.','',3,1,2,3],
+['Hi.','','嗨，你好。','Hi.','',3,1,2,3],
+['grandfather (grandpa)','/ˈɡrænfɑːðə(r)/','（外）祖父；爷爷；外公','I like grandfather.','构词：grand(祖辈) + father(爸爸)。',3,1,2,1],
+['grandmother (grandma)','/ˈɡrænmʌðə(r)/','（外）祖母；奶奶；外婆','I like grandmother.','构词：grand(祖辈) + mother(妈妈)。',3,1,2,1],
+['father','/ˈfɑːðə(r)/','爸爸','My father is tall.','',3,1,2,1],
+['mother','/ˈmʌðə(r)/','妈妈','My mother is kind.','',3,1,2,1],
+['sister','/ˈsɪstə(r)/','姐姐；妹妹','This is my sister.','联想：sis + ter，与 brother 相对。',3,1,2,1],
+['head','/hed/','头','This is my head.','联想：head 头，hat(帽子)戴在 head 上。',3,1,3,1],
+['eye','/aɪ/','眼睛','I have two eyes.','联想：e 像眼睛，中间 y 像鼻子。',3,1,3,1],
+['ear','/ɪə(r)/','耳朵','The rabbit has long ears.','联想：ear 耳朵，与 hear(听见) 形近。',3,1,3,1],
+['mouth','/maʊθ/','嘴巴','Open your mouth.','联想：mouth 嘴，与 month(月) 形近易混。',3,1,3,1],
+['hair','/heə(r)/','头发','My hair is black.','联想：hair 头发，与 chair(椅子) 押韵。',3,1,3,1],
+['nose','/nəʊz/','鼻子','This is my nose.','联想：nose 鼻子，与 rose(玫瑰) 押韵。',3,1,3,1],
+['face','/feɪs/','脸','Wash your face.','联想：face 脸，与 race(比赛) 押韵。',3,1,3,1],
+['a (an)','/ə/','一；一个','I like a.','',3,1,3,1],
+['haircut','/ˈheəkʌt/','理发；发型','I like haircut.','',3,1,3,3],
+['your','/jɔː(r)/','你的；你们的','This is your pen.','',3,1,3,1],
+['long','/lɒŋ/','长的','My hair is long.','联想：long 长，反义 short。',3,1,3,1],
+['but','/bʌt/','但是','It is small but nice.','',3,1,3,1],
+['like','/laɪk/','喜欢','I like apples.','',3,1,3,1],
+['see','/siː/','看见','I can see a bird.','联想：see 看见，与 sea(大海) 同音。',3,1,3,1],
+['sit','/sɪt/','坐','Please sit down.','联想：sit 坐，反义 stand。',3,1,3,1],
+['on','/ɒn/','在……上','I like on.','',3,1,3,2],
+['chair','/tʃeə(r)/','椅子','Sit on the chair.','联想：chair 椅子，与 hair 押韵。',3,1,3,2],
+['please','/pliːz/','请','Sit down, please.','词源：pleas(取悦) + -e；请、令高兴。',3,1,3,1],
+['you','/juː/','你；你们','How are you?','',3,1,3,1],
+['have','/hæv/','有','I have a book.','联想：have 有，第三人称单数 has。',3,1,3,1],
+['short','/ʃɔːt/','短的；个子矮的','My pencil is short.','联想：short 短/矮，反义 long/tall。',3,1,3,1],
+['mum','/mʌm/','妈妈','This is my mum.','',3,1,3,1],
+['You look great!','','你看起来很棒！','You look great!','',3,1,3,3],
+['skip','/skɪp/','跳绳','I can skip.','联想：skip 跳绳，与 slip(滑) 形近。',3,1,4,1],
+['run','/rʌn/','跑','I can run fast.','联想：run 跑，与 fun(乐趣) 押韵。',3,1,4,1],
+['fly a kite','','放风筝','Let\'s fly a kite.','',3,1,4,3],
+['skateboard','/ˈskeɪtbɔːd/','滑滑板','I can skateboard.','构词：skate(滑) + board(板)。',3,1,4,1],
+['ride a bike','','骑自行车','Let\'s ride a bike.','',3,1,4,3],
+['child (复数children)','/tʃaɪld/','孩子','The child is happy.','',3,1,4,1],
+['in','/ɪn/','在……里面','The cat is in the box.','',3,1,4,1],
+['the','/ðə/','（表示特指）','This is the sun.','',3,1,4,1],
+['park','/pɑːk/','公园','We play in the park.','',3,1,4,1],
+['are','/ɑː(r)/','是','They are my friends.','',3,1,4,1],
+['can','/kæn/','能够','This is a can.','',3,1,4,1],
+['fun','/fʌn/','有趣的；乐趣','It is great fun.','',3,1,4,1],
+['fast','/fɑːst/','快的；快；快速','The train is fast.','联想：fast 快，反义 slow。',3,1,4,2],
+['help','/help/','帮助','Can you help me?','',3,1,4,2],
+['together','/təˈɡeðə(r)/','一起','We play together.','构词：to + gether。',3,1,4,3],
+['get','/ɡet/','去取；得到；获得','I get up early.','',3,1,4,2],
+['bring','/brɪŋ/','带来','Please bring a book.','联想：bring 带来，反义 take 带走。',3,1,4,1],
+['jump','/dʒʌmp/','跳','The rabbit can jump.','联想：jump 跳，u 像向上跳的弧线。',3,1,4,1],
+['Hello.','','喂，你好。','Hello.','',3,1,4,3],
+['milk','/mɪlk/','牛奶','I drink milk.','联想：milk 牛奶，与 silk(丝绸) 押韵。',3,1,5,1],
+['juice','/dʒuːs/','果汁','I like juice.','联想：juice 果汁，uice 组合。',3,1,5,1],
+['tomato','/təˈmɑːtəʊ/','西红柿','This is a tomato.','联想：tomato 西红柿，与 potato 押韵。',3,1,5,1],
+['carrot','/ˈkærət/','胡萝卜','The rabbit likes carrots.','联想：carrot 胡萝卜，rabbit 最爱。',3,1,5,1],
+['apple','/ˈæpl/','苹果','I eat an apple.','联想：A 像苹果把儿，apple 苹果。',3,1,5,1],
+['banana','/bəˈnɑːnə/','香蕉','This is a banana.','联想：banana 里三个 a，像三根香蕉。',3,1,5,1],
+['grape','/ɡreɪp/','葡萄','The grape is sweet.','联想：grape 葡萄，一串串 g。',3,1,5,1],
+['meat','/miːt/','肉','I like meat.','联想：meat 肉，与 meet(遇见) 同音。',3,1,5,1],
+['fish','/fɪʃ/','鱼；鱼肉','The fish swims.','联想：fish 鱼，与 dish(盘子) 押韵。',3,1,5,1],
+['funny','/ˈfʌni/','有趣的','It is a funny story.','',3,1,5,3],
+['food','/fuːd/','食物','The food is nice.','联想：food 食物，oo 像两个鸡蛋。',3,1,5,2],
+['what','/wɒt/','什么','What is this?','',3,1,5,1],
+['some','/sʌm/','一些','I have some books.','',3,1,5,1],
+['fruit','/fruːt/','水果','Fruit is good for you.','联想：fruit 水果，与 foot(脚) 形近。',3,1,5,1],
+['vegetable','/ˈvedʒtəbl/','蔬菜','I eat vegetables.','构词：veget(植物) + -able。',3,1,5,1],
+['cut','/kʌt/','切','I cut the paper.','',3,1,5,1],
+['we','/wiː/','我们','We are friends.','',3,1,5,2],
+['no','/nəʊ/','不；不是','No, thank you.','',3,1,5,1],
+['for','/fɔː(r)/','（表示对象、用途等）给；对','I like for.','',3,1,5,2],
+['yes','/jes/','是的','Yes, please.','',3,1,5,1],
+['chicken','/ˈtʃɪkɪn/','鸡肉','I like chicken.','',3,1,5,1],
+['soup','/suːp/','汤','The soup is hot.','',3,1,5,1],
+['squirrel','/ˈskwɪrəl/','松鼠','The squirrel is cute.','联想：squirrel 松鼠，qu 发 /kw/。',3,1,6,1],
+['rabbit','/ˈræbɪt/','兔子','The rabbit is white.','联想：rabbit 兔子，双写 b。',3,1,6,1],
+['cat','/kæt/','猫','The cat is small.','',3,1,6,1],
+['mouse (复数mice)','/maʊs/','老鼠','The mouse is small.','联想：mouse 老鼠，复数 mice（不规则）。',3,1,6,1],
+['dog','/dɒɡ/','狗','I have a dog.','联想：dog 狗，与 log(木头) 押韵。',3,1,6,1],
+['frog','/frɒɡ/','青蛙','The frog is green.','联想：frog 青蛙，与 fog(雾) 形近。',3,1,6,3],
+['day','/deɪ/','白天；一天','What a nice day!','',3,1,6,2],
+['it','/ɪt/','它','It is a cat.','',3,1,6,1],
+['nice','/naɪs/','美好的','You look nice.','',3,1,6,1],
+['has','/hæz/','有（have的第三人称单数）','She has a book.','',3,1,6,1],
+['small','/smɔːl/','小的','The bird is small.','',3,1,6,1],
+['cute','/kjuːt/','可爱的','The baby is cute.','',3,1,6,1],
+['that','/ðæt/','那；那个','That is a dog.','',3,1,6,1],
+['they','/ðeɪ/','他们；她们；它们','They are my friends.','',3,1,6,1],
+['tail','/teɪl/','尾巴','The dog has a long tail.','',3,1,6,1],
+['two','/tuː/','二；二个（人或物）','I have two hands.','联想：two 二，与 too(也) 同音。',3,1,6,1],
+['animal','/ˈænɪml/','动物','I like animals.','词根：anim(生命) + -al。',3,1,6,1],
+['eat','/iːt/','吃','I eat an apple.','',3,1,6,2],
+['bad','/bæd/','坏的','It is not bad.','',3,1,6,2],
+['bug','/bʌɡ/','虫子','Look! A bug.','',3,1,6,1],
+['sunny','/ˈsʌni/','晴朗的','It is sunny today.','构词：sun(太阳) + -ny。',3,1,7,1],
+['sun','/sʌn/','太阳','The sun is bright.','',3,1,7,1],
+['windy','/ˈwɪndi/','刮风的','It is windy today.','构词：wind(风) + -y。',3,1,7,1],
+['wind','/wɪnd/','风','The wind blows.','',3,1,7,1],
+['rainy','/ˈreɪni/','下雨的','It is rainy.','构词：rain(雨) + -y。',3,1,7,1],
+['rain','/reɪn/','雨；下雨','It is raining.','',3,1,7,1],
+['cloudy','/ˈklaʊdi/','多云的','It is cloudy.','构词：cloud(云) + -y。',3,1,7,1],
+['cloud','/klaʊd/','云','The cloud is white.','',3,1,7,1],
+['different','/ˈdɪfrənt/','不同的','We are different.','',3,1,7,3],
+['weather','/ˈweðə(r)/','天气','How is the weather?','联想：weather 天气，与 whether(是否) 同音。',3,1,7,1],
+['how','/haʊ/','怎样；如何','How are you?','',3,1,7,1],
+['today','/təˈdeɪ/','今天','Today is Monday.','',3,1,7,1],
+['hat','/hæt/','帽子','I wear a hat.','联想：hat 帽子，与 cat(猫) 押韵。',3,1,7,1],
+['plant','/plɑːnt/','植物','I plant a tree.','联想：plant 植物/种植。',3,1,7,2],
+['hot','/hɒt/','热的','It is hot in summer.','联想：hot 热，反义 cold。',3,1,7,2],
+['very','/ˈveri/','非常','I am very happy.','',3,1,7,1],
+['go to the park','','去公园','Let\'s go to the park.','',3,1,7,3],
+['Hooray!','','好极了！','Hooray!','',3,1,7,3],
+['Oh, dear!','','哦，天哪！','Oh, dear!','',3,1,7,3],
+['cake','/keɪk/','蛋糕','The cake is sweet.','联想：cake 蛋糕，与 bake(烤) 押韵。',3,1,8,1],
+['candle','/ˈkændl/','蜡烛','There are ten candles.','联想：candle 蜡烛，与 candy(糖) 形近。',3,1,8,1],
+['gift','/ɡɪft/','礼物','This is a gift for you.','联想：gift 礼物，与 give(给) 同源。',3,1,8,1],
+['toy plane','','玩具飞机','I like toy plane.','',3,1,8,1],
+['doll','/dɒl/','玩具娃娃','This is my doll.','联想：doll 娃娃，与 ball 押韵。',3,1,8,1],
+['card','/kɑːd/','卡片','I make a card.','联想：card 卡片，与 car(汽车) 形近。',3,1,8,1],
+['noodles','/ˈnuːdlz/','面条','I like noodles.','联想：noodles 面条，像两条 n。',3,1,8,1],
+['come','/kʌm/','来','Please come here.','联想：come 来，反义 go。',3,1,8,1],
+['love','/lʌv/','爱','I love my family.','联想：love 爱，o 像一颗心。',3,1,8,1],
+['dad','/dæd/','爸爸','This is my dad.','',3,1,8,1],
+['afternoon','/ˌɑːftəˈnuːn/','下午','Good afternoon!','',3,1,8,1],
+['share','/ʃeə(r)/','分享','We share the toys.','联想：share 分享，与 care(关心) 押韵。',3,1,8,2],
+['his','/hɪz/','他的','This is his book.','',3,1,8,1],
+['evening','/ˈiːvnɪŋ/','傍晚；晚上','Good evening!','',3,1,8,1],
+['ten years old','','十岁','I like ten years old.','',3,1,8,3],
+['go out','','出去','Let\'s go out.','',3,1,8,3],
+['Happy birthday!','','生日快乐！','Happy birthday!','',3,1,8,3],
+['What a lovely picture!','','多么可爱的一幅画啊！','What a lovely picture!','',3,1,8,3],
+['China','/ˈtʃaɪnə/','中国','I live in China.','',3,1,90,3],
+['Thailand','/ˈtaɪlænd/','泰国','I like Thailand.','',3,1,90,3],
+['UK','/ˌjuː ˈkeɪ/','英国','I like UK.','',3,1,90,3],
+['our','/ˈaʊə(r)/','我们的','This is our school.','',3,2,1,1],
+['read','/riːd/','阅读','I read books.','联想：read 读，与 bread(面包) 押韵。',3,2,1,1],
+['sing','/sɪŋ/','唱歌','I can sing.','联想：sing 唱，与 song(歌) 相关。',3,2,1,1],
+['paint','/peɪnt/','用颜料画','I like to paint.','',3,2,1,1],
+['dance','/dɑːns/','跳舞','She can dance.','联想：dance 跳舞，a 像舞姿。',3,2,1,1],
+['swim','/swɪm/','游泳','I can swim.','联想：swim 游泳，w 像波浪。',3,2,1,1],
+['play basketball','','打篮球','Let\'s play basketball.','',3,2,1,1],
+['play ping-pong','','打乒乓球','Let\'s play ping-pong.','',3,2,1,1],
+['play football','','踢足球','Let\'s play football.','',3,2,1,1],
+['Ms','/mɪz/','女士','This is Ms Li.','',3,2,1,1],
+['talk','/tɔːk/','讨论；谈论','We talk in class.','',3,2,1,1],
+['hobby','/ˈhɒbi/','业余爱好','My hobby is reading.','',3,2,1,3],
+['do','/duː/','做，干，办（某事）','I do my homework.','',3,2,1,1],
+['free','/friː/','空闲的','I am free now.','',3,2,1,1],
+['music','/ˈmjuːzɪk/','音乐','I like Music.','词根：muse(缪斯，文艺女神) + -ic。',3,2,1,2],
+['favourite','/ˈfeɪvərɪt/','最喜欢的','My favourite food is rice.','构词：favour(偏爱) + -ite。',3,2,1,1],
+['sport','/spɔːt/','体育运动','I like sport.','联想：sport 运动，与 port(港口) 形近。',3,2,1,1],
+['play a game','','做游戏','Let\'s play a game.','',3,2,2,1],
+['take a photo','','拍照','Let\'s take a photo.','',3,2,2,1],
+['row a boat','','划船','Let\'s row a boat.','',3,2,2,3],
+['tell a story','','讲故事','Let\'s tell a story.','',3,2,2,1],
+['boat','/bəʊt/','小船','This is a boat.','联想：boat 小船，o 像船身。',3,2,2,1],
+['sandcastle','/ˈsændkɑːsl/','沙堡','We make a sandcastle.','构词：sand(沙) + castle(城堡)。',3,2,2,3],
+['great','/ɡreɪt/','很好的；很棒的','That is great!','',3,2,2,1],
+['sand','/sænd/','沙子','The sand is soft.','',3,2,2,3],
+['join','/dʒɔɪn/','参与；加入到……之中','Can I join you?','',3,2,2,3],
+['meet','/miːt/','（与……）见面','I meet my friend.','联想：meet 迎接，与 meat 同音。',3,2,2,1],
+['her','/hɜː(r)/','她的','This is her bag.','联想：her 她/她的，与 he 相关。',3,2,2,1],
+['us','/ʌs/','我们','Come with us.','',3,2,2,1],
+['we','/wiː/','我们','We are friends.','',3,2,2,1],
+['play in the sand','','玩沙子','Let\'s play in the sand.','',3,2,2,3],
+['play beach volleyball','','玩沙滩排球','Let\'s play beach volleyball.','',3,2,2,3],
+['sweater','/ˈswetə(r)/','毛衣','This is my sweater.','构词：sweat(汗) + -er，保暖出汗的毛衣。',3,2,3,1],
+['T-shirt','/ˈtiːʃɜːt/','T恤衫；短袖汗衫','I like T-shirt.','',3,2,3,3],
+['skirt','/skɜːt/','短裙；半身裙','The skirt is red.','联想：skirt 短裙，与 shirt 形近。',3,2,3,1],
+['dress','/dres/','连衣裙','She wears a dress.','联想：dress 连衣裙，与 address(地址) 形近。',3,2,3,1],
+['shirt','/ʃɜːt/','衬衫','The shirt is white.','联想：shirt 衬衫，与 skirt 形近易混。',3,2,3,1],
+['trousers','/ˈtraʊzəz/','裤子','These are my trousers.','联想：trousers 裤子，成双成对用复数。',3,2,3,1],
+['shorts','/ʃɔːts/','短裤','I wear shorts.','构词：short(短) + -s。',3,2,3,1],
+['coat','/kəʊt/','外套；外衣；大衣','This is my coat.','联想：coat 外套，与 boat(船) 押韵。',3,2,3,1],
+['cap','/kæp/','帽子','I wear a cap.','',3,2,3,1],
+['shoes','/ʃuːz/','鞋子','I have new shoes.','联想：shoes 鞋，成双用复数。',3,2,3,1],
+['student','/ˈstjuːdnt/','学生','I am a student.','词根：study(学习) + -ent(人)。',3,2,3,1],
+['wear','/weə(r)/','穿；戴；佩戴','I wear a coat.','联想：wear 穿，与 where(哪里) 同音。',3,2,3,1],
+['school','/skuːl/','学校','I go to school.','词根：schol(学习) + ool。',3,2,3,1],
+['different','/ˈdɪfrənt/','不同的','We are different.','',3,2,3,3],
+['clothes','/kləʊðz/','衣服；服装','These are my clothes.','',3,2,3,1],
+['uniform','/ˈjuːnɪfɔːm/','制服；校服','We wear a uniform.','构词：uni(单一) + form(形式)。',3,2,3,3],
+['whose','/huːz/','谁的','Whose book is this?','联想：whose 谁的，与 who 相关。',3,2,3,1],
+['world','/wɜːld/','世界','The world is big.','联想：world 世界，与 word(词) 形近。',3,2,3,1],
+['around the world','','在世界各地','I like around the world.','',3,2,3,3],
+['take a look','','看一看','Let\'s take a look.','',3,2,3,2],
+['a pair of','','一条；一双；一对','I like a pair of.','',3,2,3,2],
+['grass','/ɡrɑːs/','草','The grass is green.','联想：grass 草，与 glass(玻璃) 形近。',3,2,4,1],
+['river','/ˈrɪvə(r)/','河；江','The river is long.','联想：river 河，r 像蜿蜒的河道。',3,2,4,1],
+['hear','/hɪə(r)/','听见；听到','I can hear the bird.','联想：hear 听见，与 ear(耳朵) 相关。',3,2,4,1],
+['bird','/bɜːd/','鸟','The bird sings.','联想：bird 鸟，b 像鸟的身体。',3,2,4,1],
+['duck','/dʌk/','鸭子','The duck swims.','联想：duck 鸭子，与 luck(运气) 押韵。',3,2,4,1],
+['bee','/biː/','蜜蜂','The bee makes honey.','联想：bee 蜜蜂，与 be(是) 同音。',3,2,4,1],
+['lake','/leɪk/','湖；湖泊','The lake is big.','联想：lake 湖，与 cake 押韵。',3,2,4,1],
+['chirp','/tʃɜːp/','（鸟叫声）','I like chirp.','',3,2,4,3],
+['buzz','/bʌz/','（蜜蜂声）','I like buzz.','',3,2,4,3],
+['by','/baɪ/','在……旁边','I sit by the window.','',3,2,4,1],
+['swish','/swɪʃ/','（风声）','I like swish.','',3,2,4,3],
+['blow','/bləʊ/','刮；吹','The wind blows.','联想：blow 吹，与 slow(慢) 押韵。',3,2,4,1],
+['quack','/kwæk/','（鸭子叫声）','I like quack.','',3,2,4,3],
+['past','/pɑːst/','经过','He walks past me.','',3,2,4,3],
+['walk','/wɔːk/','走；行走','I walk to school.','联想：walk 走，与 talk(说) 押韵。',3,2,4,1],
+['along','/əˈlɒŋ/','沿着；顺着','I walk along the path.','构词：a + long(长)，沿着。',3,2,4,3],
+['path','/pɑːθ/','小路；小径','Walk along the path.','联想：path 小路，与 bath 押韵。',3,2,4,3],
+['pitter-patter','/ˈpɪtə ˌpætə/','（雨声）','I like pitter-patter.','',3,2,4,3],
+['time','/taɪm/','时间','What time is it?','联想：time 时间，与 mine(我的) 押韵。',3,2,4,1],
+['again','/əˈɡen/','再一次；又一次','Please say it again.','构词：a + gain，再一次。',3,2,4,1],
+['sound','/saʊnd/','声音','I can hear a sound.','联想：sound 声音，与 round 押韵。',3,2,4,3],
+['go outside','','去外面','Let\'s go outside.','',3,2,4,3],
+['go home','','回家','Let\'s go home.','',3,2,4,2],
+['where','/weə(r)/','哪里','Where is my bag?','联想：where 哪里，与 there 相对。',3,2,5,1],
+['colour','/ˈkʌlə(r)/','颜色','What colour is it?','联想：colour 颜色（英式），美式 color。',3,2,5,1],
+['pink','/pɪŋk/','粉红色；粉红色的','The flower is pink.','联想：pink 粉色，与 ink(墨水) 押韵。',3,2,5,1],
+['blue','/bluː/','蓝色；蓝色的','The sky is blue.','联想：blue 蓝色，与 glue(胶水) 押韵。',3,2,5,1],
+['red','/red/','红色；红色的','The packet is red.','联想：red 红色，r 像燃烧的火苗。',3,2,5,1],
+['brown','/braʊn/','棕色；棕色的','The bear is brown.','',3,2,5,1],
+['black','/blæk/','黑色；黑色的','My hair is black.','联想：black 黑色，与 back(背) 形近。',3,2,5,1],
+['white','/waɪt/','白色；白色的','The cloud is white.','联想：white 白色，反义 black。',3,2,5,1],
+['purple','/ˈpɜːpl/','紫色；紫色的','The grape is purple.','',3,2,5,3],
+['green','/ɡriːn/','绿色；绿色的','The tree is green.','联想：green 绿色，与 grass 草相关。',3,2,5,1],
+['orange','/ˈɒrɪndʒ/','橘黄色；橘黄色的','The orange is sweet.','联想：orange 橘子/橙色。',3,2,5,1],
+['yellow','/ˈjeləʊ/','黄色；黄色的','The banana is yellow.','联想：yellow 黄色，与 pillow(枕头) 押韵。',3,2,5,1],
+['snow','/snəʊ/','雪','It snows in winter.','联想：snow 雪，与 slow(慢) 形近。',3,2,5,2],
+['tree','/triː/','树；树木','The tree is tall.','联想：tree 树，与 three(三) 形近。',3,2,5,1],
+['out','/aʊt/','在室外','Let us go out.','联想：out 外面，反义 in。',3,2,5,1],
+['garden','/ˈɡɑːdn/','花园','The garden is beautiful.','构词：gard(围) + -en，有围墙的花园。',3,2,5,1],
+['up','/ʌp/','向上；在上面','Stand up, please.','',3,2,5,1],
+['there (is, are)','/ðeə(r)/','（表示存在或发生）','There is a cat.','',3,2,5,1],
+['butterfly','/ˈbʌtəflaɪ/','蝴蝶','The butterfly is beautiful.','构词：butter(黄油) + fly(飞)，蝴蝶。',3,2,5,3],
+['lizard','/ˈlɪzəd/','蜥蜴','The lizard is small.','联想：lizard 蜥蜴，与 wizard 押韵。',3,2,5,3],
+['now','/naʊ/','现在','I must go now.','',3,2,5,1],
+['problem','/ˈprɒbləm/','难题；困难','What is the problem?','词根：pro(前) + blem，难题。',3,2,5,3],
+['sky','/skaɪ/','天；天空','The sky is blue.','联想：sky 天空，与 ski(滑雪) 形近。',3,2,5,3],
+['dark','/dɑːk/','黑暗的；昏暗的','It is dark at night.','联想：dark 黑暗，反义 bright。',3,2,5,3],
+['night','/naɪt/','夜晚','Good night!','联想：night 夜晚，与 knight(骑士) 同音。',3,2,5,1],
+['colourful','/ˈkʌləfl/','五彩缤纷的','The flowers are colourful.','',3,2,5,3],
+['firework','/ˈfaɪəwɜːk/','烟花','We watch fireworks.','构词：fire + work。',3,2,5,3],
+['kitchen','/ˈkɪtʃɪn/','厨房','Mum is in the kitchen.','联想：kitchen 厨房，与 chicken(鸡) 押韵。',3,2,6,1],
+['bathroom','/ˈbɑːθruːm/','浴室；盥洗室','The bathroom is clean.','构词：bath(洗澡) + room(房间)。',3,2,6,1],
+['bedroom','/ˈbedruːm/','卧室','This is my bedroom.','构词：bed(床) + room(房间)。',3,2,6,1],
+['dining room','','餐厅','I like dining room.','',3,2,6,1],
+['living room','','客厅；起居室','I like living room.','构词：living(生活) + room。',3,2,6,1],
+['study','/ˈstʌdi/','书房','This is my study.','联想：study 书房/学习。',3,2,6,1],
+['desk','/desk/','书桌','The book is on the desk.','联想：desk 书桌，与 disk(光盘) 形近。',3,2,6,1],
+['chair','/tʃeə(r)/','椅子','Sit on the chair.','联想：chair 椅子，与 hair 押韵。',3,2,6,1],
+['sofa','/ˈsəʊfə/','长沙发','I sit on the sofa.','联想：sofa 沙发，音译词。',3,2,6,1],
+['room','/ruːm/','房间','This is my room.','联想：room 房间，oo 像两扇门。',3,2,6,1],
+['from','/frɒm/','从；来自','I am from China.','联想：from 从/来自，与 form(形式) 形近。',3,2,6,1],
+['new','/njuː/','新的','I have a new book.','联想：new 新的，反义 old。',3,2,6,1],
+['dear','/dɪə(r)/','亲爱的','Dear friend.','联想：dear 亲爱的，与 deer(鹿) 同音。',3,2,6,1],
+['show','/ʃəʊ/','给……看；展示','Let me show you.','联想：show 展示，与 snow(雪) 形近。',3,2,6,1],
+['write','/raɪt/','写字；写作','I write a letter.','联想：write 写，与 right(正确) 同音。',3,2,6,1],
+['window','/ˈwɪndəʊ/','窗；窗户','Open the window.','联想：window 窗户，wind(风) + ow。',3,2,6,1],
+['wish','/wɪʃ/','祝愿','Make a wish.','联想：wish 愿望，与 fish 押韵。',3,2,6,1],
+['in front of','','在……前面','I like in front of.','',3,2,6,2],
+['look out of','','向……外看','Let\'s look out of.','',3,2,6,2],
+['teddy bear','','泰迪熊','I like teddy bear.','',3,2,6,2],
+['welcome','/ˈwelkəm/','欢迎','Welcome to my home!','构词：wel(好) + come(来)。',3,2,7,1],
+['classroom','/ˈklɑːsruːm/','教室','This is our classroom.','构词：class(班级) + room(房间)。',3,2,7,1],
+['computer room','','电脑室','I like computer room.','',3,2,7,1],
+['toilet','/ˈtɔɪlət/','厕所；卫生间；盥洗室','Where is the toilet?','联想：toilet 厕所，to + let。',3,2,7,1],
+['sports ground','','操场','I like sports ground.','',3,2,7,3],
+['library','/ˈlaɪbrəri/','图书馆','I read in the library.','词根：libr(书) + -ary。',3,2,7,1],
+['office','/ˈɒfɪs/','办公室','The teacher is in the office.','联想：office 办公室，与 officer 相关。',3,2,7,3],
+['picture','/ˈpɪktʃə(r)/','图画','This is a picture.','联想：picture 图画，与 nature 押韵。',3,2,7,1],
+['tomorrow','/təˈmɒrəʊ/','明天','See you tomorrow.','联想：tomorrow 明天，双写 r。',3,2,7,1],
+['also','/ˈɔːlsəʊ/','也','I also like it.','联想：also 也，与 so 同源。',3,2,7,1],
+['schoolbag','/ˈskuːlbæɡ/','书包','This is my schoolbag.','构词：school(学校) + bag(包)。',3,2,7,1],
+['ruler','/ˈruːlə(r)/','直尺','The ruler is long.','联想：ruler 尺子，rule(规则) + -er。',3,2,7,1],
+['pencil','/ˈpensl/','铅笔','This is my pencil.','联想：pen(笔) + cil；铅笔芯是 c 形。',3,2,7,1],
+['pen','/pen/','钢笔','I write with a pen.','联想：pen 钢笔，p 像笔尖。',3,2,7,1],
+['art room','','美术教室','I like art room.','',3,2,7,2],
+['swimming pool','','游泳池','I like swimming pool.','',3,2,7,3],
+['lots of','','大量的；很多','I like lots of.','',3,2,7,2],
+['Come and see!','','来看一看！','Come and see!','',3,2,7,3],
+['Children\'s Day','','儿童节','I like Children\'s Day.','',3,2,8,3],
+['go to the beach','','去海滩','Let\'s go to the beach.','',3,2,8,1],
+['go to the cinema','','（去电影院）看电影','Let\'s go to the cinema.','',3,2,8,1],
+['go to the park','','去公园','Let\'s go to the park.','',3,2,8,1],
+['go to the zoo','','去动物园','Let\'s go to the zoo.','',3,2,8,1],
+['go to the museum','','去博物馆','Let\'s go to the museum.','',3,2,8,3],
+['elephant','/ˈelɪfənt/','象','The elephant is big.','联想：elephant 大象，ele + phant。',3,2,8,1],
+['film','/fɪlm/','电影','This is a film.','联想：film 胶卷/电影。',3,2,8,1],
+['pizza','/ˈpiːtsə/','比萨饼；意大利饼','I like pizza.','音译词：pizza 比萨饼。',3,2,8,3],
+['shop','/ʃɒp/','商店','I go to the shop.','联想：shop 商店，与 stop 形近。',3,2,8,1],
+['eat','/iːt/','吃','I eat an apple.','',3,2,8,1],
+['classmate','/ˈklɑːsmeɪt/','同班同学','He is my classmate.','构词：class(班) + mate(伙伴)。',3,2,8,3],
+['do a survey','','做调查','Let\'s do a survey.','',3,2,8,3],
+['science museum','','科技馆','I like science museum.','',3,2,8,3],
+['Monday','/ˈmʌndeɪ/','星期一','Today is Monday.','',3,2,91,3],
+['Tuesday','/ˈtjuːzdeɪ/','星期二','Today is Tuesday.','',3,2,91,3],
+['Wednesday','/ˈwenzdeɪ/','星期三','Today is Wednesday.','',3,2,91,3],
+['Thursday','/ˈθɜːzdeɪ/','星期四','Today is Thursday.','',3,2,91,3],
+['Friday','/ˈfraɪdeɪ/','星期五','Today is Friday.','',3,2,91,3],
+['Saturday','/ˈsætədeɪ/','星期六','Today is Saturday.','',3,2,91,3],
+['Sunday','/ˈsʌndeɪ/','星期日','Today is Sunday.','',3,2,91,3],
+['one','/wʌn/','一','I have one book.','联想：one 一，o 像数字 0，n 像门。',3,2,92,3],
+['two','/tuː/','二','I have two hands.','联想：two 二，与 too(也) 同音。',3,2,92,3],
+['three','/θriː/','三','I have three pens.','联想：three 三，与 tree(树) 形近。',3,2,92,3],
+['four','/fɔː(r)/','四','There are four cats.','联想：four 四，与 for(为了) 同音。',3,2,92,3],
+['five','/faɪv/','五','I have five fingers.','联想：five 五，f 像一只手五根手指。',3,2,92,3],
+['six','/sɪks/','六','I am six years old.','联想：six 六，与 fix(修理) 形近。',3,2,92,3],
+['seven','/ˈsevn/','七','Seven days a week.','联想：seven 七，与 heaven(天堂) 押韵。',3,2,92,3],
+['eight','/eɪt/','八','I have eight books.','联想：eight 八，与 weight(重量) 押韵。',3,2,92,3],
+['nine','/naɪn/','九','I am nine.','联想：nine 九，与 line(线) 押韵。',3,2,92,3],
+['ten','/ten/','十','I have ten fingers.','联想：ten 十，与 pen 押韵。',3,2,92,3],
+['eleven','/ɪˈlevn/','十一','I am eleven years old.','联想：eleven 十一，e + leven。',3,2,92,3],
+['twelve','/twelv/','十二','There are twelve months.','联想：twelve 十二，tw + elve。',3,2,92,3],
+['thirteen','/ˌθɜːˈtiːn/','十三','I am thirteen.','',3,2,92,3],
+['fourteen','/ˌfɔːˈtiːn/','十四','I am fourteen.','',3,2,92,3],
+['fifteen','/ˌfɪfˈtiːn/','十五','I am fifteen.','',3,2,92,3],
+['sixteen','/ˌsɪksˈtiːn/','十六','I am sixteen.','',3,2,92,3],
+['seventeen','/ˌsevnˈtiːn/','十七','I am seventeen.','',3,2,92,3],
+['eighteen','/ˌeɪˈtiːn/','十八','I am eighteen.','',3,2,92,3],
+['nineteen','/ˌnaɪnˈtiːn/','十九','I am nineteen.','',3,2,92,3],
+['twenty','/ˈtwenti/','二十','I am twenty.','',3,2,92,3],
+['city','/ˈsɪti/','城市','Shanghai is a big city.','联想：city 城市，与 kitty 押韵。',4,1,1,1],
+['building','/ˈbɪldɪŋ/','建筑物；楼房','The building is tall.','构词：build(建造) + -ing。',4,1,1,1],
+['flat','/flæt/','公寓','We live in a flat.','联想：flat 公寓/平的。',4,1,1,1],
+['street','/striːt/','大街；街道','The street is busy.','联想：street 街道，与 tree 押韵。',4,1,1,1],
+['country','/ˈkʌntri/','乡村','I live in the country.','联想：country 乡村/国家。',4,1,1,1],
+['farm','/fɑːm/','农场','The farm is big.','联想：farm 农场，与 arm(手臂) 押韵。',4,1,1,1],
+['house','/haʊs/','房屋；房子','This is my house.','联想：house 房子，与 mouse(老鼠) 押韵。',4,1,1,1],
+['people','/ˈpiːpl/','人；人们','Many people live here.','联想：people 人们，与 pupil(学生) 形近。',4,1,1,2],
+['live','/lɪv/','住；居住','I live in China.','联想：live 居住，与 life(生活) 相关。',4,1,1,1],
+['many','/ˈmeni/','许多','I have many books.','联想：many 许多，反义 few。',4,1,1,1],
+['place','/pleɪs/','地方','This is a nice place.','联想：place 地方，与 face(脸) 押韵。',4,1,1,1],
+['quiet','/ˈkwaɪət/','安静的','The village is quiet.','联想：quiet 安静，与 quite(相当) 形近易混。',4,1,1,1],
+['all kinds of','','各种各样的','I like all kinds of.','',4,1,1,3],
+['a lot of','','许多','I like a lot of.','',4,1,1,3],
+['eagle','/ˈiːɡl/','老鹰','The eagle flies high.','联想：eagle 老鹰，与 beagle 押韵。',4,1,2,1],
+['owl','/aʊl/','猫头鹰','The owl is awake at night.','联想：owl 猫头鹰，o 像圆眼睛。',4,1,2,1],
+['honeybee','/ˈhʌnibiː/','蜜蜂','I like honeybee.','',4,1,2,1],
+['nest','/nest/','巢穴','The bird has a nest.','联想：nest 巢，n 像鸟巢。',4,1,2,1],
+['their','/ðeə(r)/','他们的；她们的；它们的','This is their home.','',4,1,2,1],
+['tree hole','','树洞','I like tree hole.','',4,1,2,3],
+['safe','/seɪf/','安全的','It is safe here.','联想：safe 安全，与 save(救) 同源。',4,1,2,1],
+['there','/ðeə(r)/','那里；在那里','There is a cat.','',4,1,2,1],
+['snake','/sneɪk/','蛇','The snake is long.','联想：snake 蛇，s 像蛇身。',4,1,2,1],
+['hive','/haɪv/','蜂巢','I like hive.','',4,1,2,1],
+['under','/ˈʌndə(r)/','在……下面；小于；少于','The cat is under the table.','联想：under 在下面，反义 on/over。',4,1,2,1],
+['at night','','晚上','I like at night.','',4,1,2,3],
+['make honey','','酿蜜','Let\'s make honey.','',4,1,2,3],
+['plus','/plʌs/','加；加号','Two plus two is four.','联想：plus 加，与 minus 相对。',4,1,3,1],
+['equal','/ˈiːkwəl/','等于','Two and two equal four.','词根：equ(相等) + -al。',4,1,3,1],
+['answer','/ˈɑːnsə(r)/','答案；回答','I like answer.','',4,1,3,1],
+['minus','/ˈmaɪnəs/','减；减号','Five minus two is three.','联想：minus 减，反义 plus。',4,1,3,1],
+['odd numbers','','奇数','I like odd numbers.','',4,1,3,3],
+['even numbers','','偶数','I like even numbers.','',4,1,3,3],
+['use','/juːz/','使用','I use a pen.','联想：use 使用，名词读 /juːs/。',4,1,3,1],
+['help','/help/','帮助','Can you help me?','',4,1,3,1],
+['count','/kaʊnt/','（按顺序）数数','I can count.','联想：count 数数，与 amount 相关。',4,1,3,1],
+['thing','/θɪŋ/','东西；事物','This is a good thing.','联想：thing 东西，与 think 形近。',4,1,3,1],
+['say','/seɪ/','说','Please say it.','联想：say 说，与 day 押韵。',4,1,3,1],
+['every day','','每天','I like every day.','',4,1,3,3],
+['how many','','（用于问数量）多少','I like how many.','',4,1,3,3],
+['supermarket','/ˈsuːpəmɑːkɪt/','超市','I go to the supermarket.','构词：super(超级) + market(市场)。',4,1,4,1],
+['a bag of rice','','一袋米','I like a bag of rice.','',4,1,4,3],
+['a box of eggs','','一盒鸡蛋','I like a box of eggs.','',4,1,4,3],
+['a bottle of juice','','一瓶果汁','I like a bottle of juice.','',4,1,4,3],
+['buy','/baɪ/','购买','I buy a book.','联想：buy 买，与 by(在旁) 同音。',4,1,4,1],
+['sell','/sel/','出售','They sell books.','联想：sell 卖，反义 buy。',4,1,4,1],
+['need','/niːd/','需要','I need a pen.','联想：need 需要，与 feed(喂) 押韵。',4,1,4,1],
+['shopping list','','购物单','I like shopping list.','',4,1,4,3],
+['each','/iːtʃ/','每个','Each of us has a book.','联想：each 每个，与 teach 押韵。',4,1,4,1],
+['team','/tiːm/','队；组','Our team is strong.','联想：team 队，与 tea(茶) 相关。',4,1,4,1],
+['faster','/ˈfɑːstə(r)/','更快的','The car is faster.','',4,1,4,1],
+['candy','/ˈkændi/','糖果；巧克力','I like candy.','联想：candy 糖果，与 candle(蜡烛) 形近。',4,1,4,2],
+['bread','/bred/','面包','I eat bread.','联想：bread 面包，与 read 押韵。',4,1,4,1],
+['win','/wɪn/','获胜','We win the game.','联想：win 赢，反义 lose。',4,1,4,1],
+['still','/stɪl/','还；仍然','He is still here.','联想：still 仍然，与 hill 押韵。',4,1,4,1],
+['share','/ʃeə(r)/','分享','We share the toys.','联想：share 分享，与 care(关心) 押韵。',4,1,4,1],
+['water','/ˈwɔːtə(r)/','水；给……浇水','I drink water.','联想：water 水，w 像波浪。',4,1,4,1],
+['how much','','多少钱；多少','I like how much.','',4,1,4,3],
+['a bar of chocolate','','一块巧克力','I like a bar of chocolate.','',4,1,4,3],
+['Here they are.','','它们在这里。','Here they are.','',4,1,4,3],
+['All right.','','好的。','All right.','',4,1,4,3],
+['What would you like?','','你想要什么？','What would you like?','',4,1,4,3],
+['spring','/sprɪŋ/','春天','Spring is warm.','联想：spring 春天/泉水。',4,1,5,1],
+['warm','/wɔːm/','温暖的','It is warm in spring.','联想：warm 温暖，反义 cool。',4,1,5,1],
+['summer','/ˈsʌmə(r)/','夏天','Summer is hot.','联想：summer 夏天，双写 m。',4,1,5,1],
+['hot','/hɒt/','炎热的','It is hot in summer.','联想：hot 热，反义 cold。',4,1,5,1],
+['autumn','/ˈɔːtəm/','秋天','Autumn is cool.','联想：autumn 秋天，au 组合。',4,1,5,1],
+['cool','/kuːl/','凉爽的','It is cool.','',4,1,5,1],
+['winter','/ˈwɪntə(r)/','冬天','Winter is cold.','联想：winter 冬天，与 wind(风) 相关。',4,1,5,1],
+['cold','/kəʊld/','寒冷的','It is cold today.','联想：cold 冷的，反义 hot。',4,1,5,1],
+['parent','/ˈpeərənt/','父亲（或母亲）','My parents love me.','词根：par(生) + -ent。',4,1,5,1],
+['season','/ˈsiːzn/','季节','There are four seasons.','联想：season 季节，与 reason 押韵。',4,1,5,1],
+['year','/jɪə(r)/','年','There are twelve months in a year.','联想：year 年，与 ear(耳朵) 押韵。',4,1,5,2],
+['grow','/ɡrəʊ/','（使）生长','The tree grows tall.','联想：grow 生长，与 throw 押韵。',4,1,5,1],
+['get','/ɡet/','变得','I get up early.','',4,1,5,1],
+['usually','/ˈjuːʒuəli/','通常','I usually get up early.','构词：usual(通常的) + -ly。',4,1,5,1],
+['after','/ˈɑːftə(r)/','在……之后','After class, I go home.','联想：after 之后，反义 before。',4,1,5,1],
+['fall','/fɔːl/','落下','I like fall.','',4,1,5,1],
+['turn','/tɜːn/','（使）变成','I can turn.','',4,1,5,1],
+['often','/ˈɒfn/','经常','I often read books.','联想：often 经常，t 不发音。',4,1,5,1],
+['snow','/snəʊ/','下雪；雪','It snows in winter.','联想：snow 雪，与 slow(慢) 形近。',4,1,5,1],
+['then','/ðen/','然后','Then I go home.','联想：then 然后，与 when 相关。',4,1,5,2],
+['begin','/bɪˈɡɪn/','开始','I like begin.','',4,1,5,1],
+['flower','/ˈflaʊə(r)/','花','The flower is red.','联想：flower 花，与 flour(面粉) 同音。',4,1,6,1],
+['fruit','/fruːt/','果实；水果','Fruit is good for you.','联想：fruit 水果，与 foot(脚) 形近。',4,1,6,1],
+['leaf','/liːf/','叶子','The leaf is green.','联想：leaf 叶子，复数 leaves。',4,1,6,1],
+['soil','/sɔɪl/','土壤','The soil is soft.','联想：soil 土壤，与 oil 押韵。',4,1,6,1],
+['sunflower','/ˈsʌnflaʊə(r)/','向日葵','The sunflower is tall.','构词：sun(太阳) + flower(花)。',4,1,6,1],
+['seed','/siːd/','种子','The seed grows.','联想：seed 种子，与 see(看) 相关。',4,1,6,1],
+['put','/pʊt/','放','I can put.','',4,1,6,1],
+['plant','/plɑːnt/','植物','I plant a tree.','联想：plant 植物/种植。',4,1,6,1],
+['root','/ruːt/','根','The root is deep.','联想：root 根，与 foot 押韵。',4,1,6,1],
+['tall','/tɔːl/','高的','My father is tall.','',4,1,6,1],
+['round','/raʊnd/','圆形的','The ball is round.','联想：round 圆，与 ground 押韵。',4,1,6,1],
+['oil','/ɔɪl/','食用油','We use oil to cook.','联想：oil 油，与 soil(土) 押韵。',4,1,6,1],
+['amazing','/əˈmeɪzɪŋ/','令人惊叹的','It is amazing.','',4,1,6,1],
+['green light','','绿灯','I like green light.','',4,1,7,3],
+['red light','','红灯','I like red light.','',4,1,7,3],
+['wait','/weɪt/','等待','Please wait a moment.','联想：wait 等待，与 weight(重量) 同音。',4,1,7,1],
+['cross','/krɒs/','穿越','Cross the road.','联想：cross 穿过/十字。',4,1,7,1],
+['Mr','/ˈmɪstə(r)/','先生','I like Mr.','',4,1,7,1],
+['way','/weɪ/','路线；道路','This is the way.','联想：way 路，与 day 押韵。',4,1,7,1],
+['road','/rəʊd/','路；马路','The road is wide.','联想：road 路，与 boat 押韵。',4,1,7,1],
+['should','/ʃʊd/','应该','You should study hard.','联想：should 应该，与 would 相关。',4,1,7,1],
+['first','/fɜːst/','首先','First, turn left.','',4,1,7,1],
+['left','/left/','左边','Turn left.','联想：left 左，反义 right。',4,1,7,1],
+['car','/kɑː(r)/','小汽车','The car is fast.','',4,1,7,1],
+['right','/raɪt/','右边','Turn right.','联想：right 右/正确，反义 left/wrong。',4,1,7,1],
+['skate','/skeɪt/','滑（滑板）','I can skate.','联想：skate 滑冰，与 snake 形近。',4,1,7,1],
+['sorry','/ˈsɒri/','对不起','I am sorry.','联想：sorry 抱歉，双写 r。',4,1,7,1],
+['kid','/kɪd/','小孩；孩子','The kid is cute.','联想：kid 小孩，与 lid 押韵。',4,1,7,2],
+['late','/leɪt/','迟到','I am late.','',4,1,7,1],
+['Good job!','','做得好！','Good job!','',4,1,7,3],
+['Hurry up!','','快点！','Hurry up!','',4,1,7,3],
+['go shopping','','购物','Let\'s go shopping.','',4,1,8,3],
+['go for a walk','','去散步','Let\'s go for a walk.','',4,1,8,3],
+['use the internet','','使用互联网','Let\'s use the internet.','',4,1,8,3],
+['do exercise','','锻炼','Let\'s do exercise.','',4,1,8,3],
+['do housework','','做家务','Let\'s do housework.','',4,1,8,3],
+['do gardening','','做园艺','Let\'s do gardening.','',4,1,8,3],
+['grandparent','/ˈɡrænpeərənt/','祖父（母）；外祖父（母）','I like grandparent.','',4,1,8,1],
+['week','/wiːk/','星期；周','There are seven days in a week.','联想：week 星期，与 weak(弱) 同音。',4,1,8,1],
+['work','/wɜːk/','工作','I go to work.','联想：work 工作，与 word 形近。',4,1,8,1],
+['always','/ˈɔːlweɪz/','总是','I always get up early.','构词：al(全) + ways(路)。',4,1,8,1],
+['vlog','/vlɒɡ/','视频博客','I like vlog.','',4,1,8,1],
+['watch','/wɒtʃ/','看；观看','I watch TV.','联想：watch 看/手表。',4,1,8,2],
+['do tai chi','','打太极拳','Let\'s do tai chi.','',4,1,8,3],
+['tidy up','','收拾；整理','Let\'s tidy up.','',4,1,8,3],
+['Shenzhen','/ˌʃenˈʒen/','深圳','I like Shenzhen.','',4,1,90,3],
+['Star Village','','星星村','I like Star Village.','',4,1,90,3],
+['Green Farm','','绿色农场','I like Green Farm.','',4,1,90,3],
+['New York','/ˌnjuː ˈjɔːk/','纽约市','I like New York.','',4,1,90,3],
+['Singapore','/ˌsɪŋəˈpɔː(r)/','新加坡市','I like Singapore.','',4,1,90,3],
+['the Double Ninth Festival','','重阳节','I like the Double Ninth Festival.','',4,1,90,3],
+['January','/ˈdʒænjuəri/','一月','I like January.','',4,1,93,3],
+['February','/ˈfebruəri/','二月','I like February.','',4,1,93,3],
+['March','/mɑːtʃ/','三月','I like March.','',4,1,93,3],
+['April','/ˈeɪprəl/','四月','I like April.','',4,1,93,3],
+['May','/meɪ/','五月','May I come in?','联想：may 可能，与 day 押韵。',4,1,93,3],
+['June','/dʒuːn/','六月','I like June.','',4,1,93,3],
+['July','/dʒuˈlaɪ/','七月','I like July.','',4,1,93,3],
+['August','/ˈɔːɡəst/','八月','I like August.','',4,1,93,3],
+['September','/sepˈtembə(r)/','九月','I like September.','',4,1,93,3],
+['October','/ɒkˈtəʊbə(r)/','十月','I like October.','',4,1,93,3],
+['November','/nəʊˈvembə(r)/','十一月','I like November.','',4,1,93,3],
+['December','/dɪˈsembə(r)/','十二月','I like December.','',4,1,93,3],
+['one','/wʌn/','一','I have one book.','联想：one 一，o 像数字 0，n 像门。',4,1,94,3],
+['two','/tuː/','二','I have two hands.','联想：two 二，与 too(也) 同音。',4,1,94,3],
+['three','/θriː/','三','I have three pens.','联想：three 三，与 tree(树) 形近。',4,1,94,3],
+['four','/fɔː(r)/','四','There are four cats.','联想：four 四，与 for(为了) 同音。',4,1,94,3],
+['five','/faɪv/','五','I have five fingers.','联想：five 五，f 像一只手五根手指。',4,1,94,3],
+['six','/sɪks/','六','I am six years old.','联想：six 六，与 fix(修理) 形近。',4,1,94,3],
+['seven','/ˈsevn/','七','Seven days a week.','联想：seven 七，与 heaven(天堂) 押韵。',4,1,94,3],
+['eight','/eɪt/','八','I have eight books.','联想：eight 八，与 weight(重量) 押韵。',4,1,94,3],
+['nine','/naɪn/','九','I am nine.','联想：nine 九，与 line(线) 押韵。',4,1,94,3],
+['ten','/ten/','十','I have ten fingers.','联想：ten 十，与 pen 押韵。',4,1,94,3],
+['eleven','/ɪˈlevn/','十一','I am eleven years old.','联想：eleven 十一，e + leven。',4,1,94,3],
+['twelve','/twelv/','十二','There are twelve months.','联想：twelve 十二，tw + elve。',4,1,94,3],
+['thirteen','/ˌθɜːˈtiːn/','十三','I am thirteen.','',4,1,94,3],
+['fourteen','/ˌfɔːˈtiːn/','十四','I am fourteen.','',4,1,94,3],
+['fifteen','/ˌfɪfˈtiːn/','十五','I am fifteen.','',4,1,94,3],
+['sixteen','/ˌsɪksˈtiːn/','十六','I am sixteen.','',4,1,94,3],
+['seventeen','/ˌsevnˈtiːn/','十七','I am seventeen.','',4,1,94,3],
+['eighteen','/ˌeɪˈtiːn/','十八','I am eighteen.','',4,1,94,3],
+['nineteen','/ˌnaɪnˈtiːn/','十九','I am nineteen.','',4,1,94,3],
+['twenty','/ˈtwenti/','二十','I am twenty.','',4,1,94,3],
+['twenty-one','/ˌtwenti ˈwʌn/','二十一','I like twenty-one.','',4,1,94,3],
+['twenty-two','/ˌtwenti ˈtuː/','二十二','I like twenty-two.','',4,1,94,3],
+['twenty-three','/ˌtwenti ˈθriː/','二十三','I like twenty-three.','',4,1,94,3],
+['thirty','/ˈθɜːti/','三十','I like thirty.','',4,1,94,3],
+['forty','/ˈfɔːti/','四十','I like forty.','',4,1,94,3],
+['fifty','/ˈfɪfti/','五十','I like fifty.','',4,1,94,3],
+['sixty','/ˈsɪksti/','六十','I like sixty.','',4,1,94,3],
+['seventy','/ˈsevnti/','七十','I like seventy.','',4,1,94,3],
+['eighty','/ˈeɪti/','八十','I like eighty.','',4,1,94,3],
+['ninety','/ˈnaɪnti/','九十','I like ninety.','',4,1,94,3],
+['one hundred','','一百','I like one hundred.','',4,1,94,3],
+['first','/fɜːst/','第一','First, turn left.','',4,1,95,3],
+['second','/ˈsekənd/','第二','I like second.','',4,1,95,3],
+['third','/θɜːd/','第三','I like third.','',4,1,95,3],
+['fourth','/fɔːθ/','第四','I like fourth.','',4,1,95,3],
+['fifth','/fɪfθ/','第五','I like fifth.','',4,1,95,3],
+['sixth','/sɪksθ/','第六','I like sixth.','',4,1,95,3],
+['seventh','/ˈsevnθ/','第七','I like seventh.','',4,1,95,3],
+['eighth','/eɪtθ/','第八','I like eighth.','',4,1,95,3],
+['ninth','/naɪnθ/','第九','I like ninth.','',4,1,95,3],
+['tenth','/tenθ/','第十','I like tenth.','',4,1,95,3],
+['eleventh','/ɪˈlevnθ/','第十一','I like eleventh.','',4,1,95,3],
+['twelfth','/twelfθ/','第十二','I like twelfth.','',4,1,95,3],
+['thirteenth','/ˌθɜːˈtiːnθ/','第十三','I like thirteenth.','',4,1,95,3],
+['fourteenth','/ˌfɔːˈtiːnθ/','第十四','I like fourteenth.','',4,1,95,3],
+['fifteenth','/ˌfɪfˈtiːnθ/','第十五','I like fifteenth.','',4,1,95,3],
+['sixteenth','/ˌsɪksˈtiːnθ/','第十六','I like sixteenth.','',4,1,95,3],
+['seventeenth','/ˌsevnˈtiːnθ/','第十七','I like seventeenth.','',4,1,95,3],
+['eighteenth','/ˌeɪˈtiːnθ/','第十八','I like eighteenth.','',4,1,95,3],
+['nineteenth','/ˌnaɪnˈtiːnθ/','第十九','I like nineteenth.','',4,1,95,3],
+['twentieth','/ˈtwentiəθ/','第二十','I like twentieth.','',4,1,95,3],
+['twenty-first','/ˌtwenti ˈfɜːst/','第二十一','I like twenty-first.','',4,1,95,3],
+['twenty-second','/ˌtwenti ˈsekənd/','第二十二','I like twenty-second.','',4,1,95,3],
+['twenty-third','/ˌtwenti ˈθɜːd/','第二十三','I like twenty-third.','',4,1,95,3],
+['twenty-fourth','/ˌtwenti ˈfɔːθ/','第二十四','I like twenty-fourth.','',4,1,95,3],
+['twenty-fifth','/ˌtwenti ˈfɪfθ/','第二十五','I like twenty-fifth.','',4,1,95,3],
+['twenty-sixth','/ˌtwenti ˈsɪksθ/','第二十六','I like twenty-sixth.','',4,1,95,3],
+['twenty-seventh','/ˌtwenti ˈsevnθ/','第二十七','I like twenty-seventh.','',4,1,95,3],
+['twenty-eighth','/ˌtwenti ˈeɪtθ/','第二十八','I like twenty-eighth.','',4,1,95,3],
+['twenty-ninth','/ˌtwenti ˈnaɪnθ/','第二十九','I like twenty-ninth.','',4,1,95,3],
+['thirtieth','/ˈθɜːtiəθ/','第三十','I like thirtieth.','',4,1,95,3],
+['thirty-first','/ˌθɜːti ˈfɜːst/','第三十一','I like thirty-first.','',4,1,95,3],
+['get up','','起床','Let\'s get up.','',4,2,1,1],
+['have breakfast','','吃早餐','Let\'s have breakfast.','',4,2,1,1],
+['go to school','','上学','Let\'s go to school.','',4,2,1,1],
+['have lunch','','吃午餐','Let\'s have lunch.','',4,2,1,1],
+['go home','','回家','Let\'s go home.','',4,2,1,1],
+['have dinner','','吃晚餐','Let\'s have dinner.','',4,2,1,1],
+['go to bed','','睡觉','Let\'s go to bed.','',4,2,1,1],
+['daily','/ˈdeɪli/','每日的；日常的','This is my daily life.','构词：day(日) 变形 + -ly。',4,2,1,1],
+['schedule','/ˈʃedjuːl/','日程安排','I like schedule.','',4,2,1,1],
+['at','/æt/','在（某时间或时刻）','I get up at seven.','',4,2,1,1],
+['o\'clock','/əˈklɒk/','（表示整点）……点钟','I like o\'clock.','',4,2,1,1],
+['half','/hɑːf/','（时间）……点半','It is half past eight.','联想：half 一半，与 calf 押韵。',4,2,1,1],
+['little','/ˈlɪtl/','年幼的','The little girl is cute.','联想：little 小的，与 bottle 押韵。',4,2,1,1],
+['drink','/drɪŋk/','喝；饮','I drink milk.','联想：drink 喝，与 think 押韵。',4,2,1,1],
+['lesson','/ˈlesn/','课','We have a lesson.','联想：lesson 课，与 less 相关。',4,2,1,1],
+['draw','/drɔː/','画','I can draw.','联想：draw 画，与 straw 押韵。',4,2,1,1],
+['quarter','/ˈkwɔːtə(r)/','15分钟；一刻钟','It is a quarter to eight.','联想：quarter 一刻钟/四分之一。',4,2,1,1],
+['Miss','/mɪs/','小姐','I miss my home.','联想：miss 想念，与 kiss 押韵。',4,2,1,1],
+['brush my teeth','','刷牙','Let\'s brush my teeth.','',4,2,1,3],
+['wash my face','','洗脸','Let\'s wash my face.','',4,2,1,3],
+['Good night, kids!','','晚安，孩子们！','Good night, kids!','',4,2,1,3],
+['Chinese','/ˌtʃaɪˈniːz/','（学科）语文','I like Chinese.','',4,2,2,1],
+['Maths','/mæθs/','（学科）数学','I like Maths.','联想：maths 数学，美式 math。',4,2,2,1],
+['English','/ˈɪŋɡlɪʃ/','（学科）英语','I like English.','联想：english 英语，England 英格兰。',4,2,2,1],
+['PE','/ˌpiː ˈiː/','（学科）体育','We have PE today.','',4,2,2,1],
+['Music','/ˈmjuːzɪk/','（学科）音乐','I like Music.','词根：muse(缪斯，文艺女神) + -ic。',4,2,2,1],
+['Art','/ɑːt/','（学科）美术','I like Art.','',4,2,2,1],
+['IT','/ˌaɪ ˈtiː/','（学科）信息技术','It is a cat.','',4,2,2,1],
+['Science','/ˈsaɪəns/','（学科）科学','I like Science.','',4,2,2,1],
+['club','/klʌb/','俱乐部；社团','I join a club.','联想：club 俱乐部，与 climb 形近。',4,2,2,1],
+['student','/ˈstjuːdnt/','学生','I am a student.','词根：study(学习) + -ent(人)。',4,2,2,1],
+['different','/ˈdɪfrənt/','不同的','We are different.','',4,2,2,1],
+['subject','/ˈsʌbdʒɪkt/','科目','My favourite subject is English.','构词：sub(下) + ject(投)。',4,2,2,1],
+['class','/klɑːs/','课；班级','We have a class.','',4,2,2,1],
+['pig','/pɪɡ/','猪','The pig is fat.','',4,2,2,1],
+['timetable','/ˈtaɪmteɪbl/','时间表','I like timetable.','',4,2,2,1],
+['raise the national flag','','升国旗','Let\'s raise the national flag.','',4,2,2,3],
+['work out','','解决；算出','Let\'s work out.','',4,2,2,3],
+['after school','','放学后','I like after school.','',4,2,2,3],
+['put on a play','','演出戏剧','Let\'s put on a play.','',4,2,2,3],
+['model plane','','飞机模型','I like model plane.','',4,2,2,3],
+['Great!','/ɡreɪt/','太棒了！','That is great!','',4,2,2,3],
+['firefighter','/ˈfaɪəfaɪtə(r)/','消防员','He is a firefighter.','构词：fire(火) + fighter(战斗者)。',4,2,3,1],
+['police officer','','警察','I like police officer.','',4,2,3,1],
+['farmer','/ˈfɑːmə(r)/','农夫；农民','He is a farmer.','构词：farm(农场) + -er(人)。',4,2,3,1],
+['teacher','/ˈtiːtʃə(r)/','老师','I like teacher.','',4,2,3,1],
+['doctor','/ˈdɒktə(r)/','医生','She is a doctor.','联想：doctor 医生，与 daughter 形近。',4,2,3,1],
+['bus driver','','公交车司机','I like bus driver.','',4,2,3,1],
+['fire','/ˈfaɪə(r)/','火','The fire is hot.','联想：fire 火，与 hire 押韵。',4,2,3,1],
+['sick','/sɪk/','生病的','He is sick.','联想：sick 生病，与 sock 形近。',4,2,3,1],
+['soup','/suːp/','汤','The soup is hot.','',4,2,3,1],
+['Mrs','/ˈmɪsɪz/','夫人；太太','I like Mrs.','',4,2,3,1],
+['job','/dʒɒb/','工作；职业','What is your job?','联想：job 工作，与 rob 押韵。',4,2,3,1],
+['people','/ˈpiːpl/','人；人们','Many people live here.','联想：people 人们，与 pupil(学生) 形近。',4,2,3,1],
+['know','/nəʊ/','知道','I know him.','联想：know 知道，k 不发音。',4,2,3,1],
+['dentist','/ˈdentɪst/','牙医','I see a dentist.','构词：dent(牙) + -ist(人)。',4,2,3,1],
+['or','/ɔː(r)/','或；或者','A pen or a pencil?','',4,2,3,1],
+['sweet','/swiːt/','甜的','The candy is sweet.','联想：sweet 甜，反义 bitter。',4,2,3,1],
+['check','/tʃek/','检查','Please check your work.','联想：check 检查，与 chick 形近。',4,2,3,1],
+['hospital','/ˈhɒspɪtl/','医院','I go to the hospital.','联想：hospital 医院，与 hotel 形近。',4,2,3,1],
+['nurse','/nɜːs/','护士','She is a nurse.','联想：nurse 护士，与 purse 押韵。',4,2,3,1],
+['put out fires','','灭火','Let\'s put out fires.','',4,2,3,3],
+['look after','','照顾；照料','Let\'s look after.','',4,2,3,3],
+['twice or three times','','两次或三次','I like twice or three times.','',4,2,3,3],
+['fill holes in teeth','','补牙','I like fill holes in teeth.','',4,2,3,3],
+['pull bad teeth out','','拔蛀牙','Let\'s pull bad teeth out.','',4,2,3,3],
+['triangle','/ˈtraɪæŋɡl/','三角铁（打击乐器）','It is a triangle.','构词：tri(三) + angle(角)。',4,2,4,1],
+['violin','/ˌvaɪəˈlɪn/','小提琴','She plays the violin.','联想：violin 小提琴，与 violet 形近。',4,2,4,1],
+['piano','/piˈænəʊ/','钢琴','I play the piano.','音译词：piano 钢琴。',4,2,4,1],
+['guitar','/ɡɪˈtɑː(r)/','吉他','He plays the guitar.','音译词：guitar 吉他。',4,2,4,1],
+['erhu','/ˈɜːhuː/','二胡','He plays the erhu.','音译词：erhu 二胡。',4,2,4,1],
+['flute','/fluːt/','长笛','She plays the flute.','联想：flute 长笛，与 fruit 形近。',4,2,4,1],
+['pipa','/ˈpiːpə/','琵琶','She plays the pipa.','音译词：pipa 琵琶。',4,2,4,1],
+['drum','/drʌm/','鼓','He plays the drum.','联想：drum 鼓，与 plum 押韵。',4,2,4,1],
+['woman','/ˈwʊmən/','成年女子；妇女','The woman is kind.','联想：woman 女人，复数 women。',4,2,4,1],
+['concert','/ˈkɒnsət/','音乐会','We go to a concert.','联想：concert 音乐会，与 concern 形近。',4,2,4,1],
+['think','/θɪŋk/','思考；想到（主意）','I think it is good.','联想：think 想，与 thank 形近。',4,2,4,1],
+['clever','/ˈklevə(r)/','聪明的','He is clever.','联想：clever 聪明，与 ever 押韵。',4,2,4,1],
+['idea','/ˈaɪdɪə/','想法','That is a good idea.','联想：idea 主意，与 dear 押韵。',4,2,4,1],
+['jar','/dʒɑː(r)/','广口瓶','I like jar.','',4,2,4,1],
+['them','/ðəm/','他们；她们；它们','I like them.','联想：them 他们，与 they 相关。',4,2,4,1],
+['these','/ðiːz/','这些','These are books.','联想：these 这些，反义 those。',4,2,4,1],
+['bucket','/ˈbʌkɪt/','桶','I like bucket.','',4,2,4,1],
+['pot','/pɒt/','锅','I like pot.','',4,2,4,1],
+['hit','/hɪt/','打；击','The ball hits the window.','联想：hit 碰撞，与 sit 押韵。',4,2,4,1],
+['beautiful','/ˈbjuːtɪfl/','美妙的；漂亮的','The flower is beautiful.','构词：beauty(美) + -ful。',4,2,4,1],
+['clap','/klæp/','鼓掌','I can clap.','',4,2,4,1],
+['musical instrument','','乐器','I like musical instrument.','',4,2,4,3],
+['paper-cut','/ˈpeɪpə kʌt/','剪纸','I like paper-cut.','',4,2,5,1],
+['painting','/ˈpeɪntɪŋ/','绘画；画作','This is a painting.','构词：paint(画) + -ing。',4,2,5,1],
+['circle','/ˈsɜːkl/','圆形','It is a circle.','联想：circle 圆，circ 环。',4,2,5,1],
+['triangle','/ˈtraɪæŋɡl/','三角形','It is a triangle.','构词：tri(三) + angle(角)。',4,2,5,1],
+['square','/skweə(r)/','正方形；正方形的','It is a square.','联想：square 正方形，与 care 押韵。',4,2,5,1],
+['star','/stɑː(r)/','星星；星形物','The star is bright.','联想：star 星，与 start 相关。',4,2,5,1],
+['rectangle','/ˈrektæŋɡl/','矩形；长方形','It is a rectangle.','构词：rect(直) + angle(角)。',4,2,5,1],
+['clock','/klɒk/','钟','I like clock.','',4,2,5,1],
+['shape','/ʃeɪp/','形状','What shape is it?','联想：shape 形状，与 ship 形近。',4,2,5,1],
+['side','/saɪd/','边','It has four sides.','联想：side 边，与 wide 押韵。',4,2,5,1],
+['corner','/ˈkɔːnə(r)/','角','It has four corners.','联想：corner 角，与 horn 押韵。',4,2,5,1],
+['ask','/ɑːsk/','问','May I ask a question?','联想：ask 问，与 task 押韵。',4,2,5,1],
+['tiger','/ˈtaɪɡə(r)/','老虎','The tiger is strong.','联想：tiger 老虎，与 timer 形近。',4,2,5,1],
+['say','/seɪ/','说','Please say it.','联想：say 说，与 day 押韵。',4,2,5,1],
+['day','/deɪ/','天；白昼；白天','What a nice day!','',4,2,6,1],
+['night','/naɪt/','夜晚；晚上','Good night!','联想：night 夜晚，与 knight(骑士) 同音。',4,2,6,1],
+['hour','/ˈaʊə(r)/','小时','There are twenty-four hours in a day.','联想：hour 小时，h 不发音。',4,2,6,1],
+['minute','/ˈmɪnɪt/','分钟','There are sixty minutes in an hour.','联想：minute 分钟，与 min 相关。',4,2,6,1],
+['second','/ˈsekənd/','秒','I like second.','',4,2,6,1],
+['month','/mʌnθ/','月；月份','There are twelve months in a year.','联想：month 月，与 mouth(嘴) 形近。',4,2,6,1],
+['year','/jɪə(r)/','年','There are twelve months in a year.','联想：year 年，与 ear(耳朵) 押韵。',4,2,6,1],
+['measure','/ˈmeʒə(r)/','测量','I measure the desk.','联想：measure 测量，与 sure 押韵。',4,2,6,1],
+['question','/ˈkwestʃən/','问题','I have a question.','构词：quest(询问) + -ion。',4,2,6,1],
+['around','/əˈraʊnd/','围绕；环绕','The earth goes around the sun.','构词：a + round(圆)。',4,2,6,1],
+['exercise','/ˈeksəsaɪz/','运动；锻炼','I do exercise every day.','联想：exercise 锻炼，与 excuse 形近。',4,2,6,1],
+['get ready','','准备好','Let\'s get ready.','',4,2,6,3],
+['at the same time','','同时','I like at the same time.','',4,2,6,3],
+['What time is it?','','几点了？','What time is it?','',4,2,6,3],
+['liquid','/ˈlɪkwɪd/','液体','Water is a liquid.','联想：liquid 液体，反义 solid/gas。',4,2,7,1],
+['solid','/ˈsɒlɪd/','固体','Ice is a solid.','联想：solid 固体，反义 liquid。',4,2,7,1],
+['gas','/ɡæs/','气体','Air is a gas.','联想：gas 气体，与 glass 形近。',4,2,7,1],
+['sugar','/ˈʃʊɡə(r)/','食糖','I like sugar.','联想：sugar 糖，与 vinegar 押韵。',4,2,7,1],
+['salt','/sɔːlt/','盐；食盐','Please pass the salt.','联想：salt 盐，与 halt 押韵。',4,2,7,1],
+['cream','/kriːm/','奶油','I like ice cream.','联想：cream 奶油，与 dream 押韵。',4,2,7,1],
+['melt','/melt/','（使）熔化；融化','The ice melts.','联想：melt 融化，与 belt 押韵。',4,2,7,1],
+['steam','/stiːm/','水蒸气','The water turns to steam.','联想：steam 蒸汽，与 stream 形近。',4,2,7,1],
+['heat','/hiːt/','加热','Heat the soup.','联想：heat 加热，与 meat 押韵。',4,2,7,1],
+['hungry','/ˈhʌŋɡri/','感到饿的','I like hungry.','',4,2,7,1],
+['party','/ˈpɑːti/','聚会；派对','We have a party.','联想：party 聚会，与 park 形近。',4,2,7,1],
+['ice cream','/ˌaɪs ˈkriːm/','冰淇淋','I like ice cream.','',4,2,7,1],
+['freezer','/ˈfriːzə(r)/','冰柜','I like freezer.','',4,2,7,1],
+['door','/dɔː(r)/','门','Close the door.','',4,2,7,1],
+['open','/ˈəʊpən/','开着的；敞开的','Open the door.','联想：open 开，反义 close。',4,2,7,1],
+['plastic','/ˈplæstɪk/','塑料的','I like plastic.','',4,2,7,1],
+['mix','/mɪks/','（使）混合','Mix the milk and sugar.','联想：mix 混合，与 fix 押韵。',4,2,7,1],
+['put','/pʊt/','放','I can put.','',4,2,7,1],
+['mixture','/ˈmɪkstʃə(r)/','混合物','I like mixture.','',4,2,7,1],
+['chocolate','/ˈtʃɒklət/','巧克力','I like chocolate.','音译词：chocolate 巧克力。',4,2,7,1],
+['shake','/ʃeɪk/','摇动','Shake the bottle.','联想：shake 摇，与 snake 形近。',4,2,7,1],
+['freeze','/friːz/','结冰；冻住','Water freezes in winter.','联想：freeze 结冰，与 breeze 押韵。',4,2,7,1],
+['Sure!','','当然！','Sure!','',4,2,7,3],
+['Don\'t worry!','','别担心！','Don\'t worry!','',4,2,7,3],
+['Done!','','做好了！','Done!','',4,2,7,3],
+['polite','/pəˈlaɪt/','有礼貌的','He is polite.','词根：poli(城市) + -te，文明的。',4,2,8,1],
+['take turns','','轮流','Let\'s take turns.','',4,2,8,1],
+['knock','/nɒk/','敲击','Please knock on the door.','联想：knock 敲，k 不发音。',4,2,8,1],
+['ox','/ɒks/','公牛','The ox is strong.','联想：ox 公牛，复数 oxen。',4,2,8,1],
+['until','/ənˈtɪl/','直到……为止','Wait until five.','联想：until 直到，与 till 同义。',4,2,8,1],
+['someone','/ˈsʌmwʌn/','某人','Someone is at the door.','构词：some(某) + one(人)。',4,2,8,1],
+['invite','/ɪnˈvaɪt/','邀请','I invite my friends.','词根：in(入) + vite，请进来。',4,2,8,1],
+['behind','/bɪˈhaɪnd/','在……之后','The cat is behind the door.','联想：behind 在后面，反义 in front of。',4,2,8,1],
+['maybe','/ˈmeɪbi/','（不确定）大概，可能','Maybe it is raining.','构词：may(可能) + be(是)。',4,2,8,1],
+['cry','/kraɪ/','哭泣','The baby cries.','联想：cry 哭，与 dry(干) 押韵。',4,2,8,1],
+['kind','/kaɪnd/','友善的','He is kind to me.','联想：kind 友善/种类。',4,2,8,1],
+['honey','/ˈhʌni/','蜂蜜','Bees make honey.','联想：honey 蜂蜜，与 money 押韵。',4,2,8,1],
+['joke','/dʒəʊk/','笑话；玩笑','That is a funny joke.','联想：joke 笑话，与 yoke 押韵。',4,2,8,1],
+['whatever','/wɒtˈevə(r)/','无论什么','Do whatever you like.','',4,2,8,1],
+['another','/əˈnʌðə(r)/','另一个','Have another cake.','构词：an + other(另一个)。',4,2,8,1],
+['helpful','/ˈhelpfl/','愿意帮忙的','She is helpful.','构词：help(帮助) + -ful。',4,2,8,1],
+['way','/weɪ/','方法；方式','This is the way.','联想：way 路，与 day 押韵。',4,2,8,1],
+['May I come in?','','我可以进来吗？','May I come in?','',4,2,8,3],
+['go jogging','','去慢跑','Let\'s go jogging.','',5,1,1,1],
+['go fishing','','去钓鱼','Let\'s go fishing.','',5,1,1,1],
+['do chores','','做家务','Let\'s do chores.','',5,1,1,1],
+['watch TV','','看电视','Let\'s watch TV.','',5,1,1,1],
+['play with friends','','和朋友一起玩','Let\'s play with friends.','',5,1,1,1],
+['have a picnic','','野餐','Let\'s have a picnic.','',5,1,1,1],
+['busy','/ˈbɪzi/','忙碌的','I am busy.','联想：busy 忙，与 business 相关。',5,1,1,1],
+['weekend','/ˌwiːkˈend/','周末','I play on the weekend.','构词：week(周) + end(末)。',5,1,1,1],
+['plan','/plæn/','计划','I have a plan.','联想：plan 计划，与 plane(飞机) 形近。',5,1,1,1],
+['early','/ˈɜːli/','早的','I get up early.','联想：early 早，反义 late。',5,1,1,1],
+['catch','/kætʃ/','抓住','I catch the ball.','联想：catch 抓，与 match 押韵。',5,1,1,1],
+['any','/ˈeni/','任何','I like any.','',5,1,1,1],
+['robot','/ˈrəʊbɒt/','机器人','The robot is cool.','音译词：robot 机器人。',5,1,1,1],
+['sock','/sɒk/','袜子','This is my sock.','联想：sock 袜子，与 rock 押韵。',5,1,1,1],
+['sweep','/swiːp/','打扫；清扫','She sweeps the floor.','联想：sweep 扫，与 sleep 形近。',5,1,1,1],
+['warm up','','热身','Let\'s warm up.','',5,1,1,3],
+['more ... than','','超过；比……更……','I like more ... than.','',5,1,1,3],
+['do exercise','','做运动','Let\'s do exercise.','',5,1,2,1],
+['eat healthy food','','吃健康的食物','Let\'s eat healthy food.','',5,1,2,1],
+['drink a lot of water','','多喝水','Let\'s drink a lot of water.','',5,1,2,1],
+['get enough sleep','','保证充足的睡眠','Let\'s get enough sleep.','',5,1,2,1],
+['strong','/strɒŋ/','强壮的','He is strong.','联想：strong 强壮，反义 weak。',5,1,2,1],
+['poster','/ˈpəʊstə(r)/','海报','I like poster.','',5,1,2,1],
+['about','/əˈbaʊt/','关于','I like about.','',5,1,2,1],
+['habit','/ˈhæbɪt/','习惯','This is a good habit.','联想：habit 习惯，与 rabbit 押韵。',5,1,2,1],
+['junk food','','垃圾食品','I like junk food.','',5,1,2,1],
+['must','/mʌst/','必须','You must study.','联想：must 必须，与 dust 押韵。',5,1,2,1],
+['less','/les/','更少的','Eat less junk food.','联想：less 更少，反义 more。',5,1,2,1],
+['hard','/hɑːd/','难的','The question is hard.','联想：hard 难/硬，反义 easy/soft。',5,1,2,1],
+['try','/traɪ/','尝试','Please try again.','联想：try 尝试，与 fly 押韵。',5,1,2,1],
+['lie','/laɪ/','躺','I lie on the bed.','联想：lie 躺，与 pie 押韵。',5,1,2,1],
+['stay','/steɪ/','保持；待；暂住','I stay at home.','联想：stay 停留，与 day 押韵。',5,1,2,1],
+['ill','/ɪl/','生病的','He is ill.','联想：ill 生病，与 hill 押韵。',5,1,2,1],
+['a glass of','','一杯','I like a glass of.','',5,1,2,3],
+['Me too.','','我也是。','Me too.','',5,1,2,3],
+['north','/nɔːθ/','北方','Beijing is in the north.','联想：north 北，反义 south。',5,1,3,1],
+['south','/saʊθ/','南方','Sanya is in the south.','联想：south 南，反义 north。',5,1,3,1],
+['east','/iːst/','东方','Shanghai is in the east.','联想：east 东，反义 west。',5,1,3,1],
+['west','/west/','西方','The sun sets in the west.','联想：west 西，反义 east。',5,1,3,1],
+['capital','/ˈkæpɪtl/','首都','Beijing is the capital of China.','词根：capit(头) + -al，首都即首城。',5,1,3,1],
+['museum','/mjuˈziːəm/','博物馆','I go to the museum.','联想：museum 博物馆，与 music 形近。',5,1,3,1],
+['palace','/ˈpæləs/','王宫；宫殿','The palace is old.','联想：palace 宫殿，与 place 形近。',5,1,3,1],
+['tourist','/ˈtʊərɪst/','游客','Many tourists visit here.','构词：tour(旅游) + -ist(人)。',5,1,3,1],
+['visit','/ˈvɪzɪt/','参观；拜访','I visit my grandma.','联想：visit 参观，与 city 押韵。',5,1,3,1],
+['northwest','/ˌnɔːθˈwest/','西北','Xinjiang is in the northwest.','',5,1,3,1],
+['across','/əˈkrɒs/','穿过','The boat goes across the river.','联想：across 穿过，与 cross 相关。',5,1,3,1],
+['fish and chips','','炸鱼薯条','I like fish and chips.','',5,1,3,1],
+['popular','/ˈpɒpjələ(r)/','流行的；受欢迎的','This song is popular.','词根：popul(人民) + -ar。',5,1,3,1],
+['wine','/waɪn/','葡萄酒','They drink wine.','联想：wine 葡萄酒，与 win 形近。',5,1,3,1],
+['on foot','','步行','I like on foot.','',5,1,3,1],
+['mountain','/ˈmaʊntən/','山','The mountain is high.','联想：mountain 山，与 fountain 押韵。',5,1,4,1],
+['cave','/keɪv/','洞穴','The cave is dark.','联想：cave 洞穴，与 wave 押韵。',5,1,4,1],
+['waterfall','/ˈwɔːtəfɔːl/','瀑布','The waterfall is beautiful.','构词：water(水) + fall(落)。',5,1,4,1],
+['hotel','/həʊˈtel/','酒店','We stay in a hotel.','联想：hotel 旅馆，与 hostel 同源。',5,1,4,1],
+['holiday','/ˈhɒlədeɪ/','假期','I like summer holiday.','构词：holi(圣) + day(日)，假期。',5,1,4,1],
+['will','/wɪl/','将；将要','I will go tomorrow.','联想：will 将，与 hill 押韵。',5,1,4,1],
+['soon','/suːn/','很快；马上','See you soon.','联想：soon 很快，与 moon 押韵。',5,1,4,1],
+['shall','/ʃæl/','（表示将来的可能性）将','Shall we go?','',5,1,4,1],
+['high-speed train','','高铁','I like high-speed train.','',5,1,4,1],
+['explore','/ɪkˈsplɔː(r)/','探索','We explore the forest.','词根：ex(出) + plore(探)。',5,1,4,1],
+['pagoda','/pəˈɡəʊdə/','塔','The pagoda is old.','',5,1,4,1],
+['cave house','','窑洞','I like cave house.','',5,1,4,1],
+['famous','/ˈfeɪməs/','著名的','He is a famous writer.','词根：fam(名) + -ous。',5,1,4,1],
+['deep-fried cake','','油炸糕','I like deep-fried cake.','',5,1,4,1],
+['wonderful','/ˈwʌndəfl/','令人惊奇的；令人赞叹的','The view is wonderful.','构词：wonder(惊奇) + -ful。',5,1,4,1],
+['view','/vjuː/','景色；风景','The view is beautiful.','联想：view 景色，与 new 押韵。',5,1,4,1],
+['It sounds great.','','听起来很棒。','It sounds great.','',5,1,4,3],
+['I can\'t wait to go!','','我等不及要去了！','I can\'t wait to go!','',5,1,4,3],
+['get sunlight','','获取阳光','Let\'s get sunlight.','',5,1,5,1],
+['get food and water','','获取食物和水','Let\'s get food and water.','',5,1,5,1],
+['grow','/ɡrəʊ/','生长','The tree grows tall.','联想：grow 生长，与 throw 押韵。',5,1,5,1],
+['change','/tʃeɪndʒ/','变化','The leaves change colour.','联想：change 变化，与 chance 形近。',5,1,5,1],
+['move','/muːv/','移动','The car moves fast.','联想：move 移动，与 movie 形近。',5,1,5,1],
+['living','/ˈlɪvɪŋ/','有生命的','A cat is a living thing.','构词：live(活) + -ing。',5,1,5,1],
+['non-living','/ˌnɒn ˈlɪvɪŋ/','无生命的','I like non-living.','',5,1,5,1],
+['thing','/θɪŋ/','东西','This is a good thing.','联想：thing 东西，与 think 形近。',5,1,5,1],
+['air','/eə(r)/','空气','The air is fresh.','联想：air 空气，与 hair 押韵。',5,1,5,1],
+['by themselves','','独自地；无需外力地','I like by themselves.','',5,1,5,1],
+['important','/ɪmˈpɔːtnt/','重要的','This is important.','词根：import(重要) + -ant。',5,1,5,1],
+['by itself','','独自地；无需外力地','I like by itself.','',5,1,5,1],
+['look around','','环顾','Let\'s look around.','',5,1,5,1],
+['smoke','/sməʊk/','烟','The smoke is black.','联想：smoke 烟，与 spoke 形近。',5,1,6,1],
+['dirty','/ˈdɜːti/','脏的','The water is dirty.','构词：dirt(灰尘) + -y。',5,1,6,1],
+['rubbish','/ˈrʌbɪʃ/','垃圾','Put the rubbish in the bin.','联想：rubbish 垃圾，与 rabbit 形近。',5,1,6,1],
+['recycle','/ˌriːˈsaɪkl/','回收利用','We recycle paper.','构词：re(再) + cycle(循环)。',5,1,6,1],
+['reduce','/rɪˈdjuːs/','减少','We should reduce waste.','构词：re(回) + duce(导)。',5,1,6,1],
+['natural resources','','自然资源','I like natural resources.','',5,1,6,1],
+['call','/kɔːl/','把……叫作','I call my mother.','联想：call 叫，与 ball 押韵。',5,1,6,1],
+['wood','/wʊd/','木材','The desk is made of wood.','联想：wood 木材，与 food 押韵。',5,1,6,1],
+['land','/lænd/','土地','This is my land.','联想：land 土地，与 hand 押韵。',5,1,6,1],
+['why','/waɪ/','为什么','Why are you late?','联想：why 为什么，与 sky 押韵。',5,1,6,1],
+['clean','/kliːn/','干净的','The room is clean.','联想：clean 干净，反义 dirty。',5,1,6,1],
+['hurt','/hɜːt/','伤害','Do not hurt animals.','联想：hurt 伤害，与 shirt 押韵。',5,1,6,1],
+['factory','/ˈfæktri/','工厂','The factory is big.','构词：fact(做) + -ory(场所)。',5,1,6,1],
+['near','/nɪə(r)/','在……附近','The shop is near my home.','联想：near 附近，反义 far。',5,1,6,1],
+['those','/ðəʊz/','那些','Those are my books.','联想：those 那些，反义 these。',5,1,6,1],
+['turn off','','关掉','Let\'s turn off.','',5,1,6,1],
+['aunt','/ɑːnt/','阿姨；姑母；姨母；伯母；舅母；婶母','My aunt is kind.','联想：aunt 阿姨，与 ant(蚂蚁) 形近。',5,1,7,1],
+['uncle','/ˈʌŋkl/','舅父；叔父；伯父；姑父；姨父','My uncle is tall.','联想：uncle 叔叔，与 ankle 形近。',5,1,7,1],
+['together','/təˈɡeðə(r)/','一起','We play together.','构词：to + gether。',5,1,7,1],
+['celebrate','/ˈselɪbreɪt/','庆祝','We celebrate the festival.','词根：celebr(庆祝) + -ate。',5,1,7,1],
+['main','/meɪn/','主要的','This is the main idea.','联想：main 主要，与 rain 押韵。',5,1,7,1],
+['eve','/iːv/','前夕','New Year\'s Eve.','联想：eve 前夕，与 even 相关。',5,1,7,1],
+['stocking','/ˈstɒkɪŋ/','长筒袜','The stocking is big.','构词：stock + -ing，长筒袜。',5,1,7,1],
+['visit relatives','','拜访亲戚；探亲','Let\'s visit relatives.','',5,1,7,1],
+['eat mooncakes','','吃月饼','Let\'s eat mooncakes.','',5,1,7,1],
+['have a dragon boat race','','进行龙舟比赛','Let\'s have a dragon boat race.','',5,1,7,1],
+['watch lanterns','','赏花灯','Let\'s watch lanterns.','',5,1,7,1],
+['next month','','下个月','I like next month.','',5,1,7,1],
+['make jiaozi','','包饺子','Let\'s make jiaozi.','',5,1,7,1],
+['watch a lion dance','','观看舞狮表演','Let\'s watch a lion dance.','',5,1,7,1],
+['have a big meal','','吃大餐','Let\'s have a big meal.','',5,1,7,1],
+['put up','','搭建；张贴；挂起','Let\'s put up.','',5,1,7,1],
+['fast','/fɑːst/','快的','The train is fast.','联想：fast 快，反义 slow。',5,1,8,1],
+['slow','/sləʊ/','慢的','The turtle is slow.','联想：slow 慢，反义 fast。',5,1,8,1],
+['excited','/ɪkˈsaɪtɪd/','兴奋的','I am so excited!','构词：excite(使兴奋) + -d。',5,1,8,1],
+['unhappy','/ʌnˈhæpi/','不开心的','He is unhappy.','构词：un(不) + happy。',5,1,8,1],
+['feel','/fiːl/','觉得；感到','I feel happy.','联想：feel 感觉，与 peel 押韵。',5,1,8,1],
+['feeling','/ˈfiːlɪŋ/','感情；情绪','What is your feeling?','构词：feel + -ing。',5,1,8,1],
+['relaxed','/rɪˈlækst/','放松的','I feel relaxed.','构词：relax(放松) + -ed。',5,1,8,1],
+['person','/ˈpɜːsn/','人','He is a nice person.','联想：person 人，与 lesson 押韵。',5,1,8,1],
+['imagination','/ɪˌmædʒɪˈneɪʃn/','想象；想象力','Use your imagination.','',5,1,8,1],
+['imagine','/ɪˈmædʒɪn/','想象','Imagine a big house.','联想：imagine 想象，与 image(图像) 同源。',5,1,8,1],
+['all over the world','','世界各地','I like all over the world.','',5,1,8,1],
+['China','/ˈtʃaɪnə/','中国','I live in China.','',5,1,90,3],
+['the Eiffel Tower','','埃菲尔铁塔','I like the Eiffel Tower.','',5,1,90,3],
+['France','/frɑːns/','法国','I like France.','',5,1,90,3],
+['UK','/ˌjuː ˈkeɪ/','英国','I like UK.','',5,1,90,3],
+['Paris','/ˈpærɪs/','巴黎','I like Paris.','',5,1,90,3],
+['Big Ben','','大本钟','I like Big Ben.','',5,1,90,3],
+['Venice','/ˈvenɪs/','威尼斯','I like Venice.','',5,1,90,3],
+['Italy','/ˈɪtəli/','意大利','I like Italy.','',5,1,90,3],
+['Suzhou','/ˌsuːˈdʒəʊ/','苏州','I like Suzhou.','',5,1,90,3],
+['Asia','/ˈeɪʒə/','亚洲','I like Asia.','',5,1,90,3],
+['the Great Wall','','长城','I like the Great Wall.','',5,1,90,3],
+['Beijing roast duck','','北京烤鸭','I like Beijing roast duck.','',5,1,90,3],
+['Europe','/ˈjʊərəp/','欧洲','I like Europe.','',5,1,90,3],
+['London','/ˈlʌndən/','伦敦','I like London.','',5,1,90,3],
+['Tower Bridge','','伦敦塔桥','I like Tower Bridge.','',5,1,90,3],
+['the British Museum','','大英博物馆','I like the British Museum.','',5,1,90,3],
+['the Louvre Museum','','卢浮宫','I like the Louvre Museum.','',5,1,90,3],
+['India','/ˈɪndiə/','印度','I like India.','',5,1,90,3],
+['Japan','/dʒəˈpæn/','日本','I like Japan.','',5,1,90,3],
+['Canada','/ˈkænədə/','加拿大','I like Canada.','',5,1,90,3],
+['North America','','北美洲','I like North America.','',5,1,90,3],
+['Harbin','/ˌhɑːˈbɪn/','哈尔滨','I like Harbin.','',5,1,90,3],
+['the Ice and Snow World','','冰雪大世界','I like the Ice and Snow World.','',5,1,90,3],
+['the Northeast Tiger Forest Park','','东北虎林园','I like the Northeast Tiger Forest Park.','',5,1,90,3],
+['Mount Lushan','','庐山','I like Mount Lushan.','',5,1,90,3],
+['the Milky Way','','银河','I like the Milky Way.','',5,1,90,3],
+['Yan\'an','/ˌjɑːnˈɑːn/','延安','I like Yan\'an.','',5,1,90,3],
+['Yan\'an Revolutionary Memorial Hall','','延安革命纪念馆','I like Yan\'an Revolutionary Memorial Hall.','',5,1,90,3],
+['Pagoda Hill','','宝塔山','I like Pagoda Hill.','',5,1,90,3],
+['the Hukou Waterfall','','壶口瀑布','I like the Hukou Waterfall.','',5,1,90,3],
+['Shaanxi Province','','陕西省','I like Shaanxi Province.','',5,1,90,3],
+['the Yellow River','','黄河','I like the Yellow River.','',5,1,90,3],
+['the Palace Museum','','故宫博物院','I like the Palace Museum.','',5,1,90,3],
+['Sanya','/ˌsænˈjɑː/','三亚','I like Sanya.','',5,1,90,3],
+['Spring Festival','','春节','I like Spring Festival.','',5,1,90,3],
+['Lantern Festival','','元宵节','I like Lantern Festival.','',5,1,90,3],
+['Dragon Boat Festival','','端午节','I like Dragon Boat Festival.','',5,1,90,3],
+['Mid-Autumn Festival','','中秋节','I like Mid-Autumn Festival.','',5,1,90,3],
+['Christmas','/ˈkrɪsməs/','圣诞节','I like Christmas.','',5,1,90,3],
+['tidy','/ˈtaɪdi/','整理；整洁的','I tidy my room.','联想：tidy 整洁，与 tiny 形近。',5,2,1,1],
+['mess','/mes/','脏乱；不整洁','The room is a mess.','联想：mess 杂乱，与 less 押韵。',5,2,1,1],
+['let','/let/','让','Let us go.','联想：let 让，与 get 押韵。',5,2,1,1],
+['sock','/sɒk/','短袜','This is my sock.','联想：sock 袜子，与 rock 押韵。',5,2,1,1],
+['yours','/jɔːz/','你的；你们的','I like yours.','',5,2,1,1],
+['cap','/kæp/','帽子','I wear a cap.','',5,2,1,1],
+['mine','/maɪn/','我的','This book is mine.','联想：mine 我的，与 line 押韵。',5,2,1,1],
+['crayon','/ˈkreɪən/','彩色蜡笔（或粉笔、铅笔）','I draw with a crayon.','联想：crayon 蜡笔，与 ray 相关。',5,2,1,1],
+['umbrella','/ʌmˈbrelə/','伞','I have an umbrella.','联想：umbrella 伞，um + brella。',5,2,1,1],
+['nail','/neɪl/','钉子','I like nail.','',5,2,1,1],
+['drop','/drɒp/','使落下；掉落','Do not drop the cup.','联想：drop 掉落，与 crop 押韵。',5,2,1,1],
+['stick','/stɪk/','粘贴；粘住','Stick the paper.','联想：stick 粘/棍，与 pick 押韵。',5,2,1,1],
+['second','/ˈsekənd/','秒（时间单位）','I like second.','',5,2,1,1],
+['hers','/hɜːz/','她的','I like hers.','',5,2,1,1],
+['theirs','/ðeəz/','他们的；她们的；它们的','I like theirs.','',5,2,1,1],
+['tidy up','','把……整理好','Let\'s tidy up.','',5,2,1,3],
+['(be) full of','','装满……；充满……','I like .','',5,2,1,3],
+['a few','','几个；一些','I like a few.','',5,2,1,3],
+['why','/waɪ/','为什么','Why are you late?','联想：why 为什么，与 sky 押韵。',5,2,2,1],
+['because','/bɪˈkɒz/','因为','Because I like it.','构词：be + cause(原因)。',5,2,2,1],
+['study','/ˈstʌdi/','书房；学习','This is my study.','联想：study 书房/学习。',5,2,2,1],
+['dining room','','餐室；餐厅','I like dining room.','',5,2,2,1],
+['wild goose','','大雁（复数wild geese）','I like wild goose.','',5,2,2,1],
+['change','/tʃeɪndʒ/','改变；变化','The leaves change colour.','联想：change 变化，与 chance 形近。',5,2,2,1],
+['place','/pleɪs/','地方','This is a nice place.','联想：place 地方，与 face(脸) 押韵。',5,2,2,1],
+['twice','/twaɪs/','两次','I like twice.','',5,2,2,1],
+['every','/ˈevri/','每；每个','I like every.','',5,2,2,1],
+['north','/nɔːθ/','北方；向北','Beijing is in the north.','联想：north 北，反义 south。',5,2,2,1],
+['south','/saʊθ/','南方；向南','Sanya is in the south.','联想：south 南，反义 north。',5,2,2,1],
+['enough','/ɪˈnʌf/','足够的','I have enough money.','联想：enough 足够，与 rough 押韵。',5,2,2,1],
+['then','/ðen/','然后','Then I go home.','联想：then 然后，与 when 相关。',5,2,2,1],
+['all day','','一天到晚','I like all day.','',5,2,2,3],
+['future','/ˈfjuːtʃə(r)/','将来；未来','In the future, I will be a doctor.','联想：future 未来，与 picture 押韵。',5,2,3,1],
+['stand','/stænd/','站；站住','Please stand up.','联想：stand 站，反义 sit。',5,2,3,1],
+['machine','/məˈʃiːn/','机器','I like machine.','',5,2,3,1],
+['will','/wɪl/','将；将会','I will go tomorrow.','联想：will 将，与 hill 押韵。',5,2,3,1],
+['exercise','/ˈeksəsaɪz/','运动；锻炼；活动','I do exercise every day.','联想：exercise 锻炼，与 excuse 形近。',5,2,3,1],
+['early','/ˈɜːli/','早；提早','I get up early.','联想：early 早，反义 late。',5,2,3,1],
+['easily','/ˈiːzəli/','容易地','I can do it easily.','构词：easy 变形 + -ly。',5,2,3,1],
+['hard','/hɑːd/','努力地','The question is hard.','联想：hard 难/硬，反义 easy/soft。',5,2,3,1],
+['more','/mɔː(r)/','更多的','I want more rice.','联想：more 更多，反义 less。',5,2,3,1],
+['in the future','','将来','I like in the future.','',5,2,3,3],
+['in front of','','在……前面','I like in front of.','',5,2,3,3],
+['take a photo','','拍照','Let\'s take a photo.','',5,2,3,3],
+['wear glasses','','戴眼镜','Let\'s wear glasses.','',5,2,3,3],
+['do exercise','','做运动','Let\'s do exercise.','',5,2,3,3],
+['(be) weak in','','不擅长','I like .','',5,2,3,3],
+['not ... any more','','不再','I like not ... any more.','',5,2,3,3],
+['storybook','/ˈstɔːribʊk/','故事书','This is my storybook.','构词：story(故事) + book(书)。',5,2,4,1],
+['buy','/baɪ/','买','I buy a book.','联想：buy 买，与 by(在旁) 同音。',5,2,4,1],
+['story','/ˈstɔːri/','故事','I like story.','',5,2,4,1],
+['dictionary','/ˈdɪkʃənri/','字典；词典','I like dictionary.','',5,2,4,1],
+['magazine','/ˌmæɡəˈziːn/','杂志','I like magazine.','',5,2,4,1],
+['newspaper','/ˈnjuːzpeɪpə(r)/','报纸','I like newspaper.','',5,2,4,1],
+['week','/wiːk/','周；星期','There are seven days in a week.','联想：week 星期，与 weak(弱) 同音。',5,2,4,1],
+['student','/ˈstjuːdnt/','学生','I am a student.','词根：study(学习) + -ent(人)。',5,2,4,1],
+['poster','/ˈpəʊstə(r)/','海报','I like poster.','',5,2,4,1],
+['best','/best/','最好的','You are my best friend.','联想：best 最好，good 的最高级。',5,2,4,1],
+['writer','/ˈraɪtə(r)/','作家','He is a writer.','构词：write(写) + -er(人)。',5,2,4,1],
+['over there','','在那边','I like over there.','',5,2,4,3],
+['do a survey','','做调查','Let\'s do a survey.','',5,2,4,3],
+['act ... out','','表演','Let\'s act ... out.','',5,2,4,3],
+['weekend','/ˌwiːkˈend/','周末','I play on the weekend.','构词：week(周) + end(末)。',5,2,5,1],
+['stay','/steɪ/','待；暂住；逗留','I stay at home.','联想：stay 停留，与 day 押韵。',5,2,5,1],
+['film','/fɪlm/','电影','This is a film.','联想：film 胶卷/电影。',5,2,5,1],
+['boat','/bəʊt/','小船；舟','This is a boat.','联想：boat 小船，o 像船身。',5,2,5,1],
+['plan','/plæn/','安排；计划','I have a plan.','联想：plan 计划，与 plane(飞机) 形近。',5,2,5,1],
+['tomorrow','/təˈmɒrəʊ/','明天','See you tomorrow.','联想：tomorrow 明天，双写 r。',5,2,5,1],
+['build','/bɪld/','建筑；建造','I can build.','',5,2,5,1],
+['next','/nekst/','紧接着；随后；紧接着的','Next, turn left.','联想：next 下一个，与 text 押韵。',5,2,5,1],
+['swing','/swɪŋ/','秋千','I play on the swing.','联想：swing 秋千，与 wing 押韵。',5,2,5,1],
+['cry','/kraɪ/','哭；喊叫','The baby cries.','联想：cry 哭，与 dry(干) 押韵。',5,2,5,1],
+['until','/ənˈtɪl/','直到','Wait until five.','联想：until 直到，与 till 同义。',5,2,5,1],
+['see a film','','看电影','Let\'s see a film.','',5,2,5,3],
+['row a boat','','划船','Let\'s row a boat.','',5,2,5,3],
+['holiday','/ˈhɒlədeɪ/','假日；假期','I like summer holiday.','构词：holi(圣) + day(日)，假期。',5,2,6,1],
+['clear','/klɪə(r)/','清澈的','The water is clear.','联想：clear 清澈，与 ear 押韵。',5,2,6,1],
+['seafood','/ˈsiːfuːd/','海鲜','I like seafood.','构词：sea(海) + food(食物)。',5,2,6,1],
+['hotel','/həʊˈtel/','旅馆','We stay in a hotel.','联想：hotel 旅馆，与 hostel 同源。',5,2,6,1],
+['island','/ˈaɪlənd/','岛','The island is beautiful.','联想：island 岛，s 不发音。',5,2,6,1],
+['butterfly','/ˈbʌtəflaɪ/','蝴蝶','The butterfly is beautiful.','构词：butter(黄油) + fly(飞)，蝴蝶。',5,2,6,1],
+['how long','','多久','I like how long.','',5,2,6,3],
+['go swimming','','去游泳','Let\'s go swimming.','',5,2,6,3],
+['in the south of','','在……的南部','I like in the south of.','',5,2,6,3],
+['all year round','','一年到头','I like all year round.','',5,2,6,3],
+['meet','/miːt/','迎接；会见','I meet my friend.','联想：meet 迎接，与 meat 同音。',5,2,7,1],
+['school gate','','校门；校门口','I like school gate.','',5,2,7,1],
+['art room','','美术室','I like art room.','',5,2,7,1],
+['hall','/hɔːl/','礼堂','We sing in the hall.','联想：hall 礼堂，与 all 押韵。',5,2,7,1],
+['finally','/ˈfaɪnəli/','最后','Finally, we go home.','构词：final(最后) + -ly。',5,2,7,1],
+['meeting room','','会客室；会议室','I like meeting room.','',5,2,7,1],
+['show','/ʃəʊ/','给……看','Let me show you.','联想：show 展示，与 snow(雪) 形近。',5,2,7,1],
+['project','/ˈprɒdʒekt/','课题','This is my project.','构词：pro(前) + ject(投)。',5,2,7,1],
+['board','/bɔːd/','布告牌；木板','This is a board.','联想：board 板，与 broad 形近。',5,2,7,1],
+['which','/wɪtʃ/','哪一个；哪一些','Which one do you like?','联想：which 哪个，与 witch 同音。',5,2,8,1],
+['trousers','/ˈtraʊzəz/','裤子','These are my trousers.','联想：trousers 裤子，成双成对用复数。',5,2,8,1],
+['size','/saɪz/','尺码','What size is it?','联想：size 尺寸，与 rise 押韵。',5,2,8,1],
+['sweater','/ˈswetə(r)/','毛衣','This is my sweater.','构词：sweat(汗) + -er，保暖出汗的毛衣。',5,2,8,1],
+['coat','/kəʊt/','外套；大衣','This is my coat.','联想：coat 外套，与 boat(船) 押韵。',5,2,8,1],
+['shoe','/ʃuː/','鞋','I like shoe.','',5,2,8,1],
+['emperor','/ˈempərə(r)/','皇帝','The emperor is old.','联想：emperor 皇帝，与 empire 同源。',5,2,8,1],
+['only','/ˈəʊnli/','只有；仅','I only have one.','',5,2,8,1],
+['nod','/nɒd/','点头','He nods his head.','联想：nod 点头，与 not 形近。',5,2,8,1],
+['smile','/smaɪl/','笑容；微笑','She has a nice smile.','联想：smile 微笑，与 mile 押韵。',5,2,8,1],
+['money','/ˈmʌni/','钱','I have some money.','联想：money 钱，与 monkey 形近。',5,2,8,1],
+['keep','/kiːp/','保持','Keep quiet, please.','联想：keep 保持，与 sleep 押韵。',5,2,8,1],
+['laugh','/lɑːf/','大笑','We laugh together.','联想：laugh 大笑，gh 发 /f/。',5,2,8,1],
+['try ... on','','试穿（衣物）','Let\'s try ... on.','',5,2,8,3],
+['put ... on','','穿；戴','Let\'s put ... on.','',5,2,8,3],
+['keep quiet','','保持安静','Let\'s keep quiet.','',5,2,8,3],
+['have a look','','看一看','Let\'s have a look.','',5,2,8,3],
+['ill','/ɪl/','生病的；不舒服','He is ill.','联想：ill 生病，与 hill 押韵。',5,2,9,1],
+['headache','/ˈhedeɪk/','头痛','I have a headache.','构词：head(头) + ache(痛)。',5,2,9,1],
+['fever','/ˈfiːvə(r)/','发烧；发热','I have a fever.','联想：fever 发烧，与 ever 押韵。',5,2,9,1],
+['should','/ʃʊd/','应该','You should study hard.','联想：should 应该，与 would 相关。',5,2,9,1],
+['medicine','/ˈmedsn/','药','Take the medicine.','联想：medicine 药，与 medical 同源。',5,2,9,1],
+['rest','/rest/','休息','Have a rest.','联想：rest 休息，与 best 押韵。',5,2,9,1],
+['toothache','/ˈtuːθeɪk/','牙痛','I have a toothache.','构词：tooth(牙) + ache(痛)。',5,2,9,1],
+['toothless','/ˈtuːθləs/','没有牙齿的','The old man is toothless.','',5,2,9,1],
+['present','/ˈpreznt/','礼物','This is a present.','联想：present 礼物，与 parent 形近。',5,2,9,1],
+['world','/wɜːld/','世界','The world is big.','联想：world 世界，与 word(词) 形近。',5,2,9,1],
+['dentist','/ˈdentɪst/','牙医','I see a dentist.','构词：dent(牙) + -ist(人)。',5,2,9,1],
+['have a headache','','头疼','Let\'s have a headache.','',5,2,9,3],
+['have a fever','','发烧','Let\'s have a fever.','',5,2,9,3],
+['have a cold','','感冒','Let\'s have a cold.','',5,2,9,3],
+['have a rest','','休息一下','Let\'s have a rest.','',5,2,9,3],
+['get well','','康复','Let\'s get well.','',5,2,9,3],
+['have a toothache','','牙疼','Let\'s have a toothache.','',5,2,9,3],
+['have a meeting','','开会','Let\'s have a meeting.','',5,2,9,3],
+['pull ... out','','把……拔出','Let\'s pull ... out.','',5,2,9,3],
+['invention','/ɪnˈvenʃn/','发明；创造','The phone is a great invention.','构词：invent(发明) + -ion。',5,2,10,1],
+['watch','/wɒtʃ/','手表','I watch TV.','联想：watch 看/手表。',5,2,10,1],
+['anywhere','/ˈeniweə(r)/','任何地方','I can go anywhere.','构词：any(任何) + where(地方)。',5,2,10,1],
+['travel','/ˈtrævl/','旅行；长途行走','I travel by train.','联想：travel 旅行，与 trouble 形近。',5,2,10,1],
+['invent','/ɪnˈvent/','发明','He invents a machine.','联想：invent 发明，与 event 形近。',5,2,10,1],
+['something','/ˈsʌmθɪŋ/','某事；某物','I have something to tell you.','构词：some(某) + thing(东西)。',5,2,10,1],
+['myself','/maɪˈself/','我自己','I do it myself.','构词：my(我) + self(自己)。',5,2,10,1],
+['camera','/ˈkæmərə/','相机','I take photos with a camera.','音译词：camera 相机。',5,2,10,1],
+['far away from ...','','远离……','far away from ...','',5,2,10,3],
+['festival','/ˈfestɪvl/','节日','Spring Festival is important.','联想：festival 节日，与 festive 同源。',5,2,11,1],
+['important','/ɪmˈpɔːtnt/','重要的','This is important.','词根：import(重要) + -ant。',5,2,11,1],
+['call','/kɔːl/','把……叫做','I call my mother.','联想：call 叫，与 ball 押韵。',5,2,11,1],
+['dumpling','/ˈdʌmplɪŋ/','饺子','We eat dumplings.','联想：dumpling 饺子，与 dump 形近。',5,2,11,1],
+['relative','/ˈrelətɪv/','亲戚','My relatives visit us.','词根：relat(联系) + -ive。',5,2,11,1],
+['red packet','','红包','I like red packet.','',5,2,11,1],
+['firework','/ˈfaɪəwɜːk/','烟火；烟花','We watch fireworks.','构词：fire + work。',5,2,11,1],
+['monster','/ˈmɒnstə(r)/','怪物','The monster is scary.','联想：monster 怪物，与 master 形近。',5,2,11,1],
+['end','/end/','结尾；结束','The story ends.','联想：end 结束，反义 begin。',5,2,11,1],
+['village','/ˈvɪlɪdʒ/','村庄','The village is quiet.','联想：village 村庄，与 age 押韵。',5,2,11,1],
+['last','/lɑːst/','最后的','This is the last one.','联想：last 最后，反义 first。',5,2,11,1],
+['firecracker','/ˈfaɪəkrækə(r)/','鞭炮；爆竹','We set off firecrackers.','构词：fire + cracker(爆裂物)。',5,2,11,1],
+['mooncake','/ˈmuːnkeɪk/','月饼','I like mooncakes.','构词：moon(月) + cake(饼)。',5,2,11,1],
+['at the end of','','在……的最后','I like at the end of.','',5,2,11,3],
+['giant','/ˈdʒaɪənt/','巨人','The giant is strong.','联想：giant 巨人，与 g 相关。',5,2,12,1],
+['wall','/wɔːl/','墙；围墙','The wall is high.','联想：wall 墙，与 ball 押韵。',5,2,12,1],
+['kind','/kaɪnd/','友好的；体贴的','He is kind to me.','联想：kind 友善/种类。',5,2,12,1],
+['through','/θruː/','穿过','The cat runs through the door.','联想：through 穿过，gh 不发音。',5,2,12,1],
+['no entry','','禁止进入','I like no entry.','',5,2,12,3],
+['(be) kind to ...','','对……友好','(be) kind to ...','',5,2,12,3],
+['knock down','','推倒；拆掉','Let\'s knock down.','',5,2,12,3],
+['meet the neighbours','','结识邻居','Let\'s meet the neighbours.','',6,1,1,1],
+['make new friends','','交新朋友','Let\'s make new friends.','',6,1,1,1],
+['go ice skating','','去滑冰','Let\'s go ice skating.','',6,1,1,1],
+['throw snowballs','','扔雪球','Let\'s throw snowballs.','',6,1,1,1],
+['ago','/əˈɡəʊ/','以前','A long time ago.','联想：ago 以前，与 go 相关。',6,1,1,1],
+['postcard','/ˈpəʊstkɑːd/','明信片','I send a postcard.','构词：post(邮) + card(卡)。',6,1,1,1],
+['lonely','/ˈləʊnli/','孤独的','He feels lonely.','构词：lone(孤单) + -ly。',6,1,1,1],
+['miss','/mɪs/','想念','I miss my home.','联想：miss 想念，与 kiss 押韵。',6,1,1,1],
+['PS','/ˌpiː ˈes/','附言','I like PS.','',6,1,1,1],
+['homeless','/ˈhəʊmləs/','无家可归的','The homeless dog is poor.','构词：home(家) + -less(无)。',6,1,1,1],
+['ski','/skiː/','滑雪','I can ski.','联想：ski 滑雪，与 sky 形近。',6,1,1,1],
+['raise money','','募捐钱','Let\'s raise money.','',6,1,1,1],
+['I\'m so excited!','','我太激动了！','I\'m so excited!','',6,1,1,3],
+['ink painting','','水墨画','I like ink painting.','',6,1,2,1],
+['oil painting','','油画','I like oil painting.','',6,1,2,1],
+['artist','/ˈɑːtɪst/','艺术家','She is an artist.','构词：art(艺术) + -ist(人)。',6,1,2,1],
+['paintbrush','/ˈpeɪntbrʌʃ/','画笔','I like paintbrush.','',6,1,2,1],
+['powerful','/ˈpaʊəfl/','有力量的','The lion is powerful.','构词：power(力量) + -ful。',6,1,2,1],
+['express','/ɪkˈspres/','表达','Art can express feelings.','构词：ex(出) + press(压)，表达。',6,1,2,1],
+['painter','/ˈpeɪntə(r)/','画家','He is a painter.','构词：paint(画) + -er(人)。',6,1,2,1],
+['own','/əʊn/','自己的','This is my own book.','联想：own 自己的，与 down 押韵。',6,1,2,1],
+['anyone','/ˈeniwʌn/','任何人','Can anyone help me?','构词：any + one。',6,1,2,1],
+['share','/ʃeə(r)/','分享','We share the toys.','联想：share 分享，与 care(关心) 押韵。',6,1,2,1],
+['touch one\'s heart','','打动某人的心','I like touch one\'s heart.','',6,1,2,3],
+['show one\'s feelings','','表现某人的情感','Let\'s show one\'s feelings.','',6,1,2,3],
+['be famous for','','因……而出名','I like be famous for.','',6,1,2,2],
+['protect','/prəˈtekt/','保护','We protect animals.','词根：pro(前) + tect(盖)。',6,1,3,1],
+['warm up','','热身','Let\'s warm up.','',6,1,3,1],
+['get hurt','','受伤','Let\'s get hurt.','',6,1,3,1],
+['call for help','','呼叫救援','Let\'s call for help.','',6,1,3,1],
+['break','/breɪk/','（使）破，裂，碎','Do not break the glass.','联想：break 打破，与 bread 形近。',6,1,3,1],
+['arm','/ɑːm/','手臂','My arm hurts.','联想：arm 手臂，与 farm 押韵。',6,1,3,1],
+['skatepark','/ˈskeɪtpɑːk/','滑板运动场','We play in the skatepark.','',6,1,3,1],
+['luckily','/ˈlʌkɪli/','幸好','Luckily, I am fine.','构词：lucky(幸运) 变形 + -ly。',6,1,3,1],
+['helmet','/ˈhelmɪt/','头盔','Wear a helmet.','联想：helmet 头盔，与 help 相关。',6,1,3,1],
+['X-ray','/ˈeks reɪ/','X光检查','I like X-ray.','',6,1,3,1],
+['choose','/tʃuːz/','选择','Choose one, please.','联想：choose 选择，与 cheese 形近。',6,1,3,1],
+['lost','/lɒst/','迷路的','The boy is lost.','联想：lost 迷路，与 cost 押韵。',6,1,3,1],
+['push','/pʊʃ/','推','Push the door.','联想：push 推，反义 pull。',6,1,4,1],
+['pull','/pʊl/','拉','Pull the rope.','联想：pull 拉，反义 push。',6,1,4,1],
+['heavy','/ˈhevi/','重的','The box is heavy.','联想：heavy 重，反义 light。',6,1,4,1],
+['light','/laɪt/','轻的','The bag is light.','联想：light 轻/光，反义 heavy/dark。',6,1,4,1],
+['easy','/ˈiːzi/','容易的','This is easy.','联想：easy 容易，反义 difficult。',6,1,4,1],
+['difficult','/ˈdɪfɪkəlt/','难的','This is difficult.','联想：difficult 难，反义 easy。',6,1,4,1],
+['win','/wɪn/','获胜','We win the game.','联想：win 赢，反义 lose。',6,1,4,1],
+['force','/fɔːs/','力','Push with force.','联想：force 力，与 horse 押韵。',6,1,4,1],
+['movement','/ˈmuːvmənt/','移动','The movement is slow.','构词：move + -ment。',6,1,4,1],
+['towards','/təˈwɔːdz/','向；朝','Walk towards the door.','构词：to + wards(向)。',6,1,4,1],
+['cause','/kɔːz/','起因；引起','What is the cause?','联想：cause 原因，与 pause 押韵。',6,1,4,1],
+['speed','/spiːd/','速度','The speed is high.','联想：speed 速度，与 seed 形近。',6,1,4,1],
+['tortoise','/ˈtɔːtəs/','陆龟；龟','The tortoise is slow.','联想：tortoise 龟，与 tourist 形近。',6,1,4,1],
+['yourself','/jɔːˈself/','你自己','Do it yourself.','',6,1,4,1],
+['invention','/ɪnˈvenʃn/','发明','The phone is a great invention.','构词：invent(发明) + -ion。',6,1,5,1],
+['slide','/slaɪd/','滑梯','I play on the slide.','联想：slide 滑梯/滑，与 glide 形近。',6,1,5,1],
+['seesaw','/ˈsiːsɔː/','跷跷板','We play on the seesaw.','构词：see + saw，跷跷板。',6,1,5,1],
+['watch','/wɒtʃ/','手表','I watch TV.','联想：watch 看/手表。',6,1,5,1],
+['lever','/ˈliːvə(r)/','杠杆','This is a lever.','联想：lever 杠杆，与 ever 押韵。',6,1,5,1],
+['wheel','/wiːl/','轮子','The wheel turns.','联想：wheel 轮子，与 heel 押韵。',6,1,5,1],
+['simple','/ˈsɪmpl/','简单的','This is a simple machine.','联想：simple 简单，反义 complex。',6,1,5,1],
+['machine','/məˈʃiːn/','机器','I like machine.','',6,1,5,1],
+['basic','/ˈbeɪsɪk/','基本的；基础的','This is basic.','联想：basic 基础，与 base 同源。',6,1,5,1],
+['everyday','/ˈevrideɪ/','每天的','This is my everyday life.','构词：every + day。',6,1,5,1],
+['playground','/ˈpleɪɡraʊnd/','游乐场','We play on the playground.','',6,1,5,1],
+['point','/pɔɪnt/','尖端；点','Point to the door.','联想：point 点/指，与 joint 押韵。',6,1,5,1],
+['truck','/trʌk/','卡车','The truck carries rubbish.','联想：truck 卡车，与 duck 押韵。',6,1,5,1],
+['inside','/ˌɪnˈsaɪd/','在……里','The cat is inside.','构词：in + side，里面。',6,1,5,1],
+['tiny','/ˈtaɪni/','极小的','The ant is tiny.','联想：tiny 极小，反义 huge。',6,1,5,1],
+['ramp','/ræmp/','斜坡；坡道','The ramp is long.','联想：ramp 坡道，与 lamp 押韵。',6,1,5,1],
+['wheelchair','/ˈwiːltʃeə(r)/','轮椅','He uses a wheelchair.','构词：wheel(轮) + chair(椅)。',6,1,5,1],
+['hill','/hɪl/','山丘；小山','The hill is green.','联想：hill 小山，与 ill 押韵。',6,1,5,1],
+['nature','/ˈneɪtʃə(r)/','自然界；大自然','I love nature.','词根：nat(生) + -ure。',6,1,5,1],
+['board','/bɔːd/','木板','This is a board.','联想：board 板，与 broad 形近。',6,1,5,1],
+['push down','','向下按压','Let\'s push down.','',6,1,5,3],
+['shopping centre','','购物中心','I like shopping centre.','',6,1,6,1],
+['art gallery','','美术馆','I like art gallery.','',6,1,6,1],
+['amusement park','','游乐园','I like amusement park.','',6,1,6,1],
+['historic building','','历史建筑','I like historic building.','',6,1,6,1],
+['modern building','','现代建筑','I like modern building.','',6,1,6,1],
+['snapshot','/ˈsnæpʃɒt/','快照；简介','This is a snapshot.','构词：snap + shot。',6,1,6,1],
+['nobody','/ˈnəʊbədi/','无人','Nobody is here.','构词：no + body。',6,1,6,1],
+['bored','/bɔːd/','厌倦的','I am bored.','联想：bored 厌倦，与 board 同音。',6,1,6,1],
+['emperor','/ˈempərə(r)/','皇帝','The emperor is old.','联想：emperor 皇帝，与 empire 同源。',6,1,6,1],
+['once','/wʌns/','曾经','Once upon a time.','联想：once 曾经/一次，与 one 同源。',6,1,6,1],
+['opera','/ˈɒprə/','歌剧','We watch an opera.','联想：opera 歌剧，与 open 形近。',6,1,6,1],
+['sell','/sel/','出售','They sell books.','联想：sell 卖，反义 buy。',6,1,6,1],
+['a mix of','','……的混合','I like a mix of.','',6,1,6,3],
+['thousands of','','成千上万的','I like thousands of.','',6,1,6,3],
+['take a trip','','去旅行','Let\'s take a trip.','',6,1,6,3],
+['a drop of','','一滴','I like a drop of.','',6,1,6,3],
+['Xu Beihong','','徐悲鸿（中国画家）','I like Xu Beihong.','',6,1,90,3],
+['Vincent van Gogh','','文森特·梵高（荷兰画家）','I like Vincent van Gogh.','',6,1,90,3],
+['Russia','/ˈrʌʃə/','俄罗斯','I like Russia.','',6,1,90,3],
+['USA','/ˌjuː es ˈeɪ/','美国','I like USA.','',6,1,90,3],
+['Xi\'an Bell Tower','','西安钟楼','I like Xi\'an Bell Tower.','',6,1,90,3],
+['Canton Tower','','广州塔','I like Canton Tower.','',6,1,90,3],
+['China Art Museum','','中华艺术宫','I like China Art Museum.','',6,1,90,3],
+['Olympic Park','','奥林匹克公园','I like Olympic Park.','',6,1,90,3],
+['Beijing roast duck','','北京烤鸭','I like Beijing roast duck.','',6,1,90,3],
+['National Centre for the Performing Arts','','国家大剧院','I like National Centre for the Performing Arts.','',6,1,90,3],
+['National Stadium','','国家体育场','I like National Stadium.','',6,1,90,3],
+['Olympic Games','','奥林匹克运动会','I like Olympic Games.','',6,1,90,3],
+['the Pearl River','','珠江','I like the Pearl River.','',6,1,90,3],
+['the Seine River','','塞纳河','I like the Seine River.','',6,1,90,3],
+['Lake Texcoco','','特斯科科湖','I like Lake Texcoco.','',6,1,90,3],
+['Mexico City','','墨西哥城','I like Mexico City.','',6,1,90,3],
+['weigh','/weɪ/','有……重；重','I weigh 30 kilograms.','联想：weigh 称重，与 way 同音。',6,2,1,1],
+['kilogram','/ˈkɪləɡræm/','千克；公斤（缩略形式kg）','A bag of rice is ten kilograms.','构词：kilo(千) + gram(克)。',6,2,1,1],
+['centimetre','/ˈsentɪmiːtə(r)/','厘米（缩略形式cm）','The ruler is 20 centimetres long.','构词：centi(百分之一) + metre(米)。',6,2,1,1],
+['taller','/ˈtɔːlə(r)/','更高的','He is taller than me.','构词：tall + -er，比较级。',6,2,1,1],
+['fan','/fæn/','（足球、电影等）迷；爱好者','I am a football fan.','联想：fan 迷/扇子。',6,2,1,1],
+['fantastic','/fænˈtæstɪk/','极好的','That is fantastic!','联想：fantastic 极好，与 fantasy 同源。',6,2,1,1],
+['themselves','/ðəmˈselvz/','他们自己；她们自己；它们自己','They do it themselves.','',6,2,1,1],
+['theatre','/ˈθɪətə(r)/','剧院','We go to the theatre.','联想：theatre 剧院，与 theater(美) 同义。',6,2,1,1],
+['go fishing','','去钓鱼','Let\'s go fishing.','',6,2,1,3],
+['enjoy oneself','','玩得愉快；得到乐趣','I like enjoy oneself.','',6,2,1,3],
+['get ... in','','收割','Let\'s get ... in.','',6,2,1,3],
+['life','/laɪf/','生活','Life is good.','联想：life 生活，复数 lives。',6,2,2,1],
+['writer','/ˈraɪtə(r)/','作家','He is a writer.','构词：write(写) + -er(人)。',6,2,2,1],
+['photographer','/fəˈtɒɡrəfə(r)/','摄影师','He is a photographer.','构词：photo(照片) + graph + -er。',6,2,2,1],
+['film','/fɪlm/','胶卷','This is a film.','联想：film 胶卷/电影。',6,2,2,1],
+['digital','/ˈdɪdʒɪtl/','数码的','This is a digital camera.','联想：digital 数码，digit(数字) + -al。',6,2,2,1],
+['street cleaner','','环卫工人','I like street cleaner.','',6,2,2,1],
+['sweep','/swiːp/','扫地','She sweeps the floor.','联想：sweep 扫，与 sleep 形近。',6,2,2,1],
+['broom','/bruːm/','扫帚','This is a broom.','联想：broom 扫帚，与 room 押韵。',6,2,2,1],
+['drive','/draɪv/','驾驶','He drives a bus.','联想：drive 驾驶，与 driver 相关。',6,2,2,1],
+['street sweeper','','扫地车','I like street sweeper.','',6,2,2,1],
+['wife','/waɪf/','妻子','This is my wife.','联想：wife 妻子，复数 wives。',6,2,2,1],
+['poor','/pɔː(r)/','贫穷的；差的；次的','The poor man is kind.','联想：poor 贫穷，反义 rich。',6,2,2,1],
+['fairy','/ˈfeəri/','仙子；小精灵','The fairy is kind.','联想：fairy 仙子，与 fair(公平) 相关。',6,2,2,1],
+['wish','/wɪʃ/','愿望；祝愿','Make a wish.','联想：wish 愿望，与 fish 押韵。',6,2,2,1],
+['by hand','','用手','I like by hand.','',6,2,2,3],
+['right away','','立即；马上','I like right away.','',6,2,2,3],
+['in a short time','','很快','I like in a short time.','',6,2,2,3],
+['carry','/ˈkæri/','背；提；拿','I carry the bag.','联想：carry 搬运，双写 r。',6,2,3,1],
+['online','/ˌɒnˈlaɪn/','在线地；在线的','I learn online.','构词：on(上) + line(线)。',6,2,3,1],
+['head teacher','','校长','I like head teacher.','',6,2,3,1],
+['PS','/ˌpiː ˈes/','附言（用于信末）','I like PS.','',6,2,3,1],
+['mountain','/ˈmaʊntən/','山；山脉','The mountain is high.','联想：mountain 山，与 fountain 押韵。',6,2,3,1],
+['even','/ˈiːvn/','甚至','Even a child knows it.','联想：even 甚至，与 seven 押韵。',6,2,3,1],
+['space','/speɪs/','太空','The rocket goes into space.','联想：space 太空，与 face 押韵。',6,2,3,1],
+['dinosaur','/ˈdaɪnəsɔː(r)/','恐龙','The dinosaur is big.','联想：dinosaur 恐龙，dino + saur。',6,2,3,1],
+['a piece of','','一张；一片','I like a piece of.','',6,2,3,3],
+['have a picnic','','去野餐','Let\'s have a picnic.','',6,2,3,3],
+['better and better','','越来越好','I like better and better.','',6,2,3,3],
+['oil','/ɔɪl/','油','We use oil to cook.','联想：oil 油，与 soil(土) 押韵。',6,2,4,1],
+['oil painting','','油画','I like oil painting.','',6,2,4,1],
+['powerful','/ˈpaʊəfl/','强有力的；力量大的','The lion is powerful.','构词：power(力量) + -ful。',6,2,4,1],
+['ink','/ɪŋk/','墨水；墨汁','The ink is black.','联想：ink 墨水，与 pink 押韵。',6,2,4,1],
+['Chinese ink painting','','中国水墨画','I like Chinese ink painting.','',6,2,4,1],
+['brush','/brʌʃ/','画笔；刷子；刷','I paint with a brush.','联想：brush 刷子/刷，与 rush 押韵。',6,2,4,1],
+['paints','/peɪnts/','绘画颜料','These are my paints.','联想：paints 颜料，paint + s。',6,2,4,1],
+['artist','/ˈɑːtɪst/','艺术家；（尤指）画家','She is an artist.','构词：art(艺术) + -ist(人)。',6,2,4,1],
+['unhappy','/ʌnˈhæpi/','不高兴的','He is unhappy.','构词：un(不) + happy。',6,2,4,1],
+['carefully','/ˈkeəfəli/','仔细地','Please listen carefully.','构词：careful(仔细) + -ly。',6,2,4,1],
+['on the left','','在左边','I like on the left.','',6,2,4,3],
+['on the right','','在右边','I like on the right.','',6,2,4,3],
+['all the time','','一直；始终','I like all the time.','',6,2,4,3],
+['craft','/krɑːft/','手艺；工艺','I like craft.','联想：craft 手艺，与 raft 押韵。',6,2,5,1],
+['crown','/kraʊn/','王冠；皇冠','The king wears a crown.','联想：crown 王冠，与 brown 押韵。',6,2,5,1],
+['scissors','/ˈsɪzəz/','剪刀','Cut with scissors.','联想：scissors 剪刀，成双用复数。',6,2,5,1],
+['tape','/teɪp/','胶带','I need some tape.','联想：tape 胶带，与 shape 押韵。',6,2,5,1],
+['glue','/ɡluː/','胶水','Use some glue.','联想：glue 胶水，与 blue 押韵。',6,2,5,1],
+['saw','/sɔː/','锯','He uses a saw.','联想：saw 锯，与 law 押韵。',6,2,5,1],
+['craftsman','/ˈkrɑːftsmən/','工匠；手艺人（复数craftsmen）','He is a craftsman.','构词：craft + s + man。',6,2,5,1],
+['tool','/tuːl/','工具','This is a tool.','联想：tool 工具，与 pool 押韵。',6,2,5,1],
+['easily','/ˈiːzəli/','容易地','I can do it easily.','构词：easy 变形 + -ly。',6,2,5,1],
+['himself','/hɪmˈself/','他自己','He does it himself.','',6,2,5,1],
+['still','/stɪl/','仍然','He is still here.','联想：still 仍然，与 hill 押韵。',6,2,5,1],
+['model house','','房子模型','I like model house.','',6,2,5,3],
+['a long time ago','','很久以前','I like a long time ago.','',6,2,5,3],
+['at work','','忙着（做事情）','I like at work.','',6,2,5,3],
+['say to oneself','','自言自语','I like say to oneself.','',6,2,5,3],
+['long race','','长跑','I like long race.','',6,2,6,1],
+['short race','','短跑','I like short race.','',6,2,6,1],
+['win','/wɪn/','获胜；赢','We win the game.','联想：win 赢，反义 lose。',6,2,6,1],
+['long jump','','跳远','I like long jump.','',6,2,6,1],
+['high jump','','跳高','I like high jump.','',6,2,6,1],
+['swimsuit','/ˈswɪmsuːt/','（尤指女式的）游泳衣','Wear a swimsuit.','构词：swim + suit。',6,2,6,1],
+['swimming cap','','游泳帽','I like swimming cap.','',6,2,6,1],
+['swimming pool','','游泳池','I like swimming pool.','',6,2,6,1],
+['warm-up','/ˈwɔːm ʌp/','准备活动；热身练习','I like warm-up.','',6,2,6,1],
+['fit','/fɪt/','健壮的','He is fit.','联想：fit 健壮，与 sit 押韵。',6,2,6,1],
+['swimming goggles','','游泳镜','I like swimming goggles.','',6,2,6,1],
+['bell','/bel/','铃铛','The bell rings.','联想：bell 铃，与 sell 形近。',6,2,7,1],
+['neck','/nek/','脖子','The giraffe has a long neck.','联想：neck 脖子，与 check 押韵。',6,2,7,1],
+['ago','/əˈɡəʊ/','以前','A long time ago.','联想：ago 以前，与 go 相关。',6,2,7,1],
+['gatekeeper','/ˈɡeɪtkiːpə(r)/','门卫','The gatekeeper is old.','构词：gate(门) + keeper(看守)。',6,2,7,1],
+['praise','/preɪz/','赞扬；称赞','The teacher praises me.','联想：praise 表扬，与 raise 押韵。',6,2,7,1],
+['praise ... for ...','','因……而表扬……','praise ... for ...','',6,2,7,3],
+['sign','/saɪn/','标识','Look at the sign.','联想：sign 标识，g 不发音。',6,2,8,1],
+['middle','/ˈmɪdl/','中间；中部；中心','I sit in the middle.','联想：middle 中间，与 mid 相关。',6,2,8,1],
+['special','/ˈspeʃl/','特别的','This is a special day.','词根：spec(看) + -ial。',6,2,8,1],
+['path','/pɑːθ/','小路；小径','Walk along the path.','联想：path 小路，与 bath 押韵。',6,2,8,1],
+['may','/meɪ/','可能；可以','May I come in?','联想：may 可能，与 day 押韵。',6,2,8,1],
+['lost','/lɒst/','迷路的；迷失的','The boy is lost.','联想：lost 迷路，与 cost 押韵。',6,2,8,1],
+['worry','/ˈwʌri/','担心','Do not worry.','联想：worry 担心，双写 r。',6,2,8,1],
+['follow','/ˈfɒləʊ/','跟随；跟着','Follow me, please.','联想：follow 跟随，与 hollow 押韵。',6,2,8,1],
+['in the middle','','在中间','I like in the middle.','',6,2,8,3],
+['look out','','小心；当心','Let\'s look out.','',6,2,8,3],
+['no smoking','','禁止吸烟','I like no smoking.','',6,2,8,3],
+['no swimming','','禁止游泳','I like no swimming.','',6,2,8,3],
+['get lost','','迷路','Let\'s get lost.','',6,2,8,3],
+['some time','','一段时间','I like some time.','',6,2,8,3],
+['on the way','','在路上','I like on the way.','',6,2,8,3],
+['reuse','/ˌriːˈjuːz/','重新利用','We reuse the box.','构词：re(再) + use(用)。',6,2,9,1],
+['can','/kæn/','金属罐','This is a can.','',6,2,9,1],
+['rubber','/ˈrʌbə(r)/','橡皮','This is my rubber.','',6,2,9,1],
+['vase','/vɑːz/','花瓶','The vase is beautiful.','联想：vase 花瓶，与 case 押韵。',6,2,9,1],
+['pen holder','','笔筒','I like pen holder.','',6,2,9,1],
+['envelope','/ˈenvələʊp/','信封','Put it in the envelope.','联想：envelope 信封，与 develop 形近。',6,2,9,1],
+['plastic','/ˈplæstɪk/','塑料制的；塑料的','I like plastic.','',6,2,9,1],
+['rubbish bin','','垃圾桶','I like rubbish bin.','',6,2,9,1],
+['truck','/trʌk/','卡车','The truck carries rubbish.','联想：truck 卡车，与 duck 押韵。',6,2,9,1],
+['piece','/piːs/','碎片；碎块','A piece of paper.','联想：piece 碎片，与 peace(和平) 同音。',6,2,9,1],
+['cloth','/klɒθ/','布；布料','This is a cloth.','联想：cloth 布，与 clothes 相关。',6,2,9,1],
+['throw away','','扔掉','Let\'s throw away.','',6,2,9,3],
+['fairy tale','','童话（故事）','I like fairy tale.','',6,2,10,1],
+['adult','/ˈædʌlt/','成年人','He is an adult.','联想：adult 成人，反义 child。',6,2,10,1],
+['well-known','/ˌwel ˈnəʊn/','众所周知的；著名的','I like well-known.','',6,2,10,1],
+['stronger','/ˈstrɒŋɡə(r)/','更强大的','The lion is stronger.','',6,2,10,1],
+['than','/ðæn/','比','He is taller than me.','',6,2,10,1],
+['scarf','/skɑːf/','围巾（复数scarves或scarfs）','I wear a scarf.','联想：scarf 围巾，复数 scarves。',6,2,10,1],
+['blow off','','吹掉','Let\'s blow off.','',6,2,10,3],
+['take off','','脱掉','Let\'s take off.','',6,2,10,3],
+['Western','/ˈwestən/','西方的','This is a Western festival.','构词：west + -ern。',6,2,11,1],
+['turkey','/ˈtɜːki/','火鸡','We eat turkey.','联想：turkey 火鸡，与 Turkey(土耳其) 同形。',6,2,11,1],
+['moment','/ˈməʊmənt/','时光；时刻','Wait a moment.','联想：moment 时刻，与 movement 形近。',6,2,11,1],
+['decorate','/ˈdekəreɪt/','装饰；布置','We decorate the house.','词根：decor(装饰) + -ate。',6,2,11,1],
+['bright','/braɪt/','明亮的；鲜艳的','The light is bright.','联想：bright 明亮，反义 dark。',6,2,11,1],
+['laugh at','','嘲笑','Let\'s laugh at.','',6,2,11,3],
+['pea','/piː/','豌豆','This is a pea.','联想：pea 豌豆，与 sea 押韵。',6,2,12,1],
+['pod','/pɒd/','豆荚','The pod is green.','联想：pod 豆荚，与 nod 押韵。',6,2,12,1],
+['forever','/fərˈevə(r)/','永远','We are friends forever.','构词：for + ever。',6,2,12,1],
+['bigger','/ˈbɪɡə(r)/','更大的','The elephant is bigger.','构词：big + g + er，比较级。',6,2,12,1],
+['excited','/ɪkˈsaɪtɪd/','兴奋的','I am so excited!','构词：excite(使兴奋) + -d。',6,2,12,1],
+['bullet','/ˈbʊlɪt/','子弹','The bullet is fast.','联想：bullet 子弹，双写 l。',6,2,12,1],
+['lazy','/ˈleɪzi/','懒惰的','The cat is lazy.','联想：lazy 懒惰，反义 hard-working。',6,2,12,1],
+['roof','/ruːf/','屋顶','The roof is red.','联想：roof 屋顶，与 proof 押韵。',6,2,12,1],
+['yard','/jɑːd/','院子','I play in the yard.','联想：yard 院子，与 card 押韵。',6,2,12,1],
+['hit','/hɪt/','碰撞；撞击','The ball hits the window.','联想：hit 碰撞，与 sit 押韵。',6,2,12,1],
+['see the world','','见世面','Let\'s see the world.','',6,2,12,3],
+['one by one','','一个接一个地','I like one by one.','',6,2,12,3],
+['look out of','','往外看','Let\'s look out of.','',6,2,12,3],
+];
+let _id=0;
+function buildWords(){
+  return VOCAB.map(v=>({
+    id:'v'+(++_id),
+    word:v[0], phonetic:v[1], meaning:v[2],
+    sentence:v[3]||'', memory:v[4]||'',
+    grade:v[5], semester:v[6], unit:v[7], level:v[8],
+    draw:0, correct:0
+  }));
+}
+
+/* ---------- 默认设置 ---------- */
+function defaultRange(){ return {3:[1,2],4:[1,2],5:[1,2],6:[1,2]}; }
+const DEFAULT_WEIGHT = {F:5,E:10,D:5,C:3,B:2,A:1};
+function defaultSettings(){
+  return {
+    name:'Sophia',
+    grade:3,
+    encourage:JSON.parse(JSON.stringify(DEFAULT_ENCOURAGE)),
+    practice:{range:defaultRange(), levels:[1,2,3], display:{word:true,phonetic:true,meaning:true,sentence:true,memory:true}, ratio:'proportional', count:10, weight:Object.assign({},DEFAULT_WEIGHT)},
+    assessment:{range:defaultRange(), levels:[1,2,3], ratio:'count', count:10, mode:'mixed', weight:Object.assign({},DEFAULT_WEIGHT)},
+    stats:{grades:[3,4,5,6]}
+  };
+}
+function normalizeSettings(s){
+  const def = defaultSettings();
+  s = s || {};
+  function rangeOf(v){
+    // 新结构：{3:[1,2],4:[1,2],...}
+    if(v && v.range && typeof v.range==='object' && !Array.isArray(v.range)) return v.range;
+    // 旧结构：grades 数组
+    const g = (v && Array.isArray(v.grades)) ? v.grades : GRADES;
+    const r = {};
+    g.forEach(x=>{ if(GRADES.includes(x)) r[x]=[1,2]; });
+    return r;
+  }
+  function levelsOf(v){
+    return (v && Array.isArray(v.levels)) ? v.levels.filter(l=>LEVEL[l]) : [1,2,3];
+  }
+  function weightOf(v){
+    // 兼容旧版：顶层 s.weight 作为两者默认值
+    const legacy = s.weight || {};
+    return Object.assign({}, DEFAULT_WEIGHT, legacy, (v && v.weight)||{});
+  }
+  const p = s.practice || {}, a = s.assessment || {}, st = s.stats || {};
+  return {
+    name: (s.name && s.name.trim()) ? s.name : def.name,
+    grade: GRADES.includes(s.grade) ? s.grade : 3,
+    encourage: Object.assign({}, def.encourage, s.encourage||{}),
+    practice: {
+      range: rangeOf(p),
+      levels: levelsOf(p),
+      display: Object.assign({}, def.practice.display, p.display||{}),
+      ratio: p.ratio==='proportional' ? 'proportional' : 'all',
+      count: Math.max(1, parseInt(p.count)||10),
+      weight: weightOf(p)
+    },
+    assessment: {
+      range: rangeOf(a),
+      levels: levelsOf(a),
+      ratio: a.ratio==='all' ? 'all' : 'count',
+      count: Math.max(1, parseInt(a.count)||10),
+      mode: (a.mode==='c2e'||a.mode==='e2c') ? a.mode : 'mixed',
+      weight: weightOf(a)
+    },
+    stats: {
+      grades: (Array.isArray(st.grades)) ? st.grades.filter(g=>GRADES.includes(g)) : [3,4,5,6]
+    }
+  };
+}
+
+/* ---------- 状态 ---------- */
+let state = loadState();
+let session = null; // {type:'practice'|'assessment', ...}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      if(d && Array.isArray(d.words)){
+        // 词库版本变化时，用新词库替换（保留设置，测评记录随旧词库作废）
+        const words = (d.vocabVersion === VOCAB_VERSION) ? d.words : buildWords();
+        return {version:APP_VERSION, vocabVersion:VOCAB_VERSION, settings:normalizeSettings(d.settings), words};
+      }
+    }
+  }catch(e){}
+  return {version:APP_VERSION, vocabVersion:VOCAB_VERSION, settings:defaultSettings(), words:buildWords()};
+}
+function saveState(){
+  if(!state.vocabVersion) state.vocabVersion = VOCAB_VERSION;
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+/* ---------- 工具 ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function accOf(w){ return w.draw>0 ? (w.correct/w.draw) : null; }
+function bandOf(w){
+  if(w.draw===0) return 'F';
+  const a=w.correct/w.draw;
+  if(a<=0.2) return 'E';
+  if(a<=0.4) return 'D';
+  if(a<=0.8) return 'C';
+  if(a<=0.95) return 'B';
+  return 'A';
+}
+function weightOf(w, weights){ return (weights[bandOf(w)])||1; }
+function bandColor(b){ return BAND[b].color; }
+function accText(w){ return w.draw>0 ? Math.round(w.correct/w.draw*100)+'%' : '—'; }
+
+function filterWords(range,levels){
+  return state.words.filter(w=>{
+    const sems = range[w.grade];
+    return sems && sems.includes(w.semester) && levels.includes(w.level);
+  });
+}
+function textbookOrder(a,b){
+  if(a.grade!==b.grade) return a.grade-b.grade;
+  if(a.semester!==b.semester) return a.semester-b.semester;
+  if((a.unit||0)!==(b.unit||0)) return (a.unit||0)-(b.unit||0);
+  return 0;
+}
+function levelPill(l){
+  const cls = l===1?'green':l===2?'yellow':'gray';
+  return '<span class="pill '+cls+'">'+LEVEL[l]+'</span>';
+}
+const UNIT_APPENDIX = {90:'专有名词',91:'星期',92:'数字',93:'月份',94:'基数词',95:'序数词'};
+function unitLabel(u){
+  if(u==null || u==='') return '—';
+  if(u>=90) return UNIT_APPENDIX[u] || '附录';
+  return 'U'+u;
+}
+function baseWord(w){
+  // 去除括号注释与句末标点，用于语音朗读
+  return String(w.word||w).split('(')[0].replace(/[.!?]+$/,'').trim();
+}
+function weightedSample(pool,n,weightFn){
+  const items=pool.slice(), res=[];
+  while(res.length<n && items.length){
+    const ws=items.map(weightFn);
+    const total=ws.reduce((a,b)=>a+b,0);
+    if(total<=0){ res.push(items.splice(Math.floor(Math.random()*items.length),1)[0]); continue; }
+    let r=Math.random()*total, idx=0;
+    for(let i=0;i<items.length;i++){ r-=ws[i]; if(r<=0){idx=i;break;} idx=i; }
+    res.push(items.splice(idx,1)[0]);
+  }
+  return res;
+}
+function tenDigitStamp(){
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  return String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+p(d.getHours())+p(d.getMinutes());
+}
+function speak(text){
+  try{
+    if(!window.speechSynthesis) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='en-US'; u.rate=0.9;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---------- Toast ---------- */
+let toastTimer=null;
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ---------- 路由 ---------- */
+function showPage(id){
+  if(session){
+    const ok = (id==='home') || (session.type==='practice' && id==='practice') || (session.type==='assessment' && id==='assessment');
+    if(!ok){ toast('练习/测评进行中，请先退出'); return; }
+  }
+  $$('.page').forEach(p=>p.classList.remove('active'));
+  $('#page-'+id).classList.add('active');
+  $$('#topNav button').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
+  $$('#bottomNav button').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
+  if(id==='home') renderHome();
+  if(id==='wordbank') renderWordbank();
+  if(id==='practice') renderPractice();
+  if(id==='assessment') renderAssessment();
+  if(id==='settings') renderSettings();
+  window.scrollTo(0,0);
+}
+
+/* ============================================================
+   主界面
+   ============================================================ */
+function renderHome(){
+  const s=state.settings, words=state.words;
+  const review = words.filter(w=>w.draw>0 && (w.correct/w.draw)<=0.4)
+    .sort((a,b)=>accOf(a)-accOf(b));
+  const fresh = words.filter(w=>w.draw===0);
+  const today = review.concat(fresh).slice(0,5);
+
+  let todayHtml='';
+  if(today.length===0){
+    todayHtml='<div class="muted" style="text-align:center;padding:10px;">🎉 没有需要重点复习的单词啦，去练习或测评巩固一下吧！</div>';
+  }else{
+    todayHtml = today.map(w=>{
+      const overdue = w.draw>0 && (w.correct/w.draw)<=0.2;
+      const acc = accText(w);
+      return '<div class="today-item'+(overdue?' overdue':'')+'">'
+        +'<span class="w">'+esc(w.word)+'</span>'
+        +'<span class="m">'+esc(w.meaning)+' · '+esc(SEM[w.semester])+' '+esc(w.grade)+'年级 · 正确率 '+esc(acc)+'</span>'
+        +(overdue?'<span class="pill red">急 · 需复习</span>':'<span class="pill yellow">待巩固</span>')
+        +'</div>';
+    }).join('');
+  }
+
+  const backupTip = words.length>=30
+    ? '<div class="backup-tip">💾 数据已积累 <b>'+words.length+'</b> 条，建议通过「导出设置参数」与「导出教材词库」备份，防止数据丢失。</div>'
+    : '';
+
+  $('#page-home').innerHTML = `
+    <div class="today-wrap">
+      <div class="today-head">📌 今天要处理 · 复习建议</div>
+      ${todayHtml}
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn accent small" onclick="goReviewPractice()">🔁 一键复习这些单词</button>
+        <button class="btn small" onclick="clearSample()">🧹 清空词库</button>
+      </div>
+    </div>
+
+    ${backupTip}
+
+    <div class="card">
+      <h2>🚀 功能区</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;">
+        <button class="btn block" onclick="openHelp()">📖 使用说明</button>
+        <button class="btn block" onclick="openAbout()">ℹ️ 应用信息</button>
+        <button class="btn block" onclick="exportSettings()">⚙️ 导出设置参数</button>
+        <button class="btn block" onclick="importData()">⚙️ 导入设置参数</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📊 今日概览 <span class="tag">${words.length} 词</span></h2>
+      <div class="muted" style="margin-bottom:10px;">共 ${words.length} 个单词，其中未测评 ${words.filter(w=>w.draw===0).length} 个，已掌握（A/B 级）${words.filter(w=>bandOf(w)==='A'||bandOf(w)==='B').length} 个。</div>
+      <div id="homeMiniRose" class="rose-wrap"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔧 快捷操作</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn warn small" onclick="confirmClearAll()">🗑️ 清空全部数据</button>
+      </div>
+      <div class="muted" style="margin-top:8px;">数据保存在本机浏览器（localStorage），请定期导出备份。</div>
+    </div>
+  `;
+  renderRoseChart('#homeMiniRose', state.settings.stats.grades, true);
+}
+
+function goReviewPractice(){
+  // 直接进入练习，但只练习待复习单词（临时把范围切到低正确率词）
+  startPractice(reviewWordIds());
+}
+function reviewWordIds(){
+  const ids = state.words.filter(w=> (w.draw>0 && (w.correct/w.draw)<=0.4) || w.draw===0).map(w=>w.id);
+  return ids;
+}
+
+/* ============================================================
+   词汇表页
+   ============================================================ */
+function renderWordbank(){
+  const s=state.settings;
+  $('#page-wordbank').innerHTML = `
+    <div class="card">
+      <h2>📚 词汇表 <span class="tag">${state.words.length} 词</span></h2>
+      <div class="wb-controls">
+        <input type="text" id="wbSearch" placeholder="🔍 搜索单词/释义..." oninput="renderWbTable()">
+        <select id="wbGrade" onchange="renderWbTable()">
+          <option value="0">全部年级</option>
+          ${GRADES.map(g=>'<option value="'+g+'"'+(g===3?' selected':'')+'>'+g+'年级</option>').join('')}
+        </select>
+        <select id="wbSem" onchange="renderWbTable()">
+          <option value="0">上下册</option>
+          <option value="1">上册</option>
+          <option value="2">下册</option>
+        </select>
+      </div>
+      <div id="wbTableWrap"></div>
+      <div class="band-legend">
+        ${['A','B','C','D','E','F'].map(b=>'<span class="lg"><span class="sw" style="background:'+BAND[b].color+'"></span>'+b+' '+BAND[b].label+'（答对率 '+BAND[b].acc+'）</span>').join('')}
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn small primary" onclick="openAddWord()">➕ 手动添加单词</button>
+        <button class="btn small" onclick="clearSample()">🧹 清空词库</button>
+        <button class="btn small" onclick="importData()">📥 导入教材词库</button>
+        <button class="btn small" onclick="exportVocab()">📤 导出教材词库</button>
+        <button class="btn small accent" onclick="exportWbPrint()">🖨️ 导出打印清单（A4）</button>
+      </div>
+      <div class="muted" style="margin-top:8px;">ℹ️ 词汇表参考上海教育出版社（根据 2022 年版课程标准修订）英语义务教育教科书（三年级起点）编制。</div>
+    </div>
+  `;
+  renderWbTable();
+}
+
+function renderWbTable(){
+  const q=($('#wbSearch')?$('#wbSearch').value:'').trim().toLowerCase();
+  const g=parseInt($('#wbGrade')?$('#wbGrade').value:'0');
+  const sm=parseInt($('#wbSem')?$('#wbSem').value:'0');
+  let list=state.words.slice();
+  if(q) list=list.filter(w=>w.word.toLowerCase().includes(q)||w.meaning.includes(q));
+  if(g) list=list.filter(w=>w.grade===g);
+  if(sm) list=list.filter(w=>w.semester===sm);
+  list.sort(textbookOrder);
+  if(list.length===0){ $('#wbTableWrap').innerHTML='<div class="muted" style="text-align:center;padding:20px;">没有符合条件的单词</div>'; return; }
+
+  const rows = list.map(w=>{
+    const b=bandOf(w);
+    return '<tr>'
+      +'<td class="tight"><b>'+esc(w.word)+'</b><br><span class="muted" style="font-size:12px;">'+esc(w.phonetic)+'</span></td>'
+      +'<td class="tight">'+esc(w.meaning)+'</td>'
+      +'<td class="tight">'+esc(w.grade)+'年级'+esc(SEM[w.semester])+' '+unitLabel(w.unit)+'</td>'
+      +'<td class="tight">'+levelPill(w.level)+'</td>'
+      +'<td class="tight">'+w.draw+'</td>'
+      +'<td class="tight">'+w.correct+'</td>'
+      +'<td class="tight"><div class="acc-bar"><i style="width:'+Math.round((w.draw?w.correct/w.draw*100:0))+'%;background:'+bandColor(b)+';'+(b==='F'?'border:1px solid #ddd;':'')+'"></i></div><span style="font-size:11px;color:var(--muted)">'+accText(w)+'</span></td>'
+      +'<td class="tight"><span class="dot" style="background:'+bandColor(b)+'"></span>'+b+'</td>'
+      +'<td class="opt"><span class="act-row"><button class="btn small" onclick="openEditWord(\''+w.id+'\')">编辑</button>'
+      +'<button class="btn small danger" onclick="deleteWord(\''+w.id+'\')">删</button></span></td>'
+      +'</tr>';
+  }).join('');
+
+  $('#wbTableWrap').innerHTML = '<div style="overflow-x:auto;"><table class="wb"><thead><tr>'
+    +'<th class="tight">单词/注音</th><th class="tight">释义</th><th class="tight">来源</th><th class="tight">分级</th><th class="tight">被抽</th><th class="tight">答对</th><th class="tight">答对率</th><th class="tight">等级</th><th class="opt">操作</th>'
+    +'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function openAddWord(){
+  openModal(`
+    <h3>➕ 添加单词</h3>
+    <label class="fld"><span class="lbl">单词 *</span><input type="text" id="f_word" placeholder="apple"></label>
+    <label class="fld"><span class="lbl">标准注音</span><input type="text" id="f_phonetic" placeholder="/ˈæpl/"></label>
+    <label class="fld"><span class="lbl">中文释义 *</span><input type="text" id="f_meaning" placeholder="苹果"></label>
+    <label class="fld"><span class="lbl">造句举例</span><textarea id="f_sentence" placeholder="I eat an apple."></textarea></label>
+    <label class="fld"><span class="lbl">扩展记忆（词根词缀/联想）</span><textarea id="f_memory" placeholder="联想：..."></textarea></label>
+    <label class="fld"><span class="lbl">年级</span><select id="f_grade">${GRADES.map(g=>'<option value="'+g+'">'+g+'年级</option>').join('')}</select></label>
+    <label class="fld"><span class="lbl">上下册</span><select id="f_sem"><option value="1">上册</option><option value="2">下册</option></select></label>
+    <label class="fld"><span class="lbl">掌握分级</span><select id="f_level"><option value="1">核心词汇（粗体）</option><option value="2">二级词（加星*）</option><option value="3">一般要求</option></select></label>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn primary" onclick="saveWord()">💾 保存</button>
+    </div>
+  `);
+}
+function saveWord(){
+  const word=$('#f_word').value.trim(), meaning=$('#f_meaning').value.trim();
+  if(!word||!meaning){ toast('请至少填写单词和释义'); return; }
+  state.words.push({
+    id:'w_'+Date.now()+Math.random().toString(36).slice(2,6),
+    word, meaning,
+    phonetic:$('#f_phonetic').value.trim()||'/—/',
+    sentence:$('#f_sentence').value.trim(),
+    memory:$('#f_memory').value.trim(),
+    grade:parseInt($('#f_grade').value),
+    semester:parseInt($('#f_sem').value),
+    level:parseInt($('#f_level').value),
+    draw:0, correct:0
+  });
+  saveState(); closeModal(); renderWordbank(); toast('已添加 '+word);
+}
+function openEditWord(id){
+  const w=state.words.find(x=>x.id===id); if(!w) return;
+  openModal(`
+    <h3>✏️ 编辑单词</h3>
+    <label class="fld"><span class="lbl">单词 *</span><input type="text" id="f_word" value="${esc(w.word)}"></label>
+    <label class="fld"><span class="lbl">标准注音</span><input type="text" id="f_phonetic" value="${esc(w.phonetic)}"></label>
+    <label class="fld"><span class="lbl">中文释义 *</span><input type="text" id="f_meaning" value="${esc(w.meaning)}"></label>
+    <label class="fld"><span class="lbl">造句举例</span><textarea id="f_sentence">${esc(w.sentence)}</textarea></label>
+    <label class="fld"><span class="lbl">扩展记忆</span><textarea id="f_memory">${esc(w.memory)}</textarea></label>
+    <label class="fld"><span class="lbl">年级</span><select id="f_grade">${GRADES.map(g=>'<option value="'+g+'"'+(w.grade===g?' selected':'')+'>'+g+'年级</option>').join('')}</select></label>
+    <label class="fld"><span class="lbl">上下册</span><select id="f_sem"><option value="1"'+(w.semester===1?' selected':'')+'>上册</option><option value="2"'+(w.semester===2?' selected':'')+'>下册</option></select></label>
+    <label class="fld"><span class="lbl">掌握分级</span><select id="f_level"><option value="1"'+(w.level===1?' selected':'')+'>核心词汇（粗体）</option><option value="2"'+(w.level===2?' selected':'')+'>二级词（加星*）</option><option value="3"'+(w.level===3?' selected':'')+'>一般要求</option></select></label>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn primary" onclick="updateWord('${w.id}')">💾 保存</button>
+    </div>
+  `);
+}
+function updateWord(id){
+  const w=state.words.find(x=>x.id===id); if(!w) return;
+  w.word=$('#f_word').value.trim(); w.meaning=$('#f_meaning').value.trim();
+  w.phonetic=$('#f_phonetic').value.trim()||'/—/';
+  w.sentence=$('#f_sentence').value.trim(); w.memory=$('#f_memory').value.trim();
+  w.grade=parseInt($('#f_grade').value); w.semester=parseInt($('#f_sem').value); w.level=parseInt($('#f_level').value);
+  saveState(); closeModal(); renderWordbank(); toast('已保存');
+}
+function deleteWord(id){
+  const w=state.words.find(x=>x.id===id); if(!w) return;
+  openModal(`
+    <h3>🗑️ 删除单词</h3>
+    <p>确认删除单词「<b>${esc(w.word)}</b>」及其测评记录吗？此操作不可恢复。</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn danger" onclick="doDeleteWord('${id}')">确认删除</button>
+    </div>
+  `);
+}
+function doDeleteWord(id){ state.words=state.words.filter(w=>w.id!==id); saveState(); closeModal(); renderWordbank(); toast('已删除'); }
+
+/* 导出当前筛选（年级-上/下册）词汇表为 A4 打印清单（不含造句与联想记忆） */
+function exportWbPrint(){
+  const q=($('#wbSearch')?$('#wbSearch').value:'').trim().toLowerCase();
+  const g=parseInt($('#wbGrade')?$('#wbGrade').value:'0');
+  const sm=parseInt($('#wbSem')?$('#wbSem').value:'0');
+  let list=state.words.slice();
+  if(q) list=list.filter(w=>w.word.toLowerCase().includes(q)||w.meaning.includes(q));
+  if(g) list=list.filter(w=>w.grade===g);
+  if(sm) list=list.filter(w=>w.semester===sm);
+  list.sort(textbookOrder);
+  if(list.length===0){ toast('当前筛选范围内没有可导出的词汇'); return; }
+
+  const gLabel = g ? (g+'年级') : '全部年级';
+  const smLabel = sm ? SEM[sm] : '上/下册';
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  const dateStr = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+
+  const items = list.map(w=>{
+    const lv = w.level===1?'核心':w.level===2?'二级':'一般';
+    const lvCls = w.level===1?'lv1':w.level===2?'lv2':'lv3';
+    return '<div class="witem '+lvCls+'">'
+      +'<span class="en">'+esc(w.word)+'</span>'
+      +'<span class="ph">'+esc(w.phonetic||'')+'</span>'
+      +'<span class="cn">'+esc(w.meaning)+'</span>'
+      +'<span class="lv">'+lv+'</span>'
+      +'</div>';
+  }).join('');
+
+  const html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">'
+    +'<title>词汇表 - '+gLabel+smLabel+'</title>'
+    +'<style>'
+    +'@page{size:A4;margin:12mm;}'
+    +'*{box-sizing:border-box;}'
+    +'body{font-family:"Microsoft YaHei","PingFang SC","Segoe UI",sans-serif;color:#1f3a5f;margin:0;background:#fff;}'
+    +'.doc-head{text-align:center;margin-bottom:6px;}'
+    +'.doc-head h1{font-size:18px;margin:0 0 2px;letter-spacing:1px;}'
+    +'.doc-head .meta{font-size:12px;color:#6b87a3;}'
+    +'.list{column-count:2;column-gap:18px;margin-top:4px;}'
+    +'.witem{break-inside:avoid;display:flex;align-items:baseline;gap:5px;padding:2px 0;border-bottom:1px dotted #dbe7f3;font-size:12.5px;line-height:1.3;}'
+    +'.witem .en{font-weight:800;}'
+    +'.witem .ph{color:#6b87a3;font-size:11px;}'
+    +'.witem .cn{flex:1 1 auto;}'
+    +'.witem .lv{font-size:9px;color:#fff;border-radius:4px;padding:0 5px;white-space:nowrap;}'
+    +'.witem.lv1 .lv{background:#3bbf7a;}'
+    +'.witem.lv2 .lv{background:#d4a017;}'
+    +'.witem.lv3 .lv{background:#9aa7b5;}'
+    +'.doc-foot{margin-top:8px;font-size:10px;color:#9aa7b5;text-align:center;}'
+    +'.toolbar{position:fixed;top:8px;right:8px;z-index:9;}'
+    +'.toolbar button{font-size:13px;padding:6px 14px;border-radius:8px;border:none;background:#5aa7e8;color:#fff;cursor:pointer;}'
+    +'@media print{.toolbar{display:none;}}'
+    +'</style></head><body>'
+    +'<div class="toolbar"><button onclick="window.print()">🖨️ 打印 / 另存为 PDF</button></div>'
+    +'<div class="doc-head"><h1>心奇学单词 · 词汇复习清单</h1>'
+    +'<div class="meta">'+gLabel+' · '+smLabel+' · 共 '+list.length+' 词 · 导出日期 '+dateStr+'</div></div>'
+    +'<div class="list">'+items+'</div>'
+    +'<div class="doc-foot">心奇学单词 v'+APP_VERSION+' · 上海教育出版社（2022 课标修订版）英语（三年级起点）</div>'
+    +'</body></html>';
+
+  const win=window.open('','_blank');
+  if(!win){ toast('浏览器拦截了弹窗，请允许弹窗后重试'); return; }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  setTimeout(()=>{ try{ win.focus(); win.print(); }catch(e){} }, 450);
+}
+
+function clearSample(){
+  openModal(`
+    <h3>🧹 清空词库</h3>
+    <p>将删除全部单词（共 ${state.words.length} 个）及其测评记录。如需保留，请先导出备份。</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn danger" onclick="doClearSample()">确认清空</button>
+    </div>
+  `);
+}
+function doClearSample(){ state.words=[]; saveState(); closeModal(); renderHome(); toast('词库已清空'); }
+function confirmClearAll(){
+  openModal(`
+    <h3>⚠️ 清空全部数据</h3>
+    <p>将删除全部单词、设置与测评记录，且无法恢复。建议先导出备份。</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn danger" onclick="doClearAll()">确认清空全部</button>
+    </div>
+  `);
+}
+function doClearAll(){ state={version:APP_VERSION,settings:defaultSettings(),words:[]}; saveState(); closeModal(); renderHome(); toast('已清空全部数据'); }
+
+/* ============================================================
+   设置页
+   ============================================================ */
+function renderSettings(){
+  const s=state.settings;
+  $('#page-settings').innerHTML = `
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <div>
+        <h2 style="margin:0;">⚙️ 设置</h2>
+        <div class="muted" style="margin-top:2px;">所有设置保存在本机，可随时恢复默认值</div>
+      </div>
+      <button class="btn warn small" onclick="resetSettings()">♻️ 恢复默认设置</button>
+    </div>
+
+    <div class="card">
+      <h2>🧒 1. 个人信息</h2>
+      <label class="fld"><span class="lbl">英文姓名</span>
+        <input type="text" id="set_name" value="${esc(s.name)}" onchange="setName(this.value)">
+      </label>
+      <label class="fld"><span class="lbl">年级</span>
+        <select id="set_grade" onchange="setGrade(parseInt(this.value))">
+          ${GRADES.map(g=>'<option value="'+g+'"'+(s.grade===g?' selected':'')+'>'+g+'年级</option>').join('')}
+        </select>
+      </label>
+    </div>
+
+    <div class="card">
+      <h2>✏️ 2. 练习页设置</h2>
+      <div class="section-title">生成范围（年级教材）</div>
+      <div class="chip-group" id="prac_grades">${rangeChips('prac', s.practice.range)}</div>
+      <div class="section-title">掌握分级</div>
+      <div class="chip-group" id="prac_levels">${levelChips('prac', s.practice.levels)}</div>
+      <div class="section-title">展示内容勾选</div>
+      <div class="chip-group">
+        ${dispChip('prac','word','单词')}${dispChip('prac','phonetic','注音')}${dispChip('prac','meaning','释义')}${dispChip('prac','sentence','造句')}${dispChip('prac','memory','扩展记忆')}
+      </div>
+      <div class="section-title">抽题数量</div>
+      <div class="chip-group">
+        <label class="chip ${s.practice.ratio==='all'?'on':''}"><input type="radio" name="prac_ratio" ${s.practice.ratio==='all'?'checked':''} onchange="setPracRatio('all')">全部</label>
+        <label class="chip ${s.practice.ratio==='proportional'?'on':''}"><input type="radio" name="prac_ratio" ${s.practice.ratio==='proportional'?'checked':''} onchange="setPracRatio('proportional')">按数量抽取</label>
+      </div>
+      <div id="prac_count_wrap" class="${s.practice.ratio==='proportional'?'':'hidden'}" style="margin-top:10px;">
+        <label class="fld"><span class="lbl">抽取数量</span><input type="number" min="1" id="prac_count" value="${s.practice.count}" onchange="setPracCount(this.value)"></label>
+      </div>
+      <div class="section-title">抽取权重（练习页单独生效，可调整）</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${weightChips(s.practice.weight, 'setPracWeight')}
+      </div>
+      <div class="muted" style="margin-top:6px;">概率 = 单词权重 ÷ 范围内总权重</div>
+    </div>
+
+    <div class="card">
+      <h2>🎯 3. 测评页设置</h2>
+      <div class="section-title">生成范围（年级教材）</div>
+      <div class="chip-group" id="quiz_grades">${rangeChips('quiz', s.assessment.range)}</div>
+      <div class="section-title">掌握分级</div>
+      <div class="chip-group" style="margin-top:8px;" id="quiz_levels">${levelChips('quiz', s.assessment.levels)}</div>
+      <div class="section-title">抽题数量</div>
+      <div class="chip-group">
+        <label class="chip ${s.assessment.ratio==='all'?'on':''}"><input type="radio" name="quiz_ratio" ${s.assessment.ratio==='all'?'checked':''} onchange="setQuizRatio('all')">全部</label>
+        <label class="chip ${s.assessment.ratio==='count'?'on':''}"><input type="radio" name="quiz_ratio" ${s.assessment.ratio==='count'?'checked':''} onchange="setQuizRatio('count')">按数量</label>
+      </div>
+      <div id="quiz_count_wrap" class="${s.assessment.ratio==='count'?'':'hidden'}" style="margin-top:10px;">
+        <label class="fld"><span class="lbl">抽取数量</span><input type="number" min="1" id="quiz_count" value="${s.assessment.count}" onchange="setQuizCount(this.value)"></label>
+      </div>
+      <div class="section-title">答题模式</div>
+      <div class="chip-group">
+        <label class="chip ${s.assessment.mode==='c2e'?'on':''}"><input type="radio" name="quiz_mode" ${s.assessment.mode==='c2e'?'checked':''} onchange="setQuizMode('c2e')">中测英</label>
+        <label class="chip ${s.assessment.mode==='e2c'?'on':''}"><input type="radio" name="quiz_mode" ${s.assessment.mode==='e2c'?'checked':''} onchange="setQuizMode('e2c')">英测中</label>
+        <label class="chip ${s.assessment.mode==='mixed'?'on':''}"><input type="radio" name="quiz_mode" ${s.assessment.mode==='mixed'?'checked':''} onchange="setQuizMode('mixed')">混合</label>
+      </div>
+      <div class="section-title">抽取权重（测评页单独生效，可调整）</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${weightChips(s.assessment.weight, 'setQuizWeight')}
+      </div>
+      <div class="muted" style="margin-top:6px;">概率 = 单词权重 ÷ 范围内总权重</div>
+      <div class="section-title">鼓励语设置</div>
+      ${['A','B','C','D','E','F'].map(b=>`
+        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+          <span class="pill" style="background:${BAND[b].color};color:#333;border:1px solid #ddd;min-width:26px;text-align:center;">${b}</span>
+          <input type="text" value="${esc(s.encourage[b].en)}" onchange="setEncourage('${b}','en',this.value)" placeholder="English">
+          <input type="text" value="${esc(s.encourage[b].zh)}" onchange="setEncourage('${b}','zh',this.value)" placeholder="中文">
+        </div>`).join('')}
+    </div>
+
+    <div class="card">
+      <h2>📈 4. 统计分析</h2>
+      <div class="section-title">勾选范围</div>
+      <div class="chip-group" id="stats_grades">${gradeChips('stats', s.stats.grades)}</div>
+      <div class="rose-wrap" style="margin-top:14px;">
+        <div id="statsRose"></div>
+        <div class="rose-legend">
+          ${['A','B','C','D','E','F'].map(b=>'<span class="lg"><span class="sw" style="background:'+BAND[b].color+'"></span>'+b+' '+BAND[b].label+'</span>').join('')}
+          <span class="lg"><span class="sw" style="background:#cfe4f5;"></span>扇区=年级上/下册 · 扇区内按掌握程度堆积</span>
+        </div>
+      </div>
+    </div>
+  `;
+  renderRoseChart('#statsRose', s.stats.grades, false);
+}
+
+function weightChips(weights, handler){
+  return ['F','E','D','C','B','A'].map(b=>`
+    <div class="w-chip" style="background:${BAND[b].color};">
+      <span class="dot" style="background:${BAND[b].color}"></span><b>${b}</b>·${BAND[b].label}
+      <input class="w-in" type="number" min="0" max="99" value="${weights[b]}" onchange="${handler}('${b}',this.value)">
+    </div>`).join('');
+}
+function gradeChips(prefix, selected){
+  return GRADES.map(g=>`
+    <label class="chip ${selected.includes(g)?'on':''}">
+      <input type="checkbox" ${selected.includes(g)?'checked':''} onchange="toggleGrade('${prefix}',${g})">${g}年级
+    </label>`).join('');
+}
+function rangeChips(prefix, range){
+  return GRADES.map(g=>{
+    const sems = range[g]||[];
+    return `<div class="range-row">
+      <span class="range-g">${g}年级</span>
+      <label class="chip ${sems.includes(1)?'on':''}"><input type="checkbox" ${sems.includes(1)?'checked':''} onchange="toggleSem('${prefix}',${g},1)">上册</label>
+      <label class="chip ${sems.includes(2)?'on':''}"><input type="checkbox" ${sems.includes(2)?'checked':''} onchange="toggleSem('${prefix}',${g},2)">下册</label>
+    </div>`;
+  }).join('');
+}
+function levelChips(prefix, selected){
+  return [1,2,3].map(l=>`
+    <label class="chip ${selected.includes(l)?'on':''}">
+      <input type="checkbox" ${selected.includes(l)?'checked':''} onchange="toggleLevel('${prefix}',${l})">${LEVEL[l]}
+    </label>`).join('');
+}
+function dispChip(prefix,key,label){
+  const on=state.settings.practice.display[key];
+  return `<label class="chip ${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="toggleDisplay('${key}')">${label}</label>`;
+}
+
+/* 设置项变更 */
+function setName(v){ state.settings.name=v.trim()||'Sophia'; saveState(); }
+function setGrade(g){
+  state.settings.grade=g;
+  // 联动：确保该年级上下册包含在各范围
+  ['practice','assessment'].forEach(k=>{ state.settings[k].range[g]=[1,2]; });
+  if(!state.settings.stats.grades.includes(g)) state.settings.stats.grades.push(g);
+  saveState(); renderSettings(); toast('已联动更新各模块默认范围');
+}
+function toggleGrade(prefix,g){
+  const key = prefix==='prac'?'practice':prefix==='quiz'?'assessment':'stats';
+  const arr = state.settings[key].grades;
+  const i=arr.indexOf(g);
+  if(i>=0) arr.splice(i,1); else arr.push(g);
+  saveState(); renderSettings();
+}
+function toggleSem(prefix,g,sem){
+  const key = prefix==='prac'?'practice':'assessment';
+  const range = state.settings[key].range;
+  if(!range[g]) range[g]=[];
+  const i=range[g].indexOf(sem);
+  if(i>=0) range[g].splice(i,1); else range[g].push(sem);
+  saveState(); renderSettings();
+}
+function toggleLevel(prefix,l){
+  const key = prefix==='prac'?'practice':'assessment';
+  const arr = state.settings[key].levels;
+  const i=arr.indexOf(l);
+  if(i>=0) arr.splice(i,1); else arr.push(l);
+  saveState(); renderSettings();
+}
+function toggleDisplay(key){
+  const d=state.settings.practice.display;
+  d[key]=!d[key]; saveState(); renderSettings();
+}
+function setPracRatio(r){ state.settings.practice.ratio=r; saveState(); renderSettings(); }
+function setPracCount(v){ state.settings.practice.count=Math.max(1,parseInt(v)||1); saveState(); }
+function setQuizRatio(r){ state.settings.assessment.ratio=r; saveState(); renderSettings(); }
+function setQuizCount(v){ state.settings.assessment.count=Math.max(1,parseInt(v)||1); saveState(); }
+function setQuizMode(m){ state.settings.assessment.mode=m; saveState(); renderSettings(); }
+function setPracWeight(b,v){
+  state.settings.practice.weight[b]=Math.max(0,Math.min(99,parseInt(v)||0));
+  saveState();
+}
+function setQuizWeight(b,v){
+  state.settings.assessment.weight[b]=Math.max(0,Math.min(99,parseInt(v)||0));
+  saveState();
+}
+function setEncourage(b,k,v){ state.settings.encourage[b][k]=v; saveState(); }
+function resetSettings(){
+  openModal(`
+    <h3>♻️ 恢复默认设置</h3>
+    <p>将把<b>所有设置</b>（姓名、年级、练习/测评范围与权重、答题模式、鼓励语、统计范围等）恢复为默认值。</p>
+    <p class="muted">词汇表与已积累的测评记录<b>不受影响</b>。</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn warn" onclick="doResetSettings()">确认恢复默认</button>
+    </div>
+  `);
+}
+function doResetSettings(){
+  state.settings=defaultSettings();
+  saveState(); closeModal(); renderSettings(); toast('已恢复默认设置');
+}
+
+/* ============================================================
+   统计分析图：堆积扇形图（玫瑰图 / SVG 内联手写）
+   每个年级一个扇区，扇区内分上/下册，再按掌握程度 A–F 堆积
+   ============================================================ */
+let roseTip=null;
+function renderRoseChart(sel, grades, mini){
+  const el=$(sel); if(!el) return;
+  const G = grades.filter(g=>GRADES.includes(g));
+  if(G.length===0){ el.innerHTML='<div class="muted" style="text-align:center;padding:20px;">请先勾选年级</div>'; return; }
+  const size = mini?320:480;
+  const cx=size/2, cy=size/2;
+  const r0 = mini? size*0.15 : size*0.16;   // 内孔
+  const r1 = size/2 - 34;                    // 外径
+  const angGrade = 2*Math.PI/G.length;
+  const bands=['A','B','C','D','E','F'];
+
+  let paths='', labels='';
+  G.forEach((g,gi)=>{
+    [1,2].forEach(sem=>{
+      const ws = state.words.filter(w=>w.grade===g && w.semester===sem);
+      const total = ws.length;
+      const a0 = gi*angGrade + (sem===1?0:angGrade/2) - Math.PI/2;
+      const a1 = a0 + angGrade/2;
+      if(total===0){
+        paths += '<path d="'+polarSector(cx,cy,r0,r1,a0,a1)+'" fill="#eef3f9" stroke="#fff" stroke-width="1.5"/>';
+      } else {
+        let acc=0;
+        bands.forEach(b=>{
+          const cnt = ws.filter(w=>bandOf(w)===b).length;
+          if(cnt<=0) return;
+          const frac = cnt/total;
+          const ba0 = a0 + (a1-a0)*acc;
+          const ba1 = a0 + (a1-a0)*(acc+frac);
+          acc += frac;
+          const tip = g+'年级'+SEM[sem]+' · '+BAND[b].label+'：'+cnt+'/'+total+' 词';
+          paths += '<path d="'+polarSector(cx,cy,r0,r1,ba0,ba1)+'" fill="'+BAND[b].color+'" stroke="#fff" stroke-width="1.2" data-tip="'+esc(tip)+'"/>';
+        });
+      }
+    });
+    // 年级标签（放扇区中部偏外）
+    const mid = gi*angGrade - Math.PI/2 + angGrade/2;
+    const lr = r1 + 14;
+    labels += '<text x="'+(cx+lr*Math.cos(mid))+'" y="'+(cy+lr*Math.sin(mid))+'" text-anchor="middle" font-size="12" font-weight="700" fill="#1f3a5f">'+g+'年级</text>';
+  });
+
+  const center = '<circle cx="'+cx+'" cy="'+cy+'" r="'+r0+'" fill="#fff" stroke="#cfe4f5" stroke-width="1.5"/>'
+    +'<text x="'+cx+'" y="'+(cy-2)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#1f3a5f">掌握程度</text>'
+    +'<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" font-size="11" fill="#6b87a3">堆积扇形图</text>';
+
+  el.innerHTML = '<svg viewBox="0 0 '+size+' '+size+'" style="max-width:100%;height:auto;width:100%;">'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="'+(r1+3)+'" fill="#fff" stroke="#cfe4f5" stroke-width="2"/>'
+    + paths + labels + center + '</svg>';
+
+  // 悬停数值提示
+  el.querySelectorAll('path[data-tip]').forEach(p=>{
+    p.addEventListener('mousemove', e=>showRoseTip(e, p.getAttribute('data-tip')));
+    p.addEventListener('mouseleave', hideRoseTip);
+  });
+}
+function showRoseTip(e, txt){
+  if(!roseTip){
+    roseTip=document.createElement('div');
+    roseTip.className='rose-tip';
+    document.body.appendChild(roseTip);
+  }
+  roseTip.textContent=txt;
+  roseTip.style.display='block';
+  roseTip.style.left=(e.clientX+14)+'px';
+  roseTip.style.top=(e.clientY+14)+'px';
+}
+function hideRoseTip(){ if(roseTip) roseTip.style.display='none'; }
+function polarSector(cx,cy,r0,r1,a0,a1){
+  const large = (a1-a0)>Math.PI?1:0;
+  const x0=cx+r0*Math.cos(a0), y0=cy+r0*Math.sin(a0);
+  const x1=cx+r0*Math.cos(a1), y1=cy+r0*Math.sin(a1);
+  const x2=cx+r1*Math.cos(a1), y2=cy+r1*Math.sin(a1);
+  const x3=cx+r1*Math.cos(a0), y3=cy+r1*Math.sin(a0);
+  return 'M '+x0+' '+y0
+    +' L '+x3+' '+y3
+    +' A '+r1+' '+r1+' 0 '+large+' 1 '+x2+' '+y2
+    +' L '+x1+' '+y1
+    +' A '+r0+' '+r0+' 0 '+large+' 0 '+x0+' '+y0
+    +' Z';
+}
+
+/* ============================================================
+   练习页
+   ============================================================ */
+function startPractice(idsOverride){
+  const s=state.settings;
+  let pool = idsOverride
+    ? state.words.filter(w=>idsOverride.includes(w.id))
+    : filterWords(s.practice.range, s.practice.levels);
+  if(pool.length===0){ toast('范围内没有单词，请到设置页调整'); return; }
+  pool.sort(textbookOrder);
+  let list=pool;
+  if(!idsOverride && s.practice.ratio==='proportional'){
+    list=weightedSample(pool, Math.min(s.practice.count, pool.length), w=>weightOf(w, s.practice.weight));
+    list.sort(textbookOrder);
+  }
+  session={type:'practice', list, idx:0};
+  setNavLocked(true);
+  showPage('practice');
+}
+function goPractice(){ startPractice(null); }
+
+function renderPractice(){
+  if(!session || session.type!=='practice'){
+    $('#page-practice').innerHTML = '<div class="card" style="text-align:center;padding:40px 20px;"><h2>✏️ 练习页</h2><div class="muted">点击下方「生成练习页」按钮，按照设置规则生成练习页。</div><button class="btn primary" style="margin-top:16px;" onclick="goPractice()">✏️ 生成练习页</button></div>';
+    return;
+  }
+  renderPracticeCard();
+}
+function renderPracticeCard(){
+  const w=session.list[session.idx];
+  const d=state.settings.practice.display;
+  const total=session.list.length;
+  const pct=Math.round(session.idx/total*100);
+  $('#page-practice').innerHTML = `
+    <div class="card">
+      <div class="quiz-top">
+        <span class="count">📖 ${session.idx+1} / ${total}</span>
+        <button class="btn danger small" onclick="forceExit('practice')">🚪 强制退出</button>
+      </div>
+      <div class="prac-progress">
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <span class="muted">${pct}%</span>
+      </div>
+      <div class="prac-card">
+        <div class="src">${esc(w.grade)}年级${esc(SEM[w.semester])} · ${unitLabel(w.unit)} · ${esc(LEVEL[w.level])} · 第 ${session.idx+1}/${total} 个</div>
+        ${d.word?'<div class="w">'+esc(w.word)+'</div>':''}
+        ${d.phonetic?'<div class="ph">'+esc(w.phonetic)+' <span class="speak" onclick="speak(\''+esc(baseWord(w))+'\')">🔊 听发音</span></div>':''}
+        ${d.meaning?'<div class="me">'+esc(w.meaning)+'</div>':''}
+        <button class="btn accent small" onclick="togglePracExtra()">📖 展开造句与扩展记忆</button>
+        <div class="prac-extra" id="pracExtra">
+          ${d.sentence?'<div class="line"><span class="k">📝 造句：</span>'+esc(w.sentence||'（无）')+'</div>':''}
+          ${d.memory?'<div class="line"><span class="k">🧠 扩展记忆：</span>'+esc(w.memory||'（无）')+'</div>':''}
+        </div>
+      </div>
+      <div class="prac-nav">
+        <button class="btn" onclick="pracPrev()" ${session.idx===0?'disabled':''}>⬅️ 上一个</button>
+        <button class="btn primary" onclick="pracNext()">${session.idx===total-1?'✅ 完成练习':'下一个 ➡️'}</button>
+      </div>
+    </div>
+  `;
+  $('#pracExtra').classList.remove('show');
+}
+function togglePracExtra(){ $('#pracExtra').classList.toggle('show'); }
+function pracPrev(){ if(session.idx>0){ session.idx--; renderPracticeCard(); } }
+function pracNext(){
+  if(session.idx < session.list.length-1){ session.idx++; renderPracticeCard(); }
+  else{ finishPractice(); }
+}
+function finishPractice(){
+  const n=session.list.length;
+  session=null; setNavLocked(false);
+  openModal(`
+    <h3>🎉 练习完成</h3>
+    <p>已完成 ${n} 个单词的复习。练习不记录测评数据，去「测评」检验一下掌握程度吧！</p>
+    <div class="modal-actions">
+      <button class="btn primary" onclick="closeModal();goHome()">回到主界面</button>
+      <button class="btn accent" onclick="closeModal();goAssessment()">🎯 去测评</button>
+    </div>
+  `);
+}
+function goHome(){ showPage('home'); }
+
+/* ============================================================
+   测评页
+   ============================================================ */
+function goAssessment(){ startAssessment(); }
+function startAssessment(){
+  const s=state.settings.assessment;
+  let pool=filterWords(s.range, s.levels);
+  if(pool.length===0){ toast('范围内没有单词，请到设置页调整'); return; }
+  let selected;
+  if(s.ratio==='all'){ selected=pool.slice(); }
+  else { selected=weightedSample(pool, Math.min(s.count, pool.length), w=>weightOf(w, s.weight)); }
+  selected=shuffle(selected);
+  const qs=selected.map((w,i)=>{
+    let mode=s.mode;
+    if(mode==='mixed') mode = Math.random()<0.5?'c2e':'e2c';
+    return {id:w.id, mode, num:i+1};
+  });
+  session={type:'assessment', qs, idx:0, results:[]};
+  setNavLocked(true);
+  showPage('assessment');
+}
+function renderAssessment(){
+  if(!session || session.type!=='assessment'){
+    $('#page-assessment').innerHTML='<div class="card" style="text-align:center;padding:40px 20px;"><h2>🎯 测评页</h2><div class="muted">点击下方「生成测评页」按钮，按照设置规则生成测评页。</div><button class="btn accent" style="margin-top:16px;" onclick="goAssessment()">🎯 生成测评页</button></div>';
+    return;
+  }
+  renderAssessmentCard();
+}
+function renderAssessmentCard(){
+  const q=session.qs[session.idx];
+  const w=state.words.find(x=>x.id===q.id);
+  const total=session.qs.length;
+  const modeLabel = q.mode==='c2e'?'中测英':'英测中';
+  const hideEn = q.mode==='c2e'; // 中测英 → 遮挡英文
+  const deck = session.qs.map((_,i)=>{
+    const st = i<session.idx?'done':(i===session.idx?'cur':'');
+    return '<div class="ds '+st+'">'+(i+1)+'</div>';
+  }).join('');
+
+  $('#page-assessment').innerHTML = `
+    <div class="card">
+      <div class="quiz-top">
+        <span class="count">🎯 第 ${session.idx+1} 题 / 共 ${total} 题</span>
+        <span class="quiz-mode-tag">${modeLabel}</span>
+        <button class="btn danger small" onclick="forceExit('assessment')">🚪 强制退出</button>
+      </div>
+      <div class="deck-status">${deck}</div>
+
+      <div class="flip-scene">
+        <div class="flipper" id="flipper" onclick="flipCard()">
+          <div class="face back" id="cardBack">${cardBackSVG(q.num)}</div>
+          <div class="face front">
+            <div class="front-top">
+              <span class="cn" id="cnZone">${esc(w.meaning)}</span>
+              <div class="fog big" id="fogCn" style="${hideEn?'display:none;':''}" onclick="revealJudge()">
+                <span class="fog-txt">👁 中文被遮挡</span>
+              </div>
+            </div>
+            <div class="front-mid">
+              <span class="en" id="enZone">${esc(w.word)}</span>
+              <span class="ph" id="phZone">${esc(w.phonetic)}</span>
+              <span class="speak" onclick="event.stopPropagation();speak('${esc(baseWord(w))}')">🔊 听发音</span>
+              <div class="fog big" id="fogEn" style="${hideEn?'':'display:none;'}" onclick="revealJudge()">
+                <span class="fog-txt">👁 英文被遮挡</span>
+              </div>
+            </div>
+            <div class="front-judge" id="judgeZone">
+              <div class="judge-hint">点此揭开遮挡，判题</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="muted" style="text-align:center;margin-top:14px;">👆 点击卡牌翻面 → 点击判题区揭开遮挡 → 自我判题</div>
+    </div>
+  `;
+  session._flipped=false;
+  session._revealed=false;
+}
+
+function cardBackSVG(num){
+  return '<svg viewBox="0 0 240 320" style="width:100%;height:100%;display:block;">'
+    +'<rect width="240" height="320" fill="#1f3a5f"/>'
+    +'<rect x="10" y="10" width="220" height="300" rx="16" fill="none" stroke="#d4af37" stroke-width="2.5"/>'
+    +'<rect x="18" y="18" width="204" height="284" rx="11" fill="none" stroke="#d4af37" stroke-width="1"/>'
+    + ornament()
+    +'<circle cx="120" cy="150" r="52" fill="none" stroke="#d4af37" stroke-width="2"/>'
+    +'<circle cx="120" cy="150" r="44" fill="#2c4a74"/>'
+    +'<text x="120" y="168" text-anchor="middle" font-size="44" font-weight="bold" fill="#f0d98c" font-family="Georgia,serif">'+num+'</text>'
+    +'<text x="120" y="272" text-anchor="middle" font-size="12" fill="#d4af37" letter-spacing="3">LEARN · WORDS</text>'
+    +'</svg>';
+}
+function ornament(){
+  let s='';
+  // 顶部皇冠
+  s += '<path d="M80 52 L88 32 L100 46 L120 26 L140 46 L152 32 L160 52 Z" fill="#d4af37"/>';
+  s += '<rect x="84" y="52" width="72" height="8" rx="3" fill="#d4af37"/>';
+  s += '<circle cx="95" cy="66" r="3" fill="#d4af37"/><circle cx="120" cy="66" r="3" fill="#d4af37"/><circle cx="145" cy="66" r="3" fill="#d4af37"/>';
+  // 四角纹饰
+  [[32,32],[208,32],[32,288],[208,288]].forEach(p=>{
+    s += '<path d="M'+p[0]+' '+p[1]+' q14 0 14 14 q0 14 -14 14" fill="none" stroke="#d4af37" stroke-width="2"/>';
+    s += '<path d="M'+p[0]+' '+p[1]+' q0 14 -14 14" fill="none" stroke="#d4af37" stroke-width="2"/>';
+    s += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="#d4af37"/>';
+  });
+  // 菱形边饰
+  [[60,52],[180,52],[60,268],[180,268]].forEach(p=>{
+    s += '<path d="M'+p[0]+' '+p[1]+' l6 -8 l6 8 l-6 8 Z" fill="none" stroke="#d4af37" stroke-width="1.5"/>';
+  });
+  return s;
+}
+
+function flipCard(){
+  if(session._flipped) return;
+  session._flipped=true;
+  $('#flipper').classList.add('flipped');
+}
+
+function revealJudge(){
+  if(!session._flipped || session._revealed) return;
+  session._revealed=true;
+  const q=session.qs[session.idx];
+  // 揭开灰雾
+  if(q.mode==='c2e'){ const f=$('#fogEn'); if(f) f.classList.add('cleared'); }
+  else { const f=$('#fogCn'); if(f) f.classList.add('cleared'); }
+  $('#judgeZone').innerHTML = `
+    <div class="judge-btns">
+      <button class="jb yes" onclick="judge(true)">✔ 答对</button>
+      <button class="jb no" onclick="judge(false)">✘ 答错</button>
+    </div>
+  `;
+}
+
+function judge(correct){
+  if(!session || session._judged) return;
+  session._judged=true;
+  session.results.push({id:session.qs[session.idx].id, correct});
+  const btns=$$('#judgeZone .jb');
+  btns.forEach(b=>b.disabled=true);
+  // 视觉反馈
+  setTimeout(()=>{
+    if(session.idx < session.qs.length-1){
+      session.idx++; session._judged=false;
+      renderAssessmentCard();
+    } else {
+      finishAssessment();
+    }
+  }, 550);
+}
+
+function finishAssessment(){
+  const total=session.qs.length;
+  const correct=session.results.filter(r=>r.correct).length;
+  const acc=total>0?correct/total:0;
+  const score=Math.round(acc*100);
+  // 写入题库
+  session.results.forEach(r=>{
+    const w=state.words.find(x=>x.id===r.id);
+    if(w){ w.draw++; if(r.correct) w.correct++; }
+  });
+  saveState();
+  const band = acc>=0.95?'A':acc>=0.8?'B':acc>=0.4?'C':acc>=0.2?'D':acc>0?'E':'F';
+  const enc=state.settings.encourage[band];
+  session=null; setNavLocked(false);
+
+  openModal(`
+    <h3>🎯 测评完成</h3>
+    <div class="result-hero">
+      <div class="big">${score}<span style="font-size:24px;">分</span></div>
+      <div class="label">答对 ${correct} / ${total} 题 · 正确率 ${Math.round(acc*100)}%</div>
+      <div class="enc">${esc(enc.zh)}</div>
+      <div class="enc-en">${esc(enc.en)}</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal();goHome()">回到主界面</button>
+      <button class="btn primary" onclick="closeModal();goAssessment()">🔄 再来一轮</button>
+    </div>
+  `);
+}
+
+function forceExit(type){
+  openModal(`
+    <h3>🚪 确认退出？</h3>
+    <p>${type==='assessment'?'退出后本次测评结果将<b>不记录</b>到词汇表。':'退出后回到主界面。'}</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">继续${type==='assessment'?'测评':'练习'}</button>
+      <button class="btn danger" onclick="doForceExit()">确认退出</button>
+    </div>
+  `);
+}
+function doForceExit(){ session=null; setNavLocked(false); closeModal(); goHome(); toast('已退出，数据未记录'); }
+
+function setNavLocked(locked){
+  $$('#topNav button').forEach(b=>b.disabled=locked);
+  $$('#bottomNav button').forEach(b=>b.disabled=locked);
+}
+
+/* ============================================================
+   导出 / 导入
+   ============================================================ */
+function exportSettings(){
+  const name=state.settings.name.trim()||'Student';
+  const stamp=tenDigitStamp();
+  const payload={
+    app:'心奇学单词', version:APP_VERSION, exportedAt:new Date().toISOString(),
+    settings:state.settings
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='心奇学单词-设置参数-'+name+'-'+stamp+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+  toast('已导出设置参数');
+}
+
+/* 导出教材词库（默认含全部年级词汇），与导入同规则可识别的 JSON 格式 */
+function exportVocab(){
+  const stamp=tenDigitStamp();
+  const payload={
+    app:'心奇学单词', version:APP_VERSION, vocabVersion:VOCAB_VERSION,
+    exportedAt:new Date().toISOString(), words:state.words
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='心奇学单词-教材词库-'+state.words.length+'词-'+stamp+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+  toast('已导出教材词库（'+state.words.length+' 词）');
+}
+
+function importData(){
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='.json,application/json';
+  inp.onchange=()=>{
+    const f=inp.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const d=JSON.parse(rd.result);
+        doImport(d);
+      }catch(e){ toast('文件解析失败，请确认是导出的 JSON 备份'); }
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+let pendingImport=null;
+function doImport(d){
+  if(!d || typeof d!=='object'){ toast('无效的备份文件'); return; }
+  const hasWords = Array.isArray(d.words);
+  const hasSettings = !!(d.settings && typeof d.settings==='object');
+  if(!hasWords && !hasSettings){ toast('无效的备份文件（需包含设置参数或教材词库）'); return; }
+  pendingImport=d;
+  const parts=[];
+  if(hasSettings) parts.push('设置参数');
+  if(hasWords) parts.push('教材词库');
+  const scope = parts.join('与');
+  const wordNote = hasWords ? ('当前 '+state.words.length+' 词 → '+d.words.length+' 词。') : '';
+  const msg = '继续导入将<b>覆盖</b>当前'+scope+'。'+wordNote;
+  if(d.version && d.version!==APP_VERSION){
+    openModal(`
+      <h3>⚠️ 版本不一致</h3>
+      <p>备份版本为 <b>${esc(d.version||'未知')}</b>，当前版本为 <b>${APP_VERSION}</b>。</p>
+      <p>${msg}是否继续？</p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">取消</button>
+        <button class="btn warn" onclick="applyPendingImport()">确认继续</button>
+      </div>
+    `);
+  } else {
+    openModal(`
+      <h3>导入确认</h3>
+      <p>${msg}是否继续？</p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">取消</button>
+        <button class="btn warn" onclick="applyPendingImport()">确认继续</button>
+      </div>
+    `);
+  }
+}
+function applyPendingImport(){
+  if(!pendingImport) return;
+  const d=pendingImport; pendingImport=null;
+  if(Array.isArray(d.words)) state.words=d.words;
+  if(d.settings && typeof d.settings==='object') state.settings=normalizeSettings(d.settings);
+  state.version=APP_VERSION;
+  saveState(); closeModal(); renderHome(); toast('导入成功');
+}
+
+/* ============================================================
+   弹窗系统
+   ============================================================ */
+function openModal(html){
+  $('#modalRoot').innerHTML = '<div class="modal-mask" onclick="if(event.target===this)closeModal()"><div class="modal">'+html+'</div></div>';
+}
+function closeModal(){ $('#modalRoot').innerHTML=''; }
+
+function openHelp(){
+  openModal(`
+    <h3>📖 使用说明</h3>
+    <div class="muted" style="line-height:1.9;">
+      <p><b>🏠 主界面</b>：今日复习建议、使用说明、应用信息、导出/导入设置参数。</p>
+      <p><b>📚 词汇表页</b>：查看全部单词的教材来源、分级、释义、注音及测评记录（被抽次数/答对次数/答对率）。可手动增删改，或导入教材词库；点击「导出打印清单（A4）」可按当前筛选的年级-上/下册，一键生成紧凑型词汇清单用于集中复习打印。</p>
+      <p style="font-size:12px;line-height:1.7;word-break:break-all;">词汇表参考上海教育出版社（根据 2022 年版课程标准修订）英语义务教育教科书（三年级起点）编制。资料来源：国家中小学智慧教育平台 https://basic.smartedu.cn/tchMaterial?defaultTag=e7bbb2de-0590-11ed-9c79-92fc3b3249d5%2F6a7495dc-0772-11ed-ac74-092ab92074e6%2F362880194a9ec684014a9f0dfa190056%2Fe7bbd372-0590-11ed-9c79-92fc3b3249d5</p>
+      <p><b>✏️ 练习页</b>：点击「生成练习页」按设置规则生成，按教材顺序逐个学习单词，点「展开」查看造句与扩展记忆，供抄写记忆。</p>
+      <p><b>🎯 测评页</b>：点击「生成测评页」按设置规则随机抽题，卡牌翻面后按遮挡内容作答，人工判题 ✔/✘，完成后按正确率给出鼓励语。</p>
+      <p><b>⚙️ 设置页</b>：个人信息、练习/测评范围与权重（各自独立可调）、答题模式、鼓励语、统计分析堆积扇形图，并可一键恢复默认设置。</p>
+    </div>
+    <div class="modal-actions"><button class="btn primary" onclick="closeModal()">知道了</button></div>
+  `);
+}
+function openAbout(){
+  openModal(`
+    <h3>ℹ️ 应用信息</h3>
+    <div class="muted" style="line-height:2;">
+      <div><b>应用名称：</b>心奇学单词</div>
+      <div><b>副标题：</b>Sophia &amp; George English Words Learning App</div>
+      <div><b>版本：</b>1.0</div>
+      <div><b>更新日期：</b>2026-8-26</div>
+      <div><b>作者：</b>Peppa's Daddy</div>
+      <div style="margin-top:10px;"><b>更新日志：</b></div>
+      <ul style="margin:4px 0 0 18px;padding:0;">
+        <li>v1.0（2026-8-26）功能完整正式发布：整合发布完整 readme 文档（目的需求/设计思路/系统结构/界面操作/数据接口/遗留问题/部署配置/维护指南/版本日志/附录）；词库备份与迁移统一使用应用内 JSON 导出/导入（导出教材词库 / 导入教材词库）</li>
+        <li>v0.7（2026-8-24）词汇表表格列距收紧、操作列加宽，「编辑/删」同行显示、行高更小；词汇表新增「导出教材词库」（默认全部年级，与导入同规则 JSON，便于批量导出-修改-再导入）；主界面「导出数据/导入数据」更名「导出设置参数/导入设置参数」；设置页练习/测评「选取比例」统一更名「抽题数量」，练习默认按数量抽取 10 题、测评默认抽取 10 题</li>
+        <li>v0.6（2026-8-24）「题库」正式更名为「词汇表」；词汇表页新增「导出打印清单（A4）」功能，可按当前筛选的年级-上/下册一键生成紧凑型词汇清单（不含造句与联想记忆），自动分页并支持一键打印 / 另存 PDF</li>
+        <li>v0.5（2026-8-24）替换为上海教育出版社（2022 课标修订版）真实词库 1280 词；测评默认 20 题；词汇表默认显示三年级；使用说明补充资料来源</li>
+        <li>v0.4（2026-8-14）练习页与测评页各自独立权重系数；设置页新增「恢复默认设置」</li>
+        <li>v0.3（2026-8-14）修复测评页权重系数输入框被隐藏的问题</li>
+        <li>v0.2（2026-8-14）掌握分级三级；年级改为三至六年级；统计分析堆积扇形图</li>
+        <li>v0.1（2026-8-14）首版：题库/练习/测评/设置/统计五大页面</li>
+      </ul>
+    </div>
+    <div class="modal-actions"><button class="btn primary" onclick="closeModal()">关闭</button></div>
+  `);
+}
+
+/* ============================================================
+   初始化
+   ============================================================ */
+$$('#topNav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+$$('#bottomNav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+
+// 判题区点击委托
+document.addEventListener('click', e=>{
+  const jz=e.target.closest('.front-judge');
+  if(jz && session && session.type==='assessment' && session._flipped && !session._revealed){
+    revealJudge();
+  }
+});
+
+renderHome();
+</script>
+<script src="../../shared/back-home.js" data-home="../../index.html" defer></script>
+</body>
+</html>
